@@ -114,6 +114,19 @@ public:
             {
                 return thermo.THs(h, p, T0);
             }
+
+            //- Temperature from sensible enthalpy
+            //  given an initial temperature T0
+            scalar THErho
+            (
+                const Thermo& thermo,
+                const scalar h,
+                const scalar rho,
+                const scalar T0
+            ) const
+            {
+                return thermo.THsrho(h, rho, T0);
+            }
 };
 
 

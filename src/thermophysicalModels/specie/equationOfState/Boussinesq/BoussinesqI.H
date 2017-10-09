@@ -31,7 +31,8 @@ License
 template<class Specie>
 inline Foam::Boussinesq<Specie>::Boussinesq
 (
-    const Specie& sp, const scalar rho0, const scalar T0, const scalar beta
+    const Specie& sp, const scalar rho0, const scalar T0,
+    const scalar beta
 )
 :
     Specie(sp),
@@ -94,6 +95,17 @@ inline Foam::scalar Foam::Boussinesq<Specie>::rho
 
 
 template<class Specie>
+inline Foam::scalar Foam::Boussinesq<Specie>::p
+(
+    scalar T,
+    scalar rho
+) const
+{
+    return 0;
+}
+
+
+template<class Specie>
 inline Foam::scalar Foam::Boussinesq<Specie>::H(scalar p, scalar T) const
 {
     return 0;
@@ -148,6 +160,28 @@ inline Foam::scalar Foam::Boussinesq<Specie>::CpMCv
 ) const
 {
     return this->R();
+}
+
+
+template<class Specie>
+inline Foam::scalar Foam::Boussinesq<Specie>::dpdT
+(
+    scalar T,
+    scalar rho
+) const
+{
+    return 0;
+}
+
+
+template<class Specie>
+inline Foam::scalar Foam::Boussinesq<Specie>::dpdv
+(
+    scalar T,
+    scalar rho
+) const
+{
+    return 0;
 }
 
 

@@ -114,6 +114,19 @@ public:
             {
                 return thermo.THa(h, p, T0);
             }
+
+            //- Temperature from absolute enthalpy
+            //  given an initial temperature T0
+            scalar THErho
+            (
+                const Thermo& thermo,
+                const scalar h,
+                const scalar rho,
+                const scalar T0
+            ) const
+            {
+                return thermo.THarho(h, rho, T0);
+            }
 };
 
 

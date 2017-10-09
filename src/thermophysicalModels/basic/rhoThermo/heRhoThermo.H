@@ -85,6 +85,9 @@ public:
 
         //- Update properties
         virtual void correct();
+
+        //- Update pressure calculated from T and rho
+        virtual void correctP();
 };
 
 

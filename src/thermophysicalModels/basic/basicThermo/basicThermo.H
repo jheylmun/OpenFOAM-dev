@@ -251,6 +251,13 @@ public:
         //- Update properties
         virtual void correct() = 0;
 
+        //- Correct temperature and update pressure
+        virtual void correctP()
+        {
+            NotImplemented;
+            return;
+        }
+
         //- Return true if the equation of state is incompressible
         //  i.e. rho != f(p)
         virtual bool incompressible() const = 0;
@@ -375,6 +382,13 @@ public:
                 const scalarField& T,
                 const label patchi
             ) const = 0;
+
+            //- Speed of sound [m/s]
+            virtual tmp<volScalarField> speedOfSound() const
+            {
+                NotImplemented;
+                return p_;
+            }
 
             //- Heat capacity at constant pressure/volume [J/kg/K]
             virtual tmp<volScalarField> Cpv() const = 0;

@@ -115,6 +115,19 @@ public:
             {
                 return thermo.TEs(e, p, T0);
             }
+
+            //- Temperature from sensible internal energy
+            //  given an initial temperature T0
+            scalar THErho
+            (
+                const Thermo& thermo,
+                const scalar e,
+                const scalar rho,
+                const scalar T0
+            ) const
+            {
+                return thermo.TEsrho(e, rho, T0);
+            }
 };
 
 

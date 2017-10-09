@@ -66,6 +66,18 @@ Foam::thermophysicalPropertiesSelector<ThermophysicalProperties>::rho
 
 template<class ThermophysicalProperties>
 inline Foam::scalar
+Foam::thermophysicalPropertiesSelector<ThermophysicalProperties>::p
+(
+    scalar T,
+    scalar rho
+) const
+{
+    return propertiesPtr_->p(T, rho);
+}
+
+
+template<class ThermophysicalProperties>
+inline Foam::scalar
 Foam::thermophysicalPropertiesSelector<ThermophysicalProperties>::psi
 (
     scalar p,
@@ -85,6 +97,30 @@ Foam::thermophysicalPropertiesSelector<ThermophysicalProperties>::CpMCv
 ) const
 {
     return propertiesPtr_->CpMCv(p, T);
+}
+
+
+template<class ThermophysicalProperties>
+inline Foam::scalar
+Foam::thermophysicalPropertiesSelector<ThermophysicalProperties>::dpdT
+(
+    scalar T,
+    scalar rho
+) const
+{
+    return propertiesPtr_->dpdT(T, rho);
+}
+
+
+template<class ThermophysicalProperties>
+inline Foam::scalar
+Foam::thermophysicalPropertiesSelector<ThermophysicalProperties>::dpdv
+(
+    scalar T,
+    scalar rho
+) const
+{
+    return propertiesPtr_->dpdv(T, rho);
 }
 
 
