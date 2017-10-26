@@ -246,7 +246,6 @@ void Foam::twoPhaseSystem::solve()
 
         alphaDbyA =
             fvc::interpolate(max(alpha1, scalar(0)))
-           *fvc::interpolate(max(alpha2, scalar(0)))
            *DbyA;
 
         phir += DbyA*fvc::snGrad(alpha1, "bounded")*mesh_.magSf();

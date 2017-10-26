@@ -173,7 +173,7 @@ public:
         virtual autoPtr<PtrList<Foam::surfaceScalarField>> phiDs
         (
             const PtrList<volScalarField>& rAUs
-        ) const = 0;
+        ) = 0;
 
         //- Return true if there is mass transfer for phase
         virtual bool transfersMass(const phaseModel& phase) const = 0;

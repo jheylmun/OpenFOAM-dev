@@ -31,6 +31,7 @@ License
 #include "liftModel.H"
 #include "wallLubricationModel.H"
 #include "turbulentDispersionModel.H"
+#include "phaseCompressibleTurbulenceModel.H"
 
 #include "HashPtrTable.H"
 
@@ -632,13 +633,41 @@ Foam::autoPtr<Foam::PtrList<Foam::surfaceScalarField>>
 Foam::MomentumTransferPhaseSystem<BasePhaseSystem>::phiDs
 (
     const PtrList<volScalarField>& rAUs
-) const
+)
 {
     autoPtr<PtrList<surfaceScalarField>> tphiDs
     (
         new PtrList<surfaceScalarField>(this->phases().size())
     );
     PtrList<surfaceScalarField>& phiDs = tphiDs();
+
+    //- Add particle pressure
+    if (this->implicitPhasePressure())
+    {
+        forAll(this->phases(), phasei)
+        {
+            const phaseModel& phase(this->phases()[phasei]);
+
+            const surfaceScalarField snGradAlpha
+            (
+                fvc::snGrad(phase)*this->mesh_.magSf()
+            );
+
+            tmp<surfaceScalarField> DbyA
+            (
+                fvc::interpolate
+                (
+                    rAUs[phase.index()]*phase.turbulence().pPrime()
+                )
+            );
+            setPhiD(phiDs, phase.index()) += DbyA()*snGradAlpha;
+            this->phaseModels_[phase.index()].DbyA(DbyA);
+            if (this->mesh_.time().outputTime())
+            {
+                phase.turbulence().pPrime()().write();
+            }
+        }
+    }
 
     // Add the turbulent dispersion force
     forAllConstIter
@@ -650,17 +679,37 @@ Foam::MomentumTransferPhaseSystem<BasePhaseSystem>::phiDs
     {
         const phasePair&
             pair(this->phasePairs_[turbulentDispersionModelIter.key()]);
+        const phaseModel& phase = pair.phase1();
+        const phaseModel& phase2 = pair.phase2();
 
         const volScalarField D(turbulentDispersionModelIter()->D());
         const surfaceScalarField snGradAlpha1
         (
-            fvc::snGrad(pair.phase1())*this->mesh_.magSf()
+            fvc::snGrad(phase)*this->mesh_.magSf()
+        );
+        tmp<surfaceScalarField> DbyA1
+        (
+            fvc::interpolate(rAUs[phase.index()]*D)
+        );
+        tmp<surfaceScalarField> DbyA2
+        (
+            fvc::interpolate(rAUs[phase.index()]*D)
         );
 
-        setPhiD(phiDs, pair.phase1().index()) +=
-            fvc::interpolate(rAUs[pair.phase1().index()]*D)*snGradAlpha1;
-        setPhiD(phiDs, pair.phase2().index()) -=
-            fvc::interpolate(rAUs[pair.phase2().index()]*D)*snGradAlpha1;
+        setPhiD(phiDs, pair.phase1().index()) += DbyA1()*snGradAlpha1;
+        setPhiD(phiDs, pair.phase2().index()) -= DbyA2()*snGradAlpha1;
+
+        if (this->implicitPhasePressure())
+        {
+            this->phaseModels_[phase.index()].DbyA
+            (
+                phase.DbyA() + DbyA1
+            );
+            this->phaseModels_[phase2.index()].DbyA
+            (
+                phase2.DbyA() + DbyA2
+            );
+        }
     }
 
     return tphiDs;

@@ -193,7 +193,7 @@ public:
         virtual autoPtr<PtrList<surfaceScalarField>> phiDs
         (
             const PtrList<volScalarField>& rAUs
-        ) const;
+        );
 
         //- Return the combined face-force (lift + wall-lubrication)
         virtual tmp<surfaceScalarField> Ff(const phasePairKey& key) const;

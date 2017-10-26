@@ -189,6 +189,10 @@ protected:
             aspectRatioModelTable aspectRatioModels_;
 
 
+        // Switch for granular flows
+        Switch implicitPhasePressure_;
+
+
     // Protected member functions
 
         //- Calculate and return the mixture flux
@@ -315,6 +319,9 @@ public:
 
         //- Return MRF zones
         inline const IOMRFZoneList& MRF() const;
+
+        //- Return if implicit phase pressure is used
+        inline Switch implicitPhasePressure() const;
 
         //- Optional FV-options
         inline fv::options& fvOptions() const;

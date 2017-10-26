@@ -38,6 +38,7 @@ Description
 #include "pimpleControl.H"
 #include "localEulerDdtScheme.H"
 #include "fvcSmooth.H"
+#include "phaseCompressibleTurbulenceModel.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -59,25 +60,16 @@ int main(int argc, char *argv[])
         #include "setInitialDeltaT.H"
     }
 
-    // Switch faceMomentum
-    // (
-    //     pimple.dict().lookupOrDefault<Switch>("faceMomentum", false)
-    // );
-
-    // Switch implicitPhasePressure
-    // (
-    //     mesh.solverDict(alpha1.name()).lookupOrDefault<Switch>
-    //     (
-    //         "implicitPhasePressure", false
-    //     )
-    // );
-
-    //#include "pUf/createDDtU.H"
+//     Switch faceMomentum
+//     (
+//         pimple.dict().lookupOrDefault<Switch>("faceMomentum", false)
+//     );
+//
+//     #include "pUf/createDDtU.H"
 
     // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
     Info<< "\nStarting time loop\n" << endl;
-
     while (runTime.run())
     {
         #include "readTimeControls.H"

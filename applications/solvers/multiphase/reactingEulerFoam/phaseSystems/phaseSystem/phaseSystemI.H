@@ -82,6 +82,12 @@ inline const Foam::IOMRFZoneList& Foam::phaseSystem::MRF() const
 }
 
 
+inline Foam::Switch Foam::phaseSystem::implicitPhasePressure() const
+{
+    return implicitPhasePressure_;
+}
+
+
 inline Foam::fv::options& Foam::phaseSystem::fvOptions() const
 {
     return fv::options::New(mesh_);
