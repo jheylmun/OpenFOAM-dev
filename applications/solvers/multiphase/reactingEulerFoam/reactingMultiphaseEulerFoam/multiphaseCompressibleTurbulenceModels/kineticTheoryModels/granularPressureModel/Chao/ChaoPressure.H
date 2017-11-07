@@ -76,19 +76,8 @@ public:
         virtual tmp<volScalarField> granularPressureCoeff
         (
             const phaseModel& phase1,
-            const phaseModel& phase2,
             const volScalarField& g0,
-            const dimensionedScalar& e
-        ) const;
-
-        //- Viscosity due to granular pressure
-        virtual tmp<volScalarField> nu
-        (
-            const phaseModel& phase1,
-            const phaseModel& phase2,
-            const volScalarField& Theta1,
-            const volScalarField& Theta2,
-            const volScalarField& g0,
+            const volScalarField& rho1,
             const dimensionedScalar& e
         ) const;
 
@@ -96,21 +85,9 @@ public:
         virtual tmp<volScalarField> granularPressureCoeffPrime
         (
             const phaseModel& phase1,
-            const phaseModel& phase2,
             const volScalarField& g0,
             const volScalarField& g0prime,
-            const dimensionedScalar& e
-        ) const;
-
-        //- Derivative of viscosity due to granular pressure
-        virtual tmp<volScalarField> nuPrime
-        (
-            const phaseModel& phase1,
-            const phaseModel& phase2,
-            const volScalarField& Theta1,
-            const volScalarField& Theta2,
-            const volScalarField& g0,
-            const volScalarField& g0Prime,
+            const volScalarField& rho1,
             const dimensionedScalar& e
         ) const;
 };

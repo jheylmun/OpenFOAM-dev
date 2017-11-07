@@ -71,45 +71,13 @@ Foam::tmp<Foam::volScalarField>
 Foam::kineticTheoryModels::granularPressureModels::Lun::granularPressureCoeff
 (
     const phaseModel& phase1,
-    const phaseModel& phase2,
     const volScalarField& g0,
+    const volScalarField& rho1,
     const dimensionedScalar& e
 ) const
 {
 
-    return phase1.rho()*phase1*(1.0 + 2.0*(1.0 + e)*phase1*g0);
-}
-
-
-Foam::tmp<Foam::volScalarField>
-Foam::kineticTheoryModels::granularPressureModels::Lun::nu
-(
-    const phaseModel& phase1,
-    const phaseModel& phase2,
-    const volScalarField& Theta1,
-    const volScalarField& Theta2,
-    const volScalarField& g0,
-    const dimensionedScalar& e
-) const
-{
-
-    return tmp<volScalarField>
-    (
-        new volScalarField
-        (
-            IOobject
-            (
-                "Lun:nu",
-                g0.time().timeName(),
-                g0.mesh(),
-                IOobject::NO_READ,
-                IOobject::NO_WRITE,
-                false
-            ),
-            g0.mesh(),
-            dimensionedScalar("0", dimViscosity, 0.0)
-        )
-    );
+    return rho1*phase1*(1.0 + 2.0*(1.0 + e)*phase1*g0);
 }
 
 
@@ -118,45 +86,13 @@ Foam::kineticTheoryModels::granularPressureModels::Lun::
 granularPressureCoeffPrime
 (
     const phaseModel& phase1,
-    const phaseModel& phase2,
     const volScalarField& g0,
     const volScalarField& g0prime,
+    const volScalarField& rho1,
     const dimensionedScalar& e
 ) const
 {
-    return phase1.rho()*(1.0 + phase1*(1.0 + e)*(4.0*g0 + 2.0*g0prime*phase1));
-}
-
-
-Foam::tmp<Foam::volScalarField>
-Foam::kineticTheoryModels::granularPressureModels::Lun::nuPrime
-(
-    const phaseModel& phase1,
-    const phaseModel& phase2,
-    const volScalarField& Theta1,
-    const volScalarField& Theta2,
-    const volScalarField& g0,
-    const volScalarField& g0prime,
-    const dimensionedScalar& e
-) const
-{
-    return tmp<volScalarField>
-    (
-        new volScalarField
-        (
-            IOobject
-            (
-                "Lun:nuPrime",
-                g0.time().timeName(),
-                g0.mesh(),
-                IOobject::NO_READ,
-                IOobject::NO_WRITE,
-                false
-            ),
-            g0.mesh(),
-            dimensionedScalar("0", dimViscosity, 0.0)
-        )
-    );
+    return rho1*(1.0 + phase1*(1.0 + e)*(4.0*g0 + 2.0*g0prime*phase1));
 }
 
 

@@ -71,13 +71,8 @@ unset regionName optTouch
 export LC_ALL=C
 
 # Reader extension
-<<<<<<< Updated upstream
 # extension=OpenFOAM
 extension=foam
-
-=======
-extension=foam
->>>>>>> Stashed changes
 
 requirePV=1
 

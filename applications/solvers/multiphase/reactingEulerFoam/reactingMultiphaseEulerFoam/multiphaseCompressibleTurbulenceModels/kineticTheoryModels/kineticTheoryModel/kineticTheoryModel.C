@@ -84,6 +84,30 @@ Foam::RASModels::kineticTheoryModel::kineticTheoryModel
     phase_(phase),
 
     KTs_(lookupOrConstruct("polydisperseKineticTheory")),
+    viscosityModel_
+    (
+        kineticTheoryModels::viscosityModel::New
+        (
+            coeffDict_,
+            KTs_
+        )
+    ),
+    conductivityModel_
+    (
+        kineticTheoryModels::conductivityModel::New
+        (
+            coeffDict_,
+            KTs_
+        )
+    ),
+    granularPressureModel_
+    (
+        kineticTheoryModels::granularPressureModel::New
+        (
+            coeffDict_,
+            KTs_
+        )
+    ),
     equilibrium_(coeffDict_.lookup("equilibrium")),
     residualAlpha_
     (
@@ -198,6 +222,10 @@ bool Foam::RASModels::kineticTheoryModel::read()
         coeffDict().lookup("equilibrium") >> equilibrium_;
         alphaMax_.readIfPresent(coeffDict());
 
+        viscosityModel_->read();
+        conductivityModel_->read();
+        granularPressureModel_->read();
+
         return true;
     }
     else
@@ -248,11 +276,26 @@ Foam::RASModels::kineticTheoryModel::R() const
 Foam::tmp<Foam::volScalarField>
 Foam::RASModels::kineticTheoryModel::pPrime() const
 {
+    const volScalarField& rho = phase_.rho();
+    dimensionedScalar e
+    (
+        "e",
+        dimless,
+        KTs_.es()[phasePairKey(phase_.name(), phase_.name(), false)]
+    );
+
     tmp<volScalarField> tpPrime
     (
-        Theta_*KTs_.granularPressurePrimeCoeff(phase_)
-      + KTs_.granularPressurePrimeSrc(phase_)
-      + KTs_.frictionalPressurePrime(phase_)
+        Theta_
+       *granularPressureModel_->granularPressureCoeffPrime
+        (
+            phase_,
+            KTs_.gs0(phase_, phase_)(),
+            KTs_.gs0Prime(phase_, phase_)(),
+            rho,
+            e
+        )
+     +  KTs_.frictionalPressurePrime(phase_)
     );
 
     volScalarField::Boundary& bpPrime =
@@ -356,7 +399,7 @@ void Foam::RASModels::kineticTheoryModel::correct()
     if (!equilibrium_)
     {
         // Particle viscosity (Table 3.2, p.47)
-        nut_ = KTs_.nu(phase_);
+        nut_ = viscosityModel_->nu(phase_, Theta_, gs0_, rho, da, e);
 
         volScalarField ThetaSqrt("sqrtTheta", sqrt(Theta_));
 
@@ -439,78 +482,32 @@ void Foam::RASModels::kineticTheoryModel::correct()
                 {
                     continue;
                 }
-
-                if
-                (
-                    KTs_.found(pair.phase1().name())
-                 && KTs_.found(pair.phase2().name())
-                )
-                {
-                    const phaseModel& phase2
-                    (
-                       &pair.phase1() == &phase_
-                      ? pair.phase2()
-                      : pair.phase1()
+                tmp<volScalarField> beta(*kdtable[pair]);
+                J1 += 3.0*beta;
+                J2 +=
+                    0.25*sqr(beta)*da*sqr(pair.magUr())
+                   /(
+                        max(alpha, residualAlpha_)*rho
+                       *sqrtPi*(ThetaSqrt + ThetaSmallSqrt)
                     );
-                    const volScalarField& rho2(phase2.rho());
-                    const volVectorField& U2(phase2.U());
-                    tmp<volScalarField> d2tmp(phase2.d());
-                    const volScalarField& d2(d2tmp());
-                    const volScalarField& Theta2
-                    (
-                        alpha.mesh().lookupObject<volScalarField>
-                        (
-                            IOobject::groupName("Theta", phase2.name())
-                        )
-                    );
-
-                    const scalar& e(KTs_.es()[pair]);
-                    const scalar pi(Foam::constant::mathematical::pi);
-
-                    tmp<volScalarField> gij(KTs_.gs0(phase_, phase2));
-                    volScalarField dij(0.5*(da + d2));
-                    volScalarField m0
-                    (
-                        constant::mathematical::pi/6.0
-                        *(rho*pow3(da) + rho2*pow3(d2))
-                    );
-                    volScalarField magUr(pair.magUr());
-
-                    J2 +=
-                        max(alpha*phase2, phase_.residualAlpha())
-                       *rho*rho2/m0*sqr(dij)*(sqr(e) - 1.0)*gij*pi
-                       *(
-                            sqrt(2.0/pi)*(pow(Theta_, 1.5) + pow(Theta2, 1.5))
-                          + 1.98*(Theta_*sqrt(Theta2) + sqrt(Theta_)*Theta2)
-                          - da/60.0
-                           *(
-                                fvc::div(U2)*(9.0*Theta_ + 15.0*Theta2)
-                              + fvc::div(U)*(15.0*Theta_ + 9.0*Theta2)
-                            )
-                        );
-                }
-                else
-                {
-                    tmp<volScalarField> beta(*kdtable[pair]);
-                    J1 += 3.0*beta;
-                    J2 +=
-                        0.25*sqr(beta)*da*sqr(pair.magUr())
-                       /(
-                            max(alpha, residualAlpha_)*rho
-                           *sqrtPi*(ThetaSqrt + ThetaSmallSqrt)
-                        );
-                }
             }
         }
-        J1.write();
-        J2.write();
 
 
         // particle pressure - coefficient in front of Theta (Eq. 3.22, p. 45)
-        volScalarField PsCoeff = KTs_.granularPressureCoeff(phase_);
+        volScalarField PsCoeff
+        (
+            granularPressureModel_->granularPressureCoeff
+            (
+                phase_,
+                gs0_,
+                rho,
+                e
+            )
+        );
 
         // 'thermal' conductivity (Table 3.3, p. 49)
-        kappa_ = KTs_.kappa(phase_);
+        kappa_ = conductivityModel_->kappa(phase_, Theta_, gs0_, rho, da, e);
 
         fv::options& fvOptions(fv::options::New(mesh_));
 
@@ -529,7 +526,7 @@ void Foam::RASModels::kineticTheoryModel::correct()
           - fvm::laplacian(kappa_, Theta_, "laplacian(kappa,Theta)")
          ==
           - fvm::SuSp((PsCoeff*I) && gradU, Theta_)
-          - ((KTs_.granularPressureSrc(phase_)*I) && gradU)
+          - (tau && gradU)
           + (tau && gradU)
           + fvm::Sp(-gammaCoeff, Theta_)
           + fvm::Sp(-J1, Theta_)
@@ -593,7 +590,7 @@ void Foam::RASModels::kineticTheoryModel::correct()
            /(2.0*max(alpha, residualAlpha_)*K4)
         );
 
-        kappa_ = KTs_.kappa(phase_);
+        kappa_ = conductivityModel_->kappa(phase_, Theta_, gs0_, rho, da, e);
     }
 
     Theta_.max(0);
@@ -601,7 +598,7 @@ void Foam::RASModels::kineticTheoryModel::correct()
 
     {
         // particle viscosity (Table 3.2, p.47)
-        nut_ = KTs_.nu(phase_);
+        nut_ = viscosityModel_->nu(phase_, Theta_, gs0_, rho, da, e);
 
         volScalarField ThetaSqrt("sqrtTheta", sqrt(Theta_));
 

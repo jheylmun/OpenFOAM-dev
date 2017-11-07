@@ -35,6 +35,7 @@ divSchemes
 
     "div\(alphaRhoPhi.*,U.*\)"      Gauss limitedLinearV 0.2;
     "div\(phi.*,U.*\)"              Gauss limitedLinearV 0.2;
+    "div\(U.*\)"                    Gauss linear;
 
     "div\(alphaRhoPhi.*,(h|e).*\)"  Gauss limitedLinear 0.2;
     "div\(alphaRhoPhi.*,K.*\)"      Gauss limitedLinear 0.2;

@@ -72,6 +72,13 @@ class JohnsonJacksonSchaeffer
         //- Lower limit for (alphaMax - alpha1)
         dimensionedScalar alphaDeltaMin_;
 
+        //- Lower limit when friction is "turned on"
+        dimensionedScalar alphaMinFriction_;
+
+        //- Ratio of minimum volume fraction that frictional pressures act to
+        //  the maximum packing limit
+        dimensionedScalar alphaMinFrictionByAlphap_;
+
 
 public:
 
@@ -82,7 +89,11 @@ public:
     // Constructors
 
         //- Construct from components
-        JohnsonJacksonSchaeffer(const dictionary& dict);
+        JohnsonJacksonSchaeffer
+        (
+            const dictionary& dict,
+            const polydisperseKineticTheoryModel& kt
+        );
 
 
     //- Destructor
@@ -94,22 +105,19 @@ public:
         virtual tmp<volScalarField> frictionalPressure
         (
             const phaseModel& phase,
-            const dimensionedScalar& alphaMinFriction,
-            const dimensionedScalar& alphaMax
+            const volScalarField& alphaMax
         ) const;
 
         virtual tmp<volScalarField> frictionalPressurePrime
         (
             const phaseModel& phase,
-            const dimensionedScalar& alphaMinFriction,
-            const dimensionedScalar& alphaMax
+            const volScalarField& alphaMax
         ) const;
 
         virtual tmp<volScalarField> nu
         (
             const phaseModel& phase,
-            const dimensionedScalar& alphaMinFriction,
-            const dimensionedScalar& alphaMax,
+            const volScalarField& alphaMax,
             const volScalarField& pf,
             const volSymmTensorField& D
         ) const;

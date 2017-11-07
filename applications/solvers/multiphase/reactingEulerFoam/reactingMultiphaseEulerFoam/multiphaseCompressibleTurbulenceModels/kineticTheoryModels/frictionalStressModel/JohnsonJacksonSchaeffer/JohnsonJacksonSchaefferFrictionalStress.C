@@ -53,16 +53,29 @@ namespace frictionalStressModels
 Foam::kineticTheoryModels::frictionalStressModels::
 JohnsonJacksonSchaeffer::JohnsonJacksonSchaeffer
 (
-    const dictionary& dict
+    const dictionary& dict,
+    const polydisperseKineticTheoryModel& kt
 )
 :
-    frictionalStressModel(dict),
+    frictionalStressModel(dict, kt),
     coeffDict_(dict.optionalSubDict(typeName + "Coeffs")),
     Fr_("Fr", dimensionSet(1, -1, -2, 0, 0), coeffDict_),
     eta_("eta", dimless, coeffDict_),
     p_("p", dimless, coeffDict_),
     phi_("phi", dimless, coeffDict_),
-    alphaDeltaMin_("alphaDeltaMin", dimless, coeffDict_)
+    alphaDeltaMin_("alphaDeltaMin", dimless, coeffDict_),
+    alphaMinFriction_
+    (
+        "alphaMinFriction",
+        dimless,
+        coeffDict_
+    ),
+    alphaMinFrictionByAlphap_
+    (
+        "alphaMinFrictionByAlphap",
+        dimless,
+        coeffDict_
+    )
 {
     phi_ *= constant::mathematical::pi/180.0;
 }
@@ -82,15 +95,13 @@ Foam::kineticTheoryModels::frictionalStressModels::
 JohnsonJacksonSchaeffer::frictionalPressure
 (
     const phaseModel& phase,
-    const dimensionedScalar& alphaMinFriction,
-    const dimensionedScalar& alphaMax
+    const volScalarField& alphaMax
 ) const
 {
-    const volScalarField& alpha = phase;
-
+    const volScalarField& alphap = kt_.alphap();
     return
-        Fr_*pow(max(alpha - alphaMinFriction, scalar(0)), eta_)
-       /pow(max(alphaMax - alpha, alphaDeltaMin_), p_);
+        Fr_*pow(max(alphap - alphaMinFriction_, scalar(0)), eta_)
+       /pow(max(alphaMax - alphap, alphaDeltaMin_), p_);
 }
 
 
@@ -99,18 +110,17 @@ Foam::kineticTheoryModels::frictionalStressModels::
 JohnsonJacksonSchaeffer::frictionalPressurePrime
 (
     const phaseModel& phase,
-    const dimensionedScalar& alphaMinFriction,
-    const dimensionedScalar& alphaMax
+    const volScalarField& alphaMax
 ) const
 {
-    const volScalarField& alpha = phase;
+    const volScalarField& alphap = kt_.alphap();
 
     return Fr_*
     (
-        eta_*pow(max(alpha - alphaMinFriction, scalar(0)), eta_ - 1.0)
-       *(alphaMax-alpha)
-      + p_*pow(max(alpha - alphaMinFriction, scalar(0)), eta_)
-    )/pow(max(alphaMax - alpha, alphaDeltaMin_), p_ + 1.0);
+        eta_*pow(max(alphap - alphaMinFriction_, scalar(0)), eta_ - 1.0)
+       *(alphaMax-alphap)
+      + p_*pow(max(alphap - alphaMinFriction_, scalar(0)), eta_)
+    )/pow(max(alphaMax - alphap, alphaDeltaMin_), p_ + 1.0);
 }
 
 
@@ -119,13 +129,13 @@ Foam::kineticTheoryModels::frictionalStressModels::
 JohnsonJacksonSchaeffer::nu
 (
     const phaseModel& phase,
-    const dimensionedScalar& alphaMinFriction,
-    const dimensionedScalar& alphaMax,
+    const volScalarField& alphaMax,
     const volScalarField& pf,
     const volSymmTensorField& D
 ) const
 {
-    const volScalarField& alpha = phase;
+    const volScalarField& alphap = kt_.alphap();
+    volScalarField alphaMinFriction(alphaMinFrictionByAlphap_*alphaMax);
 
     tmp<volScalarField> tnu
     (
@@ -133,7 +143,7 @@ JohnsonJacksonSchaeffer::nu
         (
             IOobject
             (
-                "JohnsonJacksonSchaeffer:nu",
+                "Schaeffer:nu",
                 phase.mesh().time().timeName(),
                 phase.mesh(),
                 IOobject::NO_READ,
@@ -149,7 +159,7 @@ JohnsonJacksonSchaeffer::nu
 
     forAll(D, celli)
     {
-        if (alpha[celli] > alphaMinFriction.value())
+        if (alphap[celli] > alphaMinFriction[celli])
         {
             nuf[celli] =
                 0.5*pf[celli]*sin(phi_.value())

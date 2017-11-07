@@ -71,8 +71,8 @@ Foam::tmp<Foam::volScalarField>
 Foam::kineticTheoryModels::granularPressureModels::Chao::granularPressureCoeff
 (
     const phaseModel& phase1,
-    const phaseModel& phase2,
     const volScalarField& g0,
+    const volScalarField& rho1,
     const dimensionedScalar& e
 ) const
 {
@@ -89,41 +89,13 @@ Foam::kineticTheoryModels::granularPressureModels::Chao::granularPressureCoeff
 
 
 Foam::tmp<Foam::volScalarField>
-Foam::kineticTheoryModels::granularPressureModels::Chao::nu
-(
-    const phaseModel& phase1,
-    const phaseModel& phase2,
-    const volScalarField& Theta1,
-    const volScalarField& Theta2,
-    const volScalarField& g0,
-    const dimensionedScalar& e
-) const
-{
-
-    volScalarField m0
-    (
-        constant::mathematical::pi/6.0
-       *(phase1.rho()*pow3(phase1.d()) + phase2.rho()*pow3(phase2.d()))
-    );
-    return
-        phase1*phase2*phase1.rho()*phase2.rho()
-       *sqrt(2.0*constant::mathematical::pi)/(36.0*m0)
-       *(1.0 + e)*pow4((phase1.d() + phase2.d())/2.0)*g0
-       *(
-            3.0*sqrt(Theta1) + 4.0*sqrt(Theta2)
-          - 1.955*pow(Theta1*Theta2, 0.25)
-        );
-}
-
-
-Foam::tmp<Foam::volScalarField>
 Foam::kineticTheoryModels::granularPressureModels::Chao::
 granularPressureCoeffPrime
 (
     const phaseModel& phase1,
-    const phaseModel& phase2,
     const volScalarField& g0,
     const volScalarField& g0prime,
+    const volScalarField& rho1,
     const dimensionedScalar& e
 ) const
 {
@@ -146,46 +118,6 @@ granularPressureCoeffPrime
     else
     {
         return pCoeff*(g0 + phase1*g0prime);
-    }
-}
-
-
-Foam::tmp<Foam::volScalarField>
-Foam::kineticTheoryModels::granularPressureModels::Chao::nuPrime
-(
-    const phaseModel& phase1,
-    const phaseModel& phase2,
-    const volScalarField& Theta1,
-    const volScalarField& Theta2,
-    const volScalarField& g0,
-    const volScalarField& g0prime,
-    const dimensionedScalar& e
-) const
-{
-    volScalarField m0
-    (
-        constant::mathematical::pi/6.0
-       *(phase1.rho()*pow3(phase1.d()) + phase2.rho()*pow3(phase2.d()))
-    );
-    tmp<volScalarField> nuCoeff
-    (
-        2.0*phase2*phase1.rho()*phase2.rho()
-       *sqrt(2.0*constant::mathematical::pi)/(36.0*m0)
-       *(1.0 + e)*pow4((phase1.d() + phase2.d())/2.0)
-       *(
-            3.0*sqrt(Theta1) + 4.0*sqrt(Theta2)
-          - 1.955*pow(Theta1*Theta2, 0.25)
-        )
-    );
-
-    if (&phase1 == &phase2)
-    {
-        return nuCoeff*(2.0*g0 + phase1*g0prime);
-
-    }
-    else
-    {
-        return nuCoeff*(g0 + phase1*g0prime);
     }
 }
 

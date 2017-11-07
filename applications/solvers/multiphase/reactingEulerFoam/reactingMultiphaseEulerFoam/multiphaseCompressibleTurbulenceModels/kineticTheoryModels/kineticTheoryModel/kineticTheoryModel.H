@@ -52,14 +52,16 @@ SourceFiles
 #include "phaseModel.H"
 #include "phasePairKey.H"
 #include "dragModel.H"
+#include "polydisperseKineticTheoryModel.H"
+#include "viscosityModel.H"
+#include "conductivityModel.H"
+#include "granularPressureModel.H"
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
-
-class polydisperseKineticTheoryModel;
 
 namespace RASModels
 {
@@ -101,6 +103,18 @@ class kineticTheoryModel
             //- Pointer to central kineticTheory model
             polydisperseKineticTheoryModel& KTs_;
 
+
+        // Sub-models
+
+            //- Run-time selected viscosity model
+            autoPtr<kineticTheoryModels::viscosityModel> viscosityModel_;
+
+            //- Run-time selected conductivity model
+            autoPtr<kineticTheoryModels::conductivityModel> conductivityModel_;
+
+            //- Run-time selected granular pressure model
+            autoPtr<kineticTheoryModels::granularPressureModel>
+                granularPressureModel_;
 
 
         // Kinetic Theory Model coefficients

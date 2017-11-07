@@ -239,6 +239,61 @@ void Foam::multiphaseSystem::solveAlphas()
         }
     }
 
+    // Limit total granular flux
+    if
+    (
+        mesh_.foundObject<polydisperseKineticTheoryModel>
+        (
+            "polydisperseKineticTheory"
+        )
+    )
+    {
+        polydisperseKineticTheoryModel& kineticTheoryModel =
+            mesh_.lookupObjectRef<polydisperseKineticTheoryModel>
+            (
+                "polydisperseKineticTheory"
+            );
+
+        const volScalarField& alphap(kineticTheoryModel.alphap());
+        const volScalarField& alphaMax(kineticTheoryModel.alphaMax());
+        const wordList& granularPhases(kineticTheoryModel.phases());
+
+        PtrList<surfaceScalarField> alphaPhips(granularPhases.size());
+        PtrList<volScalarField> alphaps(granularPhases.size());
+        forAll(alphaps, phasei)
+        {
+            alphaPhips.set
+            (
+                phasei,
+                alphaPhiCorrs[phases()[granularPhases[phasei]].index()]
+            );
+        }
+        MULES::limitSum
+        (
+            alphap,
+            phi_,
+            alphaPhips,
+            alphaMax,
+            volScalarField
+            (
+                IOobject
+                (
+                    "0",
+                    mesh_.time().timeName(),
+                    mesh_
+                ),
+                mesh_,
+                dimensionedScalar("0", dimless, 0)
+            )
+        );
+        forAll(alphaps, phasei)
+        {
+            alphaPhiCorrs[phases()[granularPhases[phasei]].index()] =
+                alphaPhips[phasei];
+        }
+    }
+
+    // Final limiting of all phases
     MULES::limitSum(alphaPhiCorrs);
 
     volScalarField sumAlpha

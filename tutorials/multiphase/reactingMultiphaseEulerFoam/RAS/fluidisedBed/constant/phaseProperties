@@ -163,7 +163,7 @@ drag
     }
     (particles and particles1)
     {
-        type            Chao;
+        type            Syamlal;
         residualRe      1e-3;
         swarmCorrection
         {
@@ -172,7 +172,7 @@ drag
     }
     (particles and particles2)
     {
-        type            Chao;
+        type            Syamlal;
         residualRe      1e-3;
         swarmCorrection
         {
@@ -181,7 +181,7 @@ drag
     }
     (particles1 and particles2)
     {
-        type            Chao;
+        type            Syamlal;
         residualRe      1e-3;
         swarmCorrection
         {

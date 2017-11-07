@@ -47,8 +47,6 @@ SourceFiles
 
 #include "phaseSystem.H"
 #include "phaseModel.H"
-#include "kineticTheoryModel.H"
-#include "polydisperseKineticTheoryModel.H"
 #include "phasePair.H"
 #include "phasePairKey.H"
 #include "PtrListDictionary.H"
@@ -59,12 +57,14 @@ SourceFiles
 namespace Foam
 {
 
+namespace RASModels
+{
+    class kineticTheoryModel;
+}
+
 namespace kineticTheoryModels
 {
     class radialModel;
-    class granularPressureModel;
-    class viscosityModel;
-    class conductivityModel;
     class frictionalStressModel;
 }
 
@@ -84,6 +84,9 @@ class polydisperseKineticTheoryModel
         //- Kinetic theory dictionary
         const dictionary& dict_;
 
+        //- Name of total partical phase
+        const word name_;
+
         //- List of granular phase names
         wordList phases_;
 
@@ -93,34 +96,12 @@ class polydisperseKineticTheoryModel
         //- Run-time selected radial distribution model
         autoPtr<kineticTheoryModels::radialModel> radialModel_;
 
-        //- Run-time selected viscosity model
-        autoPtr<kineticTheoryModels::viscosityModel> viscosityModel_;
-
-        //- Run-time selected conductivity model
-        autoPtr<kineticTheoryModels::conductivityModel> conductivityModel_;
-
-        //- Run-time selected granular pressure model
-        autoPtr<kineticTheoryModels::granularPressureModel>
-            granularPressureModel_;
-
         //- Run-time selected frictional stress model
         autoPtr<kineticTheoryModels::frictionalStressModel>
             frictionalStressModel_;
 
 
         // Kinetic Theory Model coefficients
-
-            //- List of granular pressure coefficients
-            HashPtrTable<volScalarField> PsCoeffs_;
-
-            //- List of granular pressure' coefficients
-            HashPtrTable<volScalarField> PsPrimeCoeffs_;
-
-            //- List of granular pressure source terms
-            HashPtrTable<volScalarField> PsSrcs_;
-
-            //- List of granular pressure' source terms
-            HashPtrTable<volScalarField> PsPrimeSrcs_;
 
             //- Table for coefficient of restitutions based on phase pairs
             phasePair::scalarTable eTable_;
@@ -227,26 +208,6 @@ public:
 
         //- Return radial distribution function
         tmp<volScalarField> gs0Prime(const phaseModel&, const phaseModel&) const;
-
-        //- Return granular viscosity
-        tmp<volScalarField> nu(const phaseModel&) const;
-
-        //- Return granular heat conductivity
-        tmp<volScalarField> kappa(const phaseModel&) const;
-
-        //- Return the granular-pressure
-        tmp<volScalarField> granularPressureCoeff(const phaseModel&) const;
-
-        //- Return the granular-pressure source
-        tmp<volScalarField> granularPressureSrc(const phaseModel&) const;
-
-        //- Return the granular-pressure'
-        // (derivative of frictional-pressure w.r.t. phase-fraction)
-        tmp<volScalarField> granularPressurePrimeCoeff(const phaseModel&) const;
-
-        //- Return the granular-pressure' source
-        // (derivative of frictional-pressure w.r.t. phase-fraction)
-        tmp<volScalarField> granularPressurePrimeSrc(const phaseModel&) const;
 
         //- Return the fricitional-pressure
         tmp<volScalarField> frictionalPressure(const phaseModel&) const;

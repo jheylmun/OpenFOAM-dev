@@ -93,7 +93,6 @@ frictionalPressure
 ) const
 {
     const volScalarField& alphap = kt_.alphap();
-
     return
         Fr_*pow(max(alphap - alphaMinFriction_, scalar(0)), eta_)
        /pow(max(alphaMax - alphap, alphaDeltaMin_), p_);
@@ -109,7 +108,6 @@ frictionalPressurePrime
 ) const
 {
     const volScalarField& alphap = kt_.alphap();
-    const volScalarField& alpha(phase);
 
     return Fr_*
     (
