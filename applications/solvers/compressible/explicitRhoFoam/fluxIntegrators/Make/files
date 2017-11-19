@@ -1,0 +1,7 @@
+fluxIntegrator/fluxIntegrator.C
+fluxIntegrator/newFluxIntegrator.C
+RK45/RK45.C
+RK2/RK2.C
+Euler/Euler.C
+
+LIB = $(FOAM_LIBBIN)/libfluxIntegrators

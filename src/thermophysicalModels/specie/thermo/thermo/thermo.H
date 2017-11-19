@@ -183,6 +183,14 @@ public:
 
         // Mass specific derived properties
 
+            //- Temperature from eos
+            inline scalar TpRho
+            (
+                scalar p,
+                scalar rho,
+                scalar T0
+            ) const;
+
             //- Heat capacity at constant volume [J/(kg K)]
             inline scalar Cv(const scalar p, const scalar T) const;
 
@@ -210,6 +218,12 @@ public:
 
             //- Helmholtz free energy [J/kg]
             inline scalar A(const scalar p, const scalar T) const;
+
+            //- Internal energy differentiated with respect to pressure
+            inline scalar dHEdp(const scalar T, const scalar rho) const;
+
+            //- Internal energy differentiated with respect to density
+            inline scalar dHEdrho(const scalar T, const scalar rho) const;
 
 
         // Mole specific derived properties

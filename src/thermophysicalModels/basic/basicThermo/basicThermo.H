@@ -258,6 +258,27 @@ public:
             return;
         }
 
+        //- Correct temperature and update pressure
+        virtual void heRho()
+        {
+            NotImplemented;
+            return;
+        }
+
+        //- Change in internal energy with respect to presssure
+        virtual tmp<volScalarField> dHEdp() const
+        {
+            NotImplemented;
+            return p_;
+        }
+
+        //- Change in internal energy with respect to density
+        virtual tmp<volScalarField> dHEdrho() const
+        {
+            NotImplemented;
+            return p_;
+        }
+
         //- Return true if the equation of state is incompressible
         //  i.e. rho != f(p)
         virtual bool incompressible() const = 0;
@@ -287,6 +308,13 @@ public:
 
             //- Density for patch [kg/m^3]
             virtual tmp<scalarField> rho(const label patchi) const = 0;
+
+            //- Calculate ensity [kg/m^3]
+            virtual void calcRho()
+            {
+                NotImplemented;
+                return;
+            }
 
             //- Enthalpy/Internal energy [J/kg]
             //  Non-const access allowed for transport equations

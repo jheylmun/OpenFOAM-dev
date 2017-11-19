@@ -213,4 +213,7 @@ unset cleaned foamClean foamOldDirs
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 [ "$BASH" ] && . $WM_PROJECT_DIR/etc/config.sh/bash_completion
 
+# number of processors used
+# ~~~~~~~~~~~~~~~~~~~~~~~~~
+export WM_NCOMPPROCS=3
 #------------------------------------------------------------------------------

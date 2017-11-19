@@ -117,6 +117,7 @@ inline Foam::scalar Foam::species::thermo<Thermo, Type>::Trho
         {
             FatalErrorInFunction
                 << "Maximum number of iterations exceeded: " << maxIter_
+                << " , Error = " << mag(Tnew - Test)
                 << abort(FatalError);
         }
 
@@ -140,6 +141,48 @@ inline Foam::species::thermo<Thermo, Type>::thermo
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
+
+template<class Thermo, template<class> class Type>
+inline Foam::scalar Foam::species::thermo<Thermo, Type>::TpRho
+(
+    scalar p,
+    scalar rho,
+    scalar T0
+) const
+{
+    if (T0 < 0)
+    {
+        FatalErrorInFunction
+            << "Negative initial temperature T0: " << T0
+            << abort(FatalError);
+    }
+    if (this->dpdT(T0, rho) == 0)
+    {
+        return T0;
+    }
+
+    scalar Test = T0;
+    scalar Tnew = T0;
+    scalar Ttol = T0*tol_;
+    int    iter = 0;
+
+    do
+    {
+        Test = Tnew;
+        Tnew = Test - (this->p(Test, rho) - p)/this->dpdT(Test, rho);
+
+        if (iter++ > maxIter_)
+        {
+            FatalErrorInFunction
+                << "Maximum number of iterations exceeded: " << maxIter_
+                << abort(FatalError);
+        }
+
+    } while (mag(Tnew - Test) > Ttol);
+
+    return Tnew;
+}
+
 
 template<class Thermo, template<class> class Type>
 inline Foam::word
@@ -223,6 +266,46 @@ inline Foam::scalar
 Foam::species::thermo<Thermo, Type>::A(const scalar p, const scalar T) const
 {
     return this->Ea(p, T) - T*this->S(p, T);
+}
+
+
+template<class Thermo, template<class> class Type>
+inline Foam::scalar
+Foam::species::thermo<Thermo, Type>::dHEdp
+(
+    const scalar T,
+    const scalar rho
+) const
+{
+    scalar P = this->p(T, rho);
+    scalar dPdT = this->dpdT(T, rho);
+    scalar dHEdp = (T*dPdT - P)/this->dpdv(T, rho);
+
+    if (dPdT != 0)
+    {
+        dHEdp +=  Cv(P, T)/dPdT;
+    }
+    return dHEdp;
+}
+
+
+template<class Thermo, template<class> class Type>
+inline Foam::scalar
+Foam::species::thermo<Thermo, Type>::dHEdrho
+(
+    const scalar T,
+    const scalar rho
+) const
+{
+    scalar P = this->p(T, rho);
+    scalar dPdT = this->dpdT(T, rho);
+    scalar dHEdv = (T*dPdT - P);
+
+    if (dPdT != 0)
+    {
+        dHEdv +=  Cv(P, T)*this->dpdv(T, rho)/dPdT;
+    }
+    return -dHEdv/sqr(rho);
 }
 
 

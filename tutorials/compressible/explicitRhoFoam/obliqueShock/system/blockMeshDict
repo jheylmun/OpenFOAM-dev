@@ -1,0 +1,125 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  dev                                   |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+convertToMeters 1;
+
+theta   #calc "2*Foam::constant::mathematical::pi/180";
+beta    #calc "20*Foam::constant::mathematical::pi/180";
+
+x1      0.5;
+x2      1.5;
+y1      #calc "sin($beta)*cos($theta)";
+z1      #calc "sin($beta)*sin($theta)";
+nz1     #calc "-sin($beta)*sin($theta)";
+
+y2      #calc "cos($theta)";
+z2      #calc "sin($theta)";
+nz2     #calc "-sin($theta)";
+d       0.1;
+
+c       0.025;
+nx1     #calc "round($x1/$c)";
+nx2     #calc "round(($x2 - $x1)/$c)";
+ny     #calc "round($y2/$c)";
+
+
+vertices
+(
+    (0      0       0)
+    ($x1    0       0)
+    ($x2    $y1     $nz1)
+    ($x2    $y2     $nz2)
+    ($x1    $y2     $nz2)
+    (0      $y2     $nz2)
+
+    ($x2    $y1     $z1)
+    ($x2    $y2     $z2)
+    ($x1    $y2     $z2)
+    (0      $y2     $z2)
+);
+
+blocks
+(
+    hex (0 1 4 5 0 1 8 9) ($nx1 $ny 1) simpleGrading (1 1 1)
+    hex (1 2 3 4 1 6 7 8 ) ($nx2 $ny 1) simpleGrading (1 1 1)
+);
+
+edges
+(
+);
+
+boundary
+(
+    inlet
+    {
+        type patch;
+        faces
+        (
+            (0 5 9 0)
+        );
+    }
+    outlet
+    {
+        type patch;
+        faces
+        (
+            (5 4 8 9)
+            (4 3 7 8)
+            (2 3 7 6)
+        );
+    }
+    axis
+    {
+        type empty;
+        faces
+        (
+            (0 1 1 0)
+        );
+    }
+    wall
+    {
+        type wall;
+        faces
+        (
+            (1 2 6 1)
+        );
+    }
+    wedge0
+    {
+        type wedge;
+        faces
+        (
+            (0 1 4 5)
+            (1 2 3 4)
+        );
+    }
+    wedge1
+    {
+        type wedge;
+        faces
+        (
+            (0 1 8 9)
+            (1 6 7 8)
+        );
+    }
+);
+
+mergePatchPairs
+(
+);
+
+// ************************************************************************* //
+)))))
