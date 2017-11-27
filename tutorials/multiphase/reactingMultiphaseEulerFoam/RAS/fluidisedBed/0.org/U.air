@@ -16,23 +16,18 @@ FoamFile
 
 dimensions      [0 1 -1 0 0 0 0];
 
-internalField   uniform (0 0.25 0);
+internalField   uniform (0 0 1);
 
 boundaryField
 {
     inlet
     {
-        type               interstitialInletVelocity;
-        inletVelocity      uniform (0 0.25 0);
-        alpha              alpha.air;
-        value              $internalField;
+        type    cyclic;
     }
 
     outlet
     {
-        type               pressureInletOutletVelocity;
-        phi                phi.air;
-        value              $internalField;
+        type               cyclic;
     }
 
     walls

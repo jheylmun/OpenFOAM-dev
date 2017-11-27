@@ -22,13 +22,13 @@ boundaryField
 {
     inlet
     {
-        type               fixedValue;
+        type               cyclic;
         value              $internalField;
     }
 
     outlet
     {
-        type               inletOutlet;
+        type               cyclic;
         phi                phi.air;
         inletValue         $internalField;
         value              $internalField;

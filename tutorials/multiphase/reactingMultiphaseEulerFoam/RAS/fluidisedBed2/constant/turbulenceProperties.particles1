@@ -31,8 +31,7 @@ RAS
 
         viscosityModel          Gidaspow;
         conductivityModel       Gidaspow;
-        granularPressureModel   Lun
-;
+        granularPressureModel   Lun;
     }
 }
 

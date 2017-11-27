@@ -264,11 +264,6 @@ void Foam::polydisperseKineticTheoryModel::addPhase
 {
     const word& phaseName(ktModel.phase().name());
     phases_.append(phaseName);
-    ktModels_.set
-    (
-        phaseName,
-        const_cast<RASModels::kineticTheoryModel*>(&ktModel)
-    );
 }
 
 
@@ -296,7 +291,7 @@ void Foam::polydisperseKineticTheoryModel::correct()
         alphap_ += alpha;
         Up_ += alpha*fluid_.phases()[phases_[phasei]].U();
     }
-    Up_ /= max(alphap_, residualAlpha_);
+    Up_ /= max(alphap(), residualAlpha_);
 
     if (Switch(dict_.lookup("constantPackingLimit")))
     {
@@ -321,4 +316,12 @@ void Foam::polydisperseKineticTheoryModel::correct()
 }
 
 
+void Foam::polydisperseKineticTheoryModel::correctAlphap()
+{
+    alphap_ = 0;
+    forAll(phases_, phasei)
+    {
+        alphap_ += fluid_.phases()[phases_[phasei]];
+    }
+}
 // ************************************************************************* //

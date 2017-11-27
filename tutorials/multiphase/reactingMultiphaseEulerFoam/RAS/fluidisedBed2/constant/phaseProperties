@@ -242,7 +242,7 @@ kineticTheory
 
     SchaefferCoeffs
     {
-        alphaMinFrictionByAlphap 0.99;
+        alphaMinFrictionByAlphap 0.97;
         alphaMinFriction        0.5;
         Fr                      0.05;
         eta                     2;

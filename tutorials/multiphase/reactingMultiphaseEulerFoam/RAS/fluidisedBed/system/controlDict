@@ -23,15 +23,15 @@ startTime       0;
 
 stopAt          endTime;
 
-endTime         2;
+endTime         10;
 
-deltaT          1e-5;
+deltaT          1e-4;
 
 writeControl    adjustableRunTime;
 
-writeInterval   1e-5;
+writeInterval   0.01;
 
-purgeWrite      0;
+purgeWrite      100;
 
 writeFormat     ascii;
 
@@ -47,9 +47,9 @@ runTimeModifiable on;
 
 adjustTimeStep  yes;
 
-maxCo           0.2;
+maxCo           0.1;
 
-maxDeltaT       1e-5;
+maxDeltaT       1;
 
 functions
 {
@@ -60,7 +60,19 @@ functions
         writeControl    writeTime;
         fields
         (
+            U.Particles
+            {
+                 mean        on;
+                 prime2Mean  off;
+                 base        time;
+            }
             U.particles
+            {
+                 mean        on;
+                 prime2Mean  off;
+                 base        time;
+            }
+            U.particles1
             {
                  mean        on;
                  prime2Mean  off;
@@ -74,7 +86,19 @@ functions
                  base        time;
             }
 
+            alpha.Particles
+            {
+                 mean        on;
+                 prime2Mean  off;
+                 base        time;
+            }
             alpha.particles
+            {
+                 mean        on;
+                 prime2Mean  off;
+                 base        time;
+            }
+            alpha.particles1
             {
                  mean        on;
                  prime2Mean  off;

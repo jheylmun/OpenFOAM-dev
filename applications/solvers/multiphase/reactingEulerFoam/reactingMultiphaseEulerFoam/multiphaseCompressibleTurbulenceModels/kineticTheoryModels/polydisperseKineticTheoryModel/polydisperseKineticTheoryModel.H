@@ -90,9 +90,6 @@ class polydisperseKineticTheoryModel
         //- List of granular phase names
         wordList phases_;
 
-        //- List of kinetic theory models
-        HashPtrTable<RASModels::kineticTheoryModel> ktModels_;
-
         //- Run-time selected radial distribution model
         autoPtr<kineticTheoryModels::radialModel> radialModel_;
 
@@ -221,6 +218,9 @@ public:
 
         //- Solve the kinetic theory equations and correct the viscosity
         void correct();
+
+        //- Correct volume fraction total
+        void correctAlphap();
 
         virtual bool writeData(Ostream&) const
         {

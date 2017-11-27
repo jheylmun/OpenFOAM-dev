@@ -17,7 +17,7 @@ FoamFile
 
 type heatAndMomentumTransferMultiphaseSystem;
 
-phases (particles particles1 particles2 air);
+phases (particles particles1 air);
 
 particles
 {
@@ -47,19 +47,19 @@ particles1
     residualAlpha   1e-6;
 }
 
-particles2
-{
-    type          purePhaseModel;
-
-    diameterModel constant;
-    constantCoeffs
-    {
-        d               5e-4;
-    }
-
-    alphaMax        0.63;
-    residualAlpha   1e-6;
-}
+// particles2
+// {
+//     type          purePhaseModel;
+//
+//     diameterModel constant;
+//     constantCoeffs
+//     {
+//         d               5e-4;
+//     }
+//
+//     alphaMax        0.63;
+//     residualAlpha   1e-6;
+// }
 
 air
 {
@@ -85,8 +85,8 @@ blending
         minPartlyContinuousAlpha.particles 1;
         minFullyContinuousAlpha.particles1 1;
         minPartlyContinuousAlpha.particles1 1;
-        minFullyContinuousAlpha.particles2 1;
-        minPartlyContinuousAlpha.particles2 1;
+//         minFullyContinuousAlpha.particles2 1;
+//         minPartlyContinuousAlpha.particles2 1;
     }
 }
 
@@ -105,26 +105,26 @@ surfaceTension
         type            constant;
         sigma           0;
     }
-    (air and particles2)
-    {
-        type            constant;
-        sigma           0;
-    }
+//     (air and particles2)
+//     {
+//         type            constant;
+//         sigma           0;
+//     }
     (particles and particles1)
     {
         type            constant;
         sigma           0;
     }
-    (particles and particles2)
-    {
-        type            constant;
-        sigma           0;
-    }
-    (particles1 and particles2)
-    {
-        type            constant;
-        sigma           0;
-    }
+//     (particles and particles2)
+//     {
+//         type            constant;
+//         sigma           0;
+//     }
+//     (particles1 and particles2)
+//     {
+//         type            constant;
+//         sigma           0;
+//     }
 );
 
 
@@ -136,7 +136,7 @@ drag
 (
     (particles in air)
     {
-        type            GidaspowErgunWenYu;
+        type            Tenneti;
         residualRe      1e-3;
         swarmCorrection
         {
@@ -145,22 +145,22 @@ drag
     }
     (particles1 in air)
     {
-        type            GidaspowErgunWenYu;
+        type            Tenneti;
         residualRe      1e-3;
         swarmCorrection
         {
             type        none;
         }
     }
-    (particles2 in air)
-    {
-        type            GidaspowErgunWenYu;
-        residualRe      1e-3;
-        swarmCorrection
-        {
-            type        none;
-        }
-    }
+//     (particles2 in air)
+//     {
+//         type            GidaspowErgunWenYu;
+//         residualRe      1e-3;
+//         swarmCorrection
+//         {
+//             type        none;
+//         }
+//     }
     (particles and particles1)
     {
         type            Syamlal;
@@ -170,24 +170,24 @@ drag
             type        none;
         }
     }
-    (particles and particles2)
-    {
-        type            Syamlal;
-        residualRe      1e-3;
-        swarmCorrection
-        {
-            type        none;
-        }
-    }
-    (particles1 and particles2)
-    {
-        type            Syamlal;
-        residualRe      1e-3;
-        swarmCorrection
-        {
-            type        none;
-        }
-    }
+//     (particles and particles2)
+//     {
+//         type            Syamlal;
+//         residualRe      1e-3;
+//         swarmCorrection
+//         {
+//             type        none;
+//         }
+//     }
+//     (particles1 and particles2)
+//     {
+//         type            Syamlal;
+//         residualRe      1e-3;
+//         swarmCorrection
+//         {
+//             type        none;
+//         }
+//     }
 );
 
 virtualMass
@@ -212,10 +212,12 @@ turbulentDispersion
 
 kineticTheory
 {
-    radialModel                 Lebowitz;
-    viscosityModel              Gidaspow;
-    conductivityModel           Chao;
-    granularPressureModel       Chao;
+    name                    Particles;
+    constantPackingLimit    yes;
+    alphaMax                0.63;
+
+    radialModel             Lebowitz;
+    frictionalStressModel   JohnsonJackson;
     residualAlpha               1e-4;
 
     coeffRest
@@ -223,21 +225,19 @@ kineticTheory
         (particles and particles)   0.99
         (particles and particles1)  0.99
         (particles1 and particles1) 0.99
-        (particles and particles2)  0.99
-        (particles1 and particles2) 0.99
-        (particles2 and particles2) 0.99
+//         (particles and particles2)  0.99
+//         (particles1 and particles2) 0.99
+//         (particles2 and particles2) 0.99
     );
     coeffFric
     (
         (particles and particles)   0.1
         (particles and particles1)  0.1
         (particles1 and particles1) 0.1
-        (particles and particles2)  0.1
-        (particles1 and particles2) 0.1
-        (particles2 and particles2) 0.1
+//         (particles and particles2)  0.1
+//         (particles1 and particles2) 0.1
+//         (particles2 and particles2) 0.1
     );
-
-    frictionalStressModel   JohnsonJackson;
 
     SchaefferCoeffs
     {

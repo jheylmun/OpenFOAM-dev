@@ -20,20 +20,23 @@ defaultFieldValues
     volScalarFieldValue alpha.air 1
     volScalarFieldValue alpha.particles 0
     volScalarFieldValue alpha.particles1 0
-    volScalarFieldValue alpha.particles2 0
+//     volScalarFieldValue alpha.particles2 0
 );
 
 regions
 (
-    boxToCell
+    cylinderToCell
     {
-        box (0 0 -0.1) (0.15 0.04 0.1);
+        p1 (0 0 0);
+        p2 (0 0 0.04);
+        radius 0.032;
+
         fieldValues
         (
-            volScalarFieldValue alpha.air 0.37
-            volScalarFieldValue alpha.particles     0.27
-            volScalarFieldValue alpha.particles1    0.28
-            volScalarFieldValue alpha.particles2    0.175
+            volScalarFieldValue alpha.air 0.38
+            volScalarFieldValue alpha.particles     0.31
+            volScalarFieldValue alpha.particles1    0.31
+//             volScalarFieldValue alpha.particles2    0.0
         );
     }
 );

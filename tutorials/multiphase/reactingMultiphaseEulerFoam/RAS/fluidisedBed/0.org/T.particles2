@@ -10,7 +10,7 @@ FoamFile
     version     2.0;
     format      ascii;
     class       volScalarField;
-    object      T.particles;
+    object      T.particles2;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -22,12 +22,12 @@ boundaryField
 {
     inlet
     {
-        type               zeroGradient;
+        type               cyclic;
     }
 
     outlet
     {
-        type               zeroGradient;
+        type               cyclic;
     }
 
     walls

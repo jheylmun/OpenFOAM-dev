@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  dev                                   |
+|  \\    /   O peration     | Version:  2.3.0                                 |
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -9,37 +9,23 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       volScalarField;
-    object      alpha.particles;
+    class       dictionary;
+    location    "system";
+    object      fvOptions;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dimensions      [0 0 0 0 0 0 0];
-
-internalField   uniform 0;
-
-boundaryField
+momentumSource
 {
-    inlet
-    {
-        type            cyclic;
-        value           uniform 0;
-    }
-
-    outlet
-    {
-        type            cyclic;
-    }
-
-    walls
-    {
-        type            zeroGradient;
-    }
-
-    frontAndBackPlanes
-    {
-        type            empty;
-    }
+	type            phaseMeanVelocityForce;
+    active          on;            //on/off switch
+    selectionMode   all;
+    fields          (U.air);
+    alphaName       alpha.air;
+    rhoName         thermo:rho.air;
+    Ubar		    (0 0 1);
+    relaxation      0.5;                    // Optional relaxation factor
 }
+
 
 // ************************************************************************* //

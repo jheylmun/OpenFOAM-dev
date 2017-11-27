@@ -662,10 +662,6 @@ Foam::MomentumTransferPhaseSystem<BasePhaseSystem>::phiDs
             );
             setPhiD(phiDs, phase.index()) += DbyA()*snGradAlpha;
             this->phaseModels_[phase.index()].DbyA(DbyA);
-            if (this->mesh_.time().outputTime())
-            {
-                phase.turbulence().pPrime()().write();
-            }
         }
     }
 

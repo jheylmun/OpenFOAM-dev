@@ -118,4 +118,76 @@ void Foam::MULES::limitSum(UPtrList<scalarField>& phiPsiCorrs)
 }
 
 
+void Foam::MULES::limitSum
+(
+    UPtrList<scalarField>& phiPsiCorrs,
+    const labelList& fixedPhases
+)
+{
+    label fixi = 0;
+
+    forAll(phiPsiCorrs[0], facei)
+    {
+        scalar sumPos = 0;
+        scalar fixedSumPos = 0;
+        scalar sumNeg = 0;
+        scalar fixedSumNeg = 0;
+
+        for (int phasei=0; phasei<phiPsiCorrs.size(); phasei++)
+        {
+            if (phasei == fixedPhases[fixi])
+            {
+                if (phiPsiCorrs[phasei][facei] > 0)
+                {
+                    fixedSumPos += phiPsiCorrs[phasei][facei];
+                }
+                else
+                {
+                    fixedSumNeg += phiPsiCorrs[phasei][facei];
+                }
+                fixi++;
+            }
+            else
+            {
+                if (phiPsiCorrs[phasei][facei] > 0)
+                {
+                    fixedSumPos += phiPsiCorrs[phasei][facei];
+                }
+                else
+                {
+                    fixedSumNeg += phiPsiCorrs[phasei][facei];
+                }
+            }
+        }
+
+        scalar sum = sumPos + fixedSumPos + sumNeg + fixedSumNeg;
+
+        if (sum > 0 && sumPos > VSMALL)
+        {
+            scalar lambda = -(sumNeg + fixedSumNeg - fixedSumPos)/sumPos;
+
+            for (int phasei=0; phasei<phiPsiCorrs.size(); phasei++)
+            {
+                if (phiPsiCorrs[phasei][facei] > 0)
+                {
+                    phiPsiCorrs[phasei][facei] *= lambda;
+                }
+            }
+        }
+        else if (sum < 0 && sumNeg < -VSMALL && sumPos + fixedSumPos > VSMALL)
+        {
+            scalar lambda = -(sumPos + fixedSumPos - fixedSumNeg)/sumNeg;
+
+            for (int phasei=0; phasei<phiPsiCorrs.size(); phasei++)
+            {
+                if (phiPsiCorrs[phasei][facei] < 0)
+                {
+                    phiPsiCorrs[phasei][facei] *= lambda;
+                }
+            }
+        }
+    }
+}
+
+
 // ************************************************************************* //

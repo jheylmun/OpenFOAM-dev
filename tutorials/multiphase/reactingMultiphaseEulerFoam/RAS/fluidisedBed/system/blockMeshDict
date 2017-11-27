@@ -14,49 +14,100 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-convertToMeters 1;
+convertToMeters .001;
+
+pi  3.141529;
+h   1000;
+D   32;
+R   #calc "$D/2";
+nR  #calc "-$R";
+r   #calc "$R/2";
+nr  #calc "-$r";
+xy  #calc "$R*sin($pi/4)";
+nxy #calc "-$xy";
 
 vertices
 (
-    (0 0 -0.01)
-    (0.032 0 -0.01)
-    (0.032 1 -0.01)
-    (0 1 -0.01)
-    (0 0 0.01)
-    (0.032 0 0.01)
-    (0.032 1 0.01)
-    (0 1 0.01)
+   (0   $nR 0)
+   ($R  0   0)
+   (0   $R  0)
+   ($nR 0   0)
+   (0   $nr 0)
+   ($r  0   0)
+   (0   $r  0)
+   ($nr 0   0)
+
+   (0   $nR $h)
+   ($R  0   $h)
+   (0   $R  $h)
+   ($nR 0   $h)
+   (0   $nr $h)
+   ($r  0   $h)
+   (0   $r  $h)
+   ($nr 0   $h)
 );
 
 blocks
 (
-    hex (0 1 2 3 4 5 6 7) (18 140 1) simpleGrading (1 1 1)
+    hex (0 1 5 4 8 9 13 12) (12 8 100) simpleGrading (1 1.5 1)
+    hex (1 2 6 5 9 10 14 13) (12 8 100) simpleGrading (1 1.5 1)
+    hex (2 3 7 6 10 11 15 14) (12 8 100) simpleGrading (1 1.5 1)
+    hex (3 0 4 7 11 8 12 15) (12 8 100) simpleGrading (1 1.5 1)
+    hex (4 5 6 7 12 13 14 15) (12 12 100) simpleGrading (1 1 1)
 );
 
 edges
 (
+    arc 0 1 ($xy  $nxy 0)
+    arc 1 2 ($xy  $xy  0)
+    arc 2 3 ($nxy $xy  0)
+    arc 3 0 ($nxy $nxy 0)
+
+    arc 8 9   ($xy  $nxy $h)
+    arc 9 10  ($xy  $xy  $h)
+    arc 10 11 ($nxy $xy  $h)
+    arc 11 8  ($nxy $nxy $h)
 );
 
-patches
+boundary
 (
-    patch inlet
-    (
-        (1 5 4 0)
-    )
-    patch outlet
-    (
-        (3 7 6 2)
-    )
-    wall walls
-    (
-        (0 4 7 3)
-        (2 6 5 1)
-    )
-    empty frontAndBackPlanes
-    (
-        (0 3 2 1)
-        (4 5 6 7)
-    )
+    inlet
+    {
+        type    cyclic;
+        neighbourPatch outlet;
+        faces
+        (
+            (0 1 5 4)
+            (1 2 6 5)
+            (2 3 7 6)
+            (3 0 4 7)
+            (4 5 6 7)
+        );
+    }
+    outlet
+    {
+        type cyclic;
+        neighbourPatch inlet;
+        faces
+        (
+            (8 9 13 12)
+            (9 10 14 13)
+            (10 11 15 14)
+            (11 8 12 15)
+            (12 13 14 15)
+        );
+    }
+    walls
+    {
+        type wall;
+        faces
+        (
+            (0 1 9 8)
+            (1 2 10 9)
+            (2 3 11 10)
+            (3 0 8 11)
+        );
+    }
 );
 
 mergePatchPairs

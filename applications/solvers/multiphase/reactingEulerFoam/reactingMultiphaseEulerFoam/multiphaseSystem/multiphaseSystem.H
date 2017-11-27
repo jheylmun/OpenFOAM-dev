@@ -73,7 +73,7 @@ class multiphaseSystem
 
         void calcAlphas();
 
-        void solveAlphas();
+        void solveAlphas(PtrList<surfaceScalarField>& alphaDbyAFluxes);
 
         tmp<surfaceVectorField> nHatfv
         (

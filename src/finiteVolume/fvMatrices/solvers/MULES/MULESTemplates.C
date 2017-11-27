@@ -1195,8 +1195,13 @@ void Foam::MULES::limitSum
 
 
 template<class SurfaceScalarFieldList>
-void Foam::MULES::limitSum(SurfaceScalarFieldList& phiPsiCorrs)
+void Foam::MULES::limitSum
+(
+    SurfaceScalarFieldList& phiPsiCorrs,
+    const labelList& fixedPhases
+)
 {
+    const bool fixed = (fixedPhases.size() > 0);
     {
         UPtrList<scalarField> phiPsiCorrsInternal(phiPsiCorrs.size());
         forAll(phiPsiCorrs, phasei)
@@ -1204,7 +1209,14 @@ void Foam::MULES::limitSum(SurfaceScalarFieldList& phiPsiCorrs)
             phiPsiCorrsInternal.set(phasei, &phiPsiCorrs[phasei]);
         }
 
-        limitSum(phiPsiCorrsInternal);
+        if (!fixed)
+        {
+            limitSum(phiPsiCorrsInternal);
+        }
+        else
+        {
+            limitSum(phiPsiCorrsInternal, fixedPhases);
+        }
     }
 
     const surfaceScalarField::Boundary& bfld =
@@ -1224,7 +1236,14 @@ void Foam::MULES::limitSum(SurfaceScalarFieldList& phiPsiCorrs)
                 );
             }
 
-            limitSum(phiPsiCorrsPatch);
+            if (!fixed)
+            {
+                limitSum(phiPsiCorrsPatch);
+            }
+            else
+            {
+                limitSum(phiPsiCorrsPatch, fixedPhases);
+            }
         }
     }
 }
