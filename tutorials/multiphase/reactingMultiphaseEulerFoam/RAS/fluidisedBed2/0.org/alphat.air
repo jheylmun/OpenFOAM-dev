@@ -20,26 +20,28 @@ internalField   uniform 0;
 
 boundaryField
 {
-    inlet
+    primaryInlet
     {
         type            calculated;
         value           $internalField;
     }
-
-    outlet
+    secondaryInlet
     {
         type            calculated;
         value           $internalField;
     }
-
+    gasOutlet
+    {
+        type            calculated;
+        value           $internalField;
+    }
     walls
     {
         type            compressible::alphatWallFunction;
         Prt             0.85;
         value           $internalField;
     }
-
-    frontAndBackPlanes
+    defaultFaces
     {
         type            empty;
     }

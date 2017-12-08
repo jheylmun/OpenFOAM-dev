@@ -22,13 +22,13 @@ boundaryField
 {
     inlet
     {
-        type               cyclic;
+        type               fixedValue;
         value              $internalField;
     }
 
     outlet
     {
-        type               cyclic;
+        type               inletOutlet;
         phi                phi.air;
         inletValue         $internalField;
         value              $internalField;
@@ -40,7 +40,7 @@ boundaryField
         value              $internalField;
     }
 
-    frontAndBackPlanes
+    defaultFaces
     {
         type               empty;
     }

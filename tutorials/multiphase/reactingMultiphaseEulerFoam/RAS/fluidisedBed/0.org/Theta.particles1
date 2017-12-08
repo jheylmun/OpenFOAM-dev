@@ -24,26 +24,26 @@ boundaryField
 {
     inlet
     {
-        type               cyclic;
+        type               fixedValue;
         value              uniform 1e-4;
     }
 
     outlet
     {
-        type               cyclic;
+        type               zeroGradient;
     }
 
     walls
     {
         type            JohnsonJacksonParticleTheta;
-        restitutionCoefficient 0.2;
+        restitutionCoefficient 0.96;
         specularityCoefficient   0.1;
         muF             0.25;
         sigma           2;
         value uniform 1e-4;
     }
 
-    frontAndBackPlanes
+    defaultFaces
     {
         type               empty;
     }

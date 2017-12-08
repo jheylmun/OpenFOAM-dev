@@ -28,6 +28,7 @@ License
 #include "multiphaseSystem.H"
 #include "radialModel.H"
 #include "frictionalStressModel.H"
+// #include "granularPressureModel.H"
 #include "phaseSystem.H"
 #include "mathematicalConstants.H"
 #include "SortableList.H"
@@ -97,6 +98,14 @@ Foam::polydisperseKineticTheoryModel::polydisperseKineticTheoryModel
     frictionalStressModel_
     (
         kineticTheoryModels::frictionalStressModel::New
+        (
+            dict_,
+            *this
+        )
+    ),
+    granularPressureModel_
+    (
+        kineticTheoryModels::granularPressureModel::New
         (
             dict_,
             *this
@@ -264,6 +273,30 @@ void Foam::polydisperseKineticTheoryModel::addPhase
 {
     const word& phaseName(ktModel.phase().name());
     phases_.append(phaseName);
+
+    forAll(phases, phasei)
+    {
+        phasePairKey key(phaseName, fluid_.phases()[phases_[phasei]]);
+        phasePair pair(fluid_.pairs()[key]);
+        pairs_.insert(key, pair, false);
+
+        PsCoeffs_.insert
+        (
+            key,
+            new volScalarField
+            (
+                IOobject
+                (
+                    IOobject::groupName("PsCoeff", pair.name()),
+                    fluid_.mesh().time().timeName(),
+                    fluid_.mesh(),
+                ),
+                fluid_.mesh(),
+                dimensionedScalar("PsCoeff", dimless, 0.0)
+            )
+        );
+
+    }
 }
 
 

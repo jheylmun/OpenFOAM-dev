@@ -16,33 +16,33 @@ FoamFile
 
 dimensions      [0 1 -1 0 0 0 0];
 
-internalField   uniform (0 0 0);
+internalField   uniform (0 0 1);
 
 boundaryField
 {
     inlet
     {
-        type               cyclic;
-        value              uniform (0 0 0);
+        type               fixedValue;
+        value              uniform (0 0 1);
     }
 
     outlet
     {
-        type               cyclic;
+        type               zeroGradient;
         value              uniform (0 0 0);
     }
 
     walls
     {
-        type            JohnsonJacksonParticleSlip;
-        restitutionCoefficient 0.2;
+        type            noSlip;//JohnsonJacksonParticleSlip;
+        restitutionCoefficient 0.96;
         specularityCoefficient   0.1;
         muF             0.25;
         sigma           2;
         value uniform (0 0 0);
     }
 
-    frontAndBackPlanes
+    defaultFaces
     {
         type               empty;
     }

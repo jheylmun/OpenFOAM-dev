@@ -20,29 +20,30 @@ internalField   uniform (0 0 0);
 
 boundaryField
 {
-    inlet
+    primaryInlet
     {
-        type               interstitialInletVelocity;
-        inletVelocity      uniform (0 0.25 0);
-        alpha              alpha.air;
-        value              $internalField;
+        type                fixedValue;
+        value               uniform (0 1.0 0);
     }
-
-    outlet
+    secondaryInlet
     {
-        type               pressureInletOutletVelocity;
-        phi                phi.air;
-        value              $internalField;
+        type                fixedValue;
+        value               uniform (-0.3 0 0);
     }
-
+    gasOutlet
+    {
+        type                zeroGradient;
+        phi                 phi.air;
+        inletValue          uniform (0 0 0);
+        value               uniform (0 0 0);
+    }
     walls
     {
-        type            noSlip;
+        type                noSlip;
     }
-
-    frontAndBackPlanes
+    defaultFaces
     {
-        type               empty;
+        type                empty;
     }
 }
 

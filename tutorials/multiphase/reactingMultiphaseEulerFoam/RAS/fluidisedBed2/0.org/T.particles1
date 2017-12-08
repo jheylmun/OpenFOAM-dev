@@ -20,24 +20,31 @@ internalField       uniform 600;
 
 boundaryField
 {
-    inlet
+    primaryInlet
     {
-        type               zeroGradient;
+        type            fixedValue;
+        value           $internalField;
     }
-
-    outlet
+    secondaryInlet
     {
-        type               zeroGradient;
+        type            fixedValue;
+        value           $internalField;
     }
-
+    gasOutlet
+    {
+        type            inletOutlet;
+        phi             phi.particles1;
+        inletValue      $internalField;
+        value           $internalField;
+    }
     walls
     {
-        type               zeroGradient;
+        type            zeroGradient;
     }
 
-    frontAndBackPlanes
+    defaultFaces
     {
-        type               empty;
+        type            empty;
     }
 }
 

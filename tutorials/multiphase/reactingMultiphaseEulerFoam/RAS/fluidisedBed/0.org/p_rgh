@@ -22,13 +22,13 @@ boundaryField
 {
     inlet
     {
-        type               cyclic;
+        type               fixedFluxPressure;
         value              $internalField;
     }
 
     outlet
     {
-        type               cyclic;
+        type               prghPressure;
         p                  $internalField;
         value              $internalField;
     }
@@ -39,7 +39,7 @@ boundaryField
         value              $internalField;
     }
 
-    frontAndBackPlanes
+    defaultFaces
     {
         type               empty;
     }

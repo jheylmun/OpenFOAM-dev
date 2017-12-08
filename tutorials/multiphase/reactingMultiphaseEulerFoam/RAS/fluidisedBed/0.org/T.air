@@ -22,13 +22,13 @@ boundaryField
 {
     inlet
     {
-        type               cyclic;
+        type               fixedValue;
         value              uniform 300;
     }
 
     outlet
     {
-        type               cyclic;
+        type               inletOutlet;
         phi                phi.air;
         inletValue         uniform 300;
         value              uniform 300;
@@ -39,7 +39,7 @@ boundaryField
         type               zeroGradient;
     }
 
-    frontAndBackPlanes
+    defaultFaces
     {
         type               empty;
     }

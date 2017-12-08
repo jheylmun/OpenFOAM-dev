@@ -20,25 +20,29 @@ internalField       uniform 0;
 
 boundaryField
 {
-    inlet
+    primaryInlet
     {
-        type               calculated;
+        type               fixedValue;
         value              $internalField;
     }
-
-    outlet
+    secondaryInlet
     {
-        type               calculated;
+        type               fixedValue;
         value              $internalField;
     }
-
+    gasOutlet
+    {
+        type               inletOutlet;
+        phi                phi.air;
+        inletValue         $internalField;
+        value              $internalField;
+    }
     walls
     {
         type               nutkWallFunction;
         value              $internalField;
     }
-
-    frontAndBackPlanes
+    defaultFaces
     {
         type               empty;
     }

@@ -15,17 +15,17 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-momentumSource
-{
-	type            phaseMeanVelocityForce;
-    active          on;            //on/off switch
-    selectionMode   all;
-    fields          (U.air);
-    alphaName       alpha.air;
-    rhoName         thermo:rho.air;
-    Ubar		    (0 0 1);
-    relaxation      0.5;                    // Optional relaxation factor
-}
+// momentumSource
+// {
+// 	type            phaseMeanVelocityForce;
+//     active          on;            //on/off switch
+//     selectionMode   all;
+//     fields          (U.air);
+//     alphaName       alpha.air;
+//     rhoName         thermo:rho.air;
+//     Ubar		    (0 0 1);
+//     relaxation      0.5;                    // Optional relaxation factor
+// }
 
 
 // ************************************************************************* //

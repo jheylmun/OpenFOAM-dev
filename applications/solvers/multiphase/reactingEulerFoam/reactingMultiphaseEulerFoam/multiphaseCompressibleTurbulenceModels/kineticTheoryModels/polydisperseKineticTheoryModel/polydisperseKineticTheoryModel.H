@@ -49,7 +49,7 @@ SourceFiles
 #include "phaseModel.H"
 #include "phasePair.H"
 #include "phasePairKey.H"
-#include "PtrListDictionary.H"
+#include "HashPtrTable.H"
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -66,6 +66,7 @@ namespace kineticTheoryModels
 {
     class radialModel;
     class frictionalStressModel;
+//     class granularPressureModel;
 }
 
 /*---------------------------------------------------------------------------*\
@@ -90,6 +91,14 @@ class polydisperseKineticTheoryModel
         //- List of granular phase names
         wordList phases_;
 
+        //- Table of granular pairs
+        HashTable
+        <
+            autoUPtr<phasePair>,
+            phasePairKey,
+            phasePairKey::hash
+        > pairs_;
+
         //- Run-time selected radial distribution model
         autoPtr<kineticTheoryModels::radialModel> radialModel_;
 
@@ -106,17 +115,39 @@ class polydisperseKineticTheoryModel
             //- Table for coefficient of fricitions based on phase pairs
             phasePair::scalarTable CfTable_;
 
+            //- Maximum packing phase-fraction
+            volScalarField alphaMax_;
+
+            //- Residual phase fraction
+            dimensionedScalar residualAlpha_;
+
+
+        // Total granualr fields
+
             //- Total granular phase-fraction
             volScalarField alphap_;
 
             //- Phase averaged velocity
             volVectorField Up_;
 
-            //- Maximum packing phase-fraction
-            volScalarField alphaMax_;
 
-            //- Residual phase fraction
-            dimensionedScalar residualAlpha_;
+        // Stored tables of coefficients
+
+            //- Granular pressure coeffients for granular pairs
+            HashPtrTable
+            <
+                volScalarField,
+                phasePairKey,
+                phasePairKey::hash
+            > PsCoeffs_;
+
+            //- Thermal conductivity between granular pairs
+            HashPtrTable
+            <
+                volScalarField,
+                phasePairKey,
+                phasePairKey::hash
+            > kappas_;
 
 
     // Private Member Functions
@@ -204,7 +235,18 @@ public:
         tmp<volScalarField> gs0(const phaseModel&, const phaseModel&) const;
 
         //- Return radial distribution function
-        tmp<volScalarField> gs0Prime(const phaseModel&, const phaseModel&) const;
+        tmp<volScalarField> gs0Prime
+        (
+            const phaseModel&,
+            const phaseModel&
+        ) const;
+
+        //- Return the sum of all granular pressure for a given phase
+        tmp<volScalarField> PsCoeff(const phaseModel&) const;
+
+        //- Return the sum of the derivative of granular pressure
+        //  for a given phase
+        tmp<volScalarField> PsCoeffPrime(const phaseModel&) const;
 
         //- Return the fricitional-pressure
         tmp<volScalarField> frictionalPressure(const phaseModel&) const;

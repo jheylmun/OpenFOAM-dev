@@ -20,23 +20,26 @@ internalField   uniform 0;
 
 boundaryField
 {
-    inlet
+    primaryInlet
     {
         type            fixedValue;
         value           uniform 0;
     }
-
-    outlet
+    secondaryInlet
+    {
+        type            fixedValue;
+        value           uniform 0;
+    }
+    gasOutlet
     {
         type            zeroGradient;
     }
-
     walls
     {
         type            zeroGradient;
     }
 
-    frontAndBackPlanes
+    defaultFaces
     {
         type            empty;
     }

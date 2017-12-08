@@ -22,13 +22,13 @@ boundaryField
 {
     inlet
     {
-        type            cyclic;
+        type            calculated;
         value           $internalField;
     }
 
     outlet
     {
-        type            cyclic;
+        type            calculated;
         value           $internalField;
     }
 

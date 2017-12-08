@@ -22,12 +22,12 @@ boundaryField
 {
     inlet
     {
-        type               cyclic;
+        type               zeroGradient;
     }
 
     outlet
     {
-        type               cyclic;
+        type               zeroGradient;
     }
 
     walls
@@ -35,7 +35,7 @@ boundaryField
         type               zeroGradient;
     }
 
-    frontAndBackPlanes
+    defaultFaces
     {
         type               empty;
     }

@@ -20,25 +20,31 @@ internalField   uniform (0 0 0);
 
 boundaryField
 {
-    inlet
+    primaryInlet
     {
         type               fixedValue;
         value              uniform (0 0 0);
     }
-
-    outlet
+    secondaryInlet
     {
         type               fixedValue;
         value              uniform (0 0 0);
     }
-
+    gasOutlet
+    {
+        type               fixedValue;
+        value              uniform (0 0 0);
+    }
     walls
     {
-        type               fixedValue;
-        value              uniform (0 0 0);
+        type            JohnsonJacksonParticleSlip;
+        restitutionCoefficient 0.8;
+        specularityCoefficient   0.1;
+        muF             0.25;
+        sigma           2;
+        value uniform   (0 0 0);
     }
-
-    frontAndBackPlanes
+    defaultFaces
     {
         type               empty;
     }
