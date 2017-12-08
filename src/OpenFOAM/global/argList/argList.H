@@ -103,7 +103,6 @@ namespace Foam
 class argList
 {
     // Private data
-        static bool bannerEnabled;
 
         //- Switch on/off parallel mode. Has to be first to be constructed
         //  so destructor is done last.
@@ -355,9 +354,6 @@ public:
 
             //- Remove option from validOptions and from optionUsage
             static void removeOption(const word& opt);
-
-            //- Disable emitting the banner information
-            static void noBanner();
 
             //- Remove the parallel options
             static void noParallel();

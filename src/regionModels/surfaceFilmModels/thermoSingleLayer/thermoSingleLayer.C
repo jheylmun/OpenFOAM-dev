@@ -28,11 +28,12 @@ License
 #include "fvcLaplacian.H"
 #include "fvcFlux.H"
 #include "fvm.H"
-#include "addToRunTimeSelectionTable.H"
 #include "zeroGradientFvPatchFields.H"
+#include "mixedFvPatchFields.H"
 #include "mappedFieldFvPatchField.H"
 #include "mapDistribute.H"
 #include "constants.H"
+#include "addToRunTimeSelectionTable.H"
 
 // Sub-models
 #include "filmThermoModel.H"
@@ -66,7 +67,8 @@ wordList thermoSingleLayer::hsBoundaryTypes()
         if
         (
             T_.boundaryField()[patchi].fixesValue()
-         || bTypes[patchi] == mappedFieldFvPatchField<scalar>::typeName
+         || isA<mixedFvPatchScalarField>(T_.boundaryField()[patchi])
+         || isA<mappedFieldFvPatchField<scalar>>(T_.boundaryField()[patchi])
         )
         {
             bTypes[patchi] = fixedValueFvPatchField<scalar>::typeName;
@@ -631,6 +633,9 @@ void thermoSingleLayer::evolveRegion()
 
     // Update film wall and surface temperatures
     updateSurfaceTemperatures();
+
+    // Solve continuity for deltaRho_
+    solveContinuity();
 
     // Update sub-models to provide updated source contributions
     updateSubmodels();

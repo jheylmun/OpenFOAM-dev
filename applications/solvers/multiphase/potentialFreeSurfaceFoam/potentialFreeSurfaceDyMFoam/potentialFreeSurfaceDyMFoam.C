@@ -56,11 +56,8 @@ int main(int argc, char *argv[])
     #include "createTime.H"
     #include "createDynamicFvMesh.H"
     #include "initContinuityErrs.H"
-    #include "createControl.H"
-    #include "createTimeControls.H"
     #include "createDyMControls.H"
     #include "createFields.H"
-    #include "createFvOptions.H"
 
     volScalarField rAU
     (
@@ -87,7 +84,7 @@ int main(int argc, char *argv[])
 
     while (runTime.run())
     {
-        #include "readControls.H"
+        #include "readDyMControls.H"
         #include "CourantNo.H"
         #include "setDeltaT.H"
 

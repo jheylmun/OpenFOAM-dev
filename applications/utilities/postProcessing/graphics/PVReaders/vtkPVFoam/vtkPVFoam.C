@@ -31,6 +31,7 @@ License
 #include "Time.H"
 #include "patchZones.H"
 #include "collatedFileOperation.H"
+#include "etcFiles.H"
 
 // VTK includes
 #include "vtkDataArraySelection.h"
@@ -43,7 +44,7 @@ License
 
 namespace Foam
 {
-defineTypeNameAndDebug(vtkPVFoam, 0);
+    defineTypeNameAndDebug(vtkPVFoam, 0);
 }
 
 
@@ -250,7 +251,6 @@ Foam::vtkPVFoam::vtkPVFoam
     // For now just disable the threaded writer.
     fileOperations::collatedFileOperation::maxThreadFileBufferSize = 0;
 
-
     // avoid argList and get rootPath/caseName directly from the file
     fileName fullCasePath(fileName(FileName).path());
 
@@ -325,6 +325,12 @@ Foam::vtkPVFoam::vtkPVFoam
 
     dbPtr_().functionObjects().off();
 
+    fileNameList configDictFiles = findEtcFiles("paraFoam", false);
+    forAllReverse(configDictFiles, cdfi)
+    {
+        configDict_.merge(dictionary(IFstream(configDictFiles[cdfi])()));
+    }
+
     updateInfo();
 }
 
@@ -368,7 +374,8 @@ void Foam::vtkPVFoam::updateInfo()
     // enable 'internalMesh' on the first call
     // or preserve the enabled selections
     stringList enabledEntries;
-    if (!partSelection->GetNumberOfArrays() && !meshPtr_)
+    bool first = !partSelection->GetNumberOfArrays() && !meshPtr_;
+    if (first)
     {
         enabledEntries.setSize(1);
         enabledEntries[0] = "internalMesh";
@@ -383,7 +390,7 @@ void Foam::vtkPVFoam::updateInfo()
 
     // Update mesh parts list - add Lagrangian at the bottom
     updateInfoInternalMesh(partSelection);
-    updateInfoPatches(partSelection, enabledEntries);
+    updateInfoPatches(partSelection, enabledEntries, first);
     updateInfoSets(partSelection);
     updateInfoZones(partSelection);
     updateInfoLagrangian(partSelection);

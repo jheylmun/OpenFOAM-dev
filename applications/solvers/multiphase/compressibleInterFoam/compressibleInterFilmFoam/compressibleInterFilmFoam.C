@@ -41,10 +41,8 @@ Description
 #include "localEulerDdtScheme.H"
 #include "CrankNicolsonDdtScheme.H"
 #include "subCycle.H"
-#include "rhoThermo.H"
-#include "twoPhaseMixture.H"
-#include "twoPhaseMixtureThermo.H"
-#include "turbulentFluidThermoModel.H"
+#include "compressibleInterPhaseTransportModel.H"
+#include "pimpleControl.H"
 #include "SLGThermo.H"
 #include "surfaceFilmModel.H"
 #include "pimpleControl.H"
@@ -63,9 +61,7 @@ int main(int argc, char *argv[])
     #include "createControl.H"
     #include "createTimeControls.H"
     #include "createFields.H"
-    #include "createAlphaFluxes.H"
     #include "createSurfaceFilmModel.H"
-    #include "createFvOptions.H"
 
     volScalarField& p = mixture.p();
     volScalarField& T = mixture.T();
@@ -73,8 +69,6 @@ int main(int argc, char *argv[])
     const volScalarField& psi2 = mixture.thermo2().psi();
 
     regionModels::surfaceFilmModel& surfaceFilm = tsurfaceFilm();
-
-    turbulence->validate();
 
     if (!LTS)
     {
@@ -114,6 +108,8 @@ int main(int argc, char *argv[])
             #include "alphaControls.H"
             #include "compressibleAlphaEqnSubCycle.H"
 
+            turbulence.correctPhasePhi();
+
             volScalarField::Internal Srho(surfaceFilm.Srho());
             contErr -= posPart(Srho);
 
@@ -128,7 +124,7 @@ int main(int argc, char *argv[])
 
             if (pimple.turbCorr())
             {
-                turbulence->correct();
+                turbulence.correct();
             }
         }
 

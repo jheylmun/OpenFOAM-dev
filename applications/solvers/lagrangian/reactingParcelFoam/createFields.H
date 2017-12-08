@@ -1,13 +1,8 @@
 #include "createRDeltaT.H"
 
-Info<< "Creating combustion model\n" << endl;
-
-autoPtr<combustionModels::rhoCombustionModel> combustion
-(
-    combustionModels::rhoCombustionModel::New(mesh)
-);
-
-rhoReactionThermo& thermo = combustion->thermo();
+Info<< "Reading thermophysical properties\n" << endl;
+autoPtr<rhoReactionThermo> pThermo(rhoReactionThermo::New(mesh));
+rhoReactionThermo& thermo = pThermo();
 thermo.validate(args.executable(), "h", "e");
 
 SLGThermo slgThermo(mesh, thermo);
@@ -68,8 +63,11 @@ autoPtr<compressible::turbulenceModel> turbulence
     )
 );
 
-// Set the turbulence into the combustion model
-combustion->setTurbulence(turbulence());
+Info<< "Creating combustion model\n" << endl;
+autoPtr<combustionModels::rhoCombustionModel> combustion
+(
+    combustionModels::rhoCombustionModel::New(thermo, turbulence())
+);
 
 Info<< "Creating field dpdt\n" << endl;
 volScalarField dpdt
@@ -121,11 +119,6 @@ forAll(Y, i)
 }
 fields.add(thermo.he());
 
-Switch solvePrimaryRegion
-(
-    pimple.dict().lookupOrDefault<Switch>("solvePrimaryRegion", true)
-);
-
 volScalarField Qdot
 (
     IOobject
@@ -144,3 +137,4 @@ volScalarField Qdot
 #include "createRadiationModel.H"
 #include "createClouds.H"
 #include "createSurfaceFilmModel.H"
+#include "createFvOptions.H"

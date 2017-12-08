@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2016 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2016-2017 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -47,7 +47,7 @@ Foam::chemistryReductionMethods::DRGEP<CompType, ThermoType>::DRGEP
     dictionary initSet = this->coeffsDict_.subDict("initialSet");
     for (label i=0; i<chemistry.nSpecie(); i++)
     {
-        if (initSet.found(chemistry.Y()[i].name()))
+        if (initSet.found(chemistry.Y()[i].member()))
         {
             searchInitSet_[j++]=i;
         }
@@ -442,11 +442,9 @@ reduceMechanism
             {
                 label otherSpec = rABOtherSpec(u, v);
                 scalar rAB = mag(rABNum(u, v))/Den;
-                if (rAB>1)
+                if (rAB > 1)
                 {
-                    Info<< "Badly Conditioned rAB : " << rAB
-                    << "species involved : "<<u << "," << otherSpec << endl;
-                    rAB=1.0;
+                    rAB = 1;
                 }
 
                 scalar Rtemp = Rvalue[u]*rAB;
@@ -647,14 +645,9 @@ reduceMechanism
                     if (!disabledSpecies[otherSpec])
                     {
                         scalar rAB = mag(rABNum(u, v))/Den;
-                        if (rAB>1.0)
+                        if (rAB > 1)
                         {
-                            Info<< "Badly Conditioned rAB : " << rAB
-                            << "species involved : "
-                            <<this->chemistry_.Y()[u].name() << ","
-                            << this->chemistry_.Y()[otherSpec].name()
-                            << endl;
-                            rAB=1.0;
+                            rAB = 1;
                         }
 
                         scalar Rtemp = Rvalue[u]*rAB;

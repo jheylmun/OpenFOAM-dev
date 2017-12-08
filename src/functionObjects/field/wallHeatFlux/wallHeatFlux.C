@@ -65,20 +65,21 @@ void Foam::functionObjects::wallHeatFlux::calcHeatFlux
     volScalarField& wallHeatFlux
 )
 {
-    surfaceScalarField heatFlux
-    (
-        fvc::interpolate(alpha)*fvc::snGrad(he)
-    );
-
     volScalarField::Boundary& wallHeatFluxBf =
         wallHeatFlux.boundaryFieldRef();
 
-    const surfaceScalarField::Boundary& heatFluxBf =
-        heatFlux.boundaryField();
+    const volScalarField::Boundary& heBf =
+        he.boundaryField();
+
+    const volScalarField::Boundary& alphaBf =
+        alpha.boundaryField();
 
     forAll(wallHeatFluxBf, patchi)
     {
-        wallHeatFluxBf[patchi] = heatFluxBf[patchi];
+        if (!wallHeatFluxBf[patchi].coupled())
+        {
+            wallHeatFluxBf[patchi] = alphaBf[patchi]*heBf[patchi].snGrad();
+        }
     }
 
     if (foundObject<volScalarField>("qr"))
@@ -90,7 +91,10 @@ void Foam::functionObjects::wallHeatFlux::calcHeatFlux
 
         forAll(wallHeatFluxBf, patchi)
         {
-            wallHeatFluxBf[patchi] += radHeatFluxBf[patchi];
+            if (!wallHeatFluxBf[patchi].coupled())
+            {
+                wallHeatFluxBf[patchi] -= radHeatFluxBf[patchi];
+            }
         }
     }
 }

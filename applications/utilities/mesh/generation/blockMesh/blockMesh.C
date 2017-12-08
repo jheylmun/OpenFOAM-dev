@@ -54,7 +54,9 @@ Usage
 
 #include "blockMesh.H"
 #include "attachPolyTopoChanger.H"
+#include "polyTopoChange.H"
 #include "emptyPolyPatch.H"
+#include "cyclicPolyPatch.H"
 #include "cellSet.H"
 
 #include "argList.H"
@@ -96,17 +98,20 @@ int main(int argc, char *argv[])
         "  vertex labels and face labels is shown below.\n"
         "  For vertex numbering in the sequence 0 to 7 (block, centre):\n"
         "    faces 0 (f0) and 1 are left and right, respectively;\n"
-        "    faces 2 and 3 are bottom and top;\n"
-        "    and faces 4 and 5 are front the back:\n"
+        "    faces 2 and 3 are front and back; \n"
+        "    and faces 4 and 5 are bottom and top::\n"
         "\n"
-        "           4 ---- 5\n"
-        "      f3   |\\     |\\   f5\n"
-        "      |    | 7 ---- 6   \\\n"
-        "      |    0 |--- 1 |    \\\n"
-        "      |     \\|     \\|    f4\n"
-        "      f2     3 ---- 2\n"
+        "                 7 ---- 6\n"
+        "            f5   |\\     |\\   f3\n"
+        "            |    | 4 ---- 5   \\\n"
+        "            |    3 |--- 2 |    \\\n"
+        "            |     \\|     \\|    f2\n"
+        "            f4     0 ---- 1\n"
         "\n"
-        "            f0 ----- f1\n"
+        "       Z         f0 ----- f1\n"
+        "       |  Y\n"
+        "       | /\n"
+        "       O --- X\n"
     );
 
     #include "addRegionOption.H"
@@ -374,6 +379,30 @@ int main(int argc, char *argv[])
         mesh.addZones(List<pointZone*>(0), List<faceZone*>(0), cz);
     }
 
+
+    // Detect any cyclic patches and force re-ordering of the faces
+    {
+        const polyPatchList& patches = mesh.boundaryMesh();
+        bool hasCyclic = false;
+        forAll(patches, patchi)
+        {
+            if (isA<cyclicPolyPatch>(patches[patchi]))
+            {
+                hasCyclic = true;
+                break;
+            }
+        }
+
+        if (hasCyclic)
+        {
+            Info<< nl << "Detected cyclic patches; ordering boundary faces"
+                << endl;
+            polyTopoChange meshMod(mesh);
+            meshMod.changeMesh(mesh, false);
+        }
+    }
+
+
     // Set the precision of the points data to 10
     IOstream::defaultPrecision(max(10u, IOstream::defaultPrecision()));
 
@@ -387,9 +416,7 @@ int main(int argc, char *argv[])
     }
 
 
-    //
-    // write some information
-    //
+    // Write summary
     {
         const polyPatchList& patches = mesh.boundaryMesh();
 

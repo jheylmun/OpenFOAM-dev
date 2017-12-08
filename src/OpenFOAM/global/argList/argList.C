@@ -33,14 +33,12 @@ License
 #include "labelList.H"
 #include "regIOobject.H"
 #include "dynamicCode.H"
-#include "uncollatedFileOperation.H"
-#include "masterUncollatedFileOperation.H"
+#include "fileOperation.H"
 
 #include <cctype>
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
-bool Foam::argList::bannerEnabled = true;
 Foam::SLList<Foam::string>    Foam::argList::validArgs;
 Foam::HashTable<Foam::string> Foam::argList::validOptions;
 Foam::HashTable<Foam::string> Foam::argList::validParOptions;
@@ -143,12 +141,6 @@ void Foam::argList::removeOption(const word& opt)
 {
     validOptions.erase(opt);
     optionUsage.erase(opt);
-}
-
-
-void Foam::argList::noBanner()
-{
-    bannerEnabled = false;
 }
 
 
@@ -558,7 +550,7 @@ void Foam::argList::parse
         string timeString = clock::clockTime();
 
         // Print the banner once only for parallel runs
-        if (Pstream::master() && bannerEnabled)
+        if (Pstream::master() && writeInfoHeader)
         {
             IOobject::writeBanner(Info, true)
                 << "Build  : " << Foam::FOAMbuild << nl
@@ -616,7 +608,7 @@ void Foam::argList::parse
             fileOperation::New
             (
                 handlerType,
-                bannerEnabled
+                writeInfoHeader
             )
         );
         Foam::fileHandler(handler);
@@ -868,7 +860,7 @@ void Foam::argList::parse
     }
 
 
-    if (Pstream::master() && bannerEnabled)
+    if (Pstream::master() && writeInfoHeader)
     {
         Info<< "Case   : " << (rootPath_/globalCase_).c_str() << nl
             << "nProcs : " << nProcs << endl;
@@ -907,12 +899,12 @@ void Foam::argList::parse
 
         // Switch on signal trapping. We have to wait until after Pstream::init
         // since this sets up its own ones.
-        sigFpe_.set(bannerEnabled);
-        sigInt_.set(bannerEnabled);
-        sigQuit_.set(bannerEnabled);
-        sigSegv_.set(bannerEnabled);
+        sigFpe_.set(writeInfoHeader);
+        sigInt_.set(writeInfoHeader);
+        sigQuit_.set(writeInfoHeader);
+        sigSegv_.set(writeInfoHeader);
 
-        if (bannerEnabled)
+        if (writeInfoHeader)
         {
             Info<< "fileModificationChecking : "
                 << "Monitoring run-time modified files using "
@@ -949,7 +941,7 @@ void Foam::argList::parse
             }
         }
 
-        if (Pstream::master() && bannerEnabled)
+        if (Pstream::master() && writeInfoHeader)
         {
             Info<< endl;
             IOobject::writeDivider(Info);

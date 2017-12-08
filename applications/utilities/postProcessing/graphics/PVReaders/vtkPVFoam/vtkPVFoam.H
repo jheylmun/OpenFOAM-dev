@@ -250,6 +250,9 @@ class vtkPVFoam
         //- OpenFOAM time control
         autoPtr<Time> dbPtr_;
 
+        //- Configuration dictionary
+        dictionary configDict_;
+
         //- OpenFOAM mesh
         fvMesh* meshPtr_;
 
@@ -345,7 +348,12 @@ class vtkPVFoam
             void updateInfoLagrangian(vtkDataArraySelection*);
 
             //- Patch info
-            void updateInfoPatches(vtkDataArraySelection*, stringList&);
+            void updateInfoPatches
+            (
+                vtkDataArraySelection*,
+                stringList&,
+                const bool
+            );
 
             //- Set info
             void updateInfoSets(vtkDataArraySelection*);

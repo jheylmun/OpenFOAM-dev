@@ -62,6 +62,11 @@ Foam::AMIInterpolation<SourcePatch, TargetPatch>::interpolationMethodToWord
             method = "partialFaceAreaWeightAMI";
             break;
         }
+        case imSweptFaceAreaWeight:
+        {
+            method = "sweptFaceAreaWeightAMI";
+            break;
+        }
         default:
         {
             FatalErrorInFunction
@@ -91,7 +96,8 @@ Foam::AMIInterpolation<SourcePatch, TargetPatch>::wordTointerpolationMethod
                 "directAMI "
                 "mapNearestAMI "
                 "faceAreaWeightAMI "
-                "partialFaceAreaWeightAMI"
+                "partialFaceAreaWeightAMI "
+                "sweptFaceAreaWeightAMI"
             ")"
         )()
     );
@@ -112,6 +118,10 @@ Foam::AMIInterpolation<SourcePatch, TargetPatch>::wordTointerpolationMethod
     {
         method = imPartialFaceAreaWeight;
     }
+    else if (im == "sweptFaceAreaWeightAMI")
+    {
+        method = imSweptFaceAreaWeight;
+    }
     else
     {
         FatalErrorInFunction
@@ -121,6 +131,48 @@ Foam::AMIInterpolation<SourcePatch, TargetPatch>::wordTointerpolationMethod
     }
 
     return method;
+}
+
+
+template<class SourcePatch, class TargetPatch>
+template<class Patch>
+Foam::tmp<Foam::scalarField>
+Foam::AMIInterpolation<SourcePatch, TargetPatch>::patchMagSf
+(
+    const Patch& patch,
+    const faceAreaIntersect::triangulationMode triMode
+)
+{
+    tmp<scalarField> tResult(new scalarField(patch.size(), Zero));
+    scalarField& result = tResult.ref();
+
+    const pointField& patchPoints = patch.localPoints();
+
+    faceList patchFaceTris;
+
+    forAll(result, patchFacei)
+    {
+        faceAreaIntersect::triangulate
+        (
+            patch.localFaces()[patchFacei],
+            patchPoints,
+            triMode,
+            patchFaceTris
+        );
+
+        forAll(patchFaceTris, i)
+        {
+            result[patchFacei] +=
+                triPointRef
+                (
+                    patchPoints[patchFaceTris[i][0]],
+                    patchPoints[patchFaceTris[i][1]],
+                    patchPoints[patchFaceTris[i][2]]
+                ).mag();
+        }
+    }
+
+    return tResult;
 }
 
 
@@ -231,7 +283,7 @@ void Foam::AMIInterpolation<SourcePatch, TargetPatch>::normaliseWeights
                 << " sum(weights) min/max/average = "
                 << gMin(wghtSum) << ", "
                 << gMax(wghtSum) << ", "
-                << gAverage(wghtSum) << endl;
+                << gSum(wghtSum*patchAreas)/gSum(patchAreas) << endl;
 
             const label nLow = returnReduce(nLowWeight, sumOp<label>());
 
@@ -849,16 +901,8 @@ void Foam::AMIInterpolation<SourcePatch, TargetPatch>::update
         << endl;
 
     // Calculate face areas
-    srcMagSf_.setSize(srcPatch.size());
-    forAll(srcMagSf_, facei)
-    {
-        srcMagSf_[facei] = srcPatch[facei].mag(srcPatch.points());
-    }
-    tgtMagSf_.setSize(tgtPatch.size());
-    forAll(tgtMagSf_, facei)
-    {
-        tgtMagSf_[facei] = tgtPatch[facei].mag(tgtPatch.points());
-    }
+    srcMagSf_ = patchMagSf(srcPatch, triMode_);
+    tgtMagSf_ = patchMagSf(tgtPatch, triMode_);
 
     // Calculate if patches present on multiple processors
     singlePatchProc_ = calcDistribution(srcPatch, tgtPatch);

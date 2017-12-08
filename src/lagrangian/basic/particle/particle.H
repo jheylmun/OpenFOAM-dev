@@ -334,8 +334,8 @@ public:
         //- String representation of properties
         DefinePropertyList
         (
-            "(Px Py Pz) celli tetFacei tetPti "
-            "facei stepFraction origProc origId"
+            "(coordinatesa coordinatesb coordinatesc coordinatesd) "
+            "celli tetFacei tetPti facei stepFraction origProc origId"
         );
 
         //- Cumulative particle counter - used to provode unique ID
@@ -561,9 +561,10 @@ public:
             trackingData& td
         );
 
-        //- Set the constrained components of the particle position to the
-        //  mesh centre.
-        void constrainToMeshCentre();
+        //- Get the displacement from the mesh centre. Used to correct the
+        //  particle position in cases with reduced dimensionality. Returns a
+        //  zero vector for three-dimensional cases.
+        vector deviationFromMeshCentre() const;
 
 
     // Patch data

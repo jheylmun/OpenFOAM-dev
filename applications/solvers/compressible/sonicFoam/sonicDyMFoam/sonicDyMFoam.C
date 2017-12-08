@@ -50,11 +50,9 @@ int main(int argc, char *argv[])
     #include "setRootCase.H"
     #include "createTime.H"
     #include "createDynamicFvMesh.H"
-    #include "createControl.H"
-    #include "createControls.H"
+    #include "createDyMControls.H"
     #include "createFields.H"
     #include "createFieldRefs.H"
-    #include "createFvOptions.H"
     #include "createRhoUf.H"
     #include "compressibleCourantNo.H"
     #include "setInitialDeltaT.H"
@@ -68,7 +66,7 @@ int main(int argc, char *argv[])
 
     while (runTime.run())
     {
-        #include "readControls.H"
+        #include "readDyMControls.H"
 
         {
             // Store divrhoU from the previous mesh so that it can be mapped
