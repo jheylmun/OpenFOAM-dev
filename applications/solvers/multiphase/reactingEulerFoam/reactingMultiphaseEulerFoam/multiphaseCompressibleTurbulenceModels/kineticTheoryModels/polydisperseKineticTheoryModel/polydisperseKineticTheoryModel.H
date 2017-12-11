@@ -48,7 +48,6 @@ SourceFiles
 #include "phaseSystem.H"
 #include "phaseModel.H"
 #include "phasePair.H"
-#include "phasePairKey.H"
 #include "HashPtrTable.H"
 
 
@@ -94,7 +93,7 @@ class polydisperseKineticTheoryModel
         //- Table of granular pairs
         HashTable
         <
-            autoUPtr<phasePair>,
+            autoPtr<phasePair>,
             phasePairKey,
             phasePairKey::hash
         > pairs_;

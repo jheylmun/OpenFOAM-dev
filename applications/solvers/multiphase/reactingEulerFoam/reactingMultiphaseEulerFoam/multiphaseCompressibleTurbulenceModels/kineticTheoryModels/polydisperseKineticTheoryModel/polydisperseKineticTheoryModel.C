@@ -103,14 +103,14 @@ Foam::polydisperseKineticTheoryModel::polydisperseKineticTheoryModel
             *this
         )
     ),
-    granularPressureModel_
-    (
-        kineticTheoryModels::granularPressureModel::New
-        (
-            dict_,
-            *this
-        )
-    ),
+//     granularPressureModel_
+//     (
+//         kineticTheoryModels::granularPressureModel::New
+//         (
+//             dict_,
+//             *this
+//         )
+//     ),
     eTable_
     (
         dict_.lookup("coeffRest")
@@ -118,6 +118,30 @@ Foam::polydisperseKineticTheoryModel::polydisperseKineticTheoryModel
     CfTable_
     (
         dict_.lookup("coeffFric")
+    ),
+    alphaMax_
+    (
+        IOobject
+        (
+            IOobject::groupName("alphaMax", name_),
+            fluid.mesh().time().timeName(),
+            fluid.mesh(),
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
+        fluid.mesh(),
+        dimensionedScalar("0", dimless, 0.0),
+        wordList
+        (
+            alphap_.boundaryField().size(),
+            zeroGradientFvPatchScalarField::typeName
+        )
+    ),
+    residualAlpha_
+    (
+        "residualAlpha",
+        dimless,
+        dict_
     ),
     alphap_
     (
@@ -144,30 +168,6 @@ Foam::polydisperseKineticTheoryModel::polydisperseKineticTheoryModel
         ),
         fluid.mesh(),
         dimensionedVector("0", dimVelocity, Zero)
-    ),
-    alphaMax_
-    (
-        IOobject
-        (
-            IOobject::groupName("alphaMax", name_),
-            fluid.mesh().time().timeName(),
-            fluid.mesh(),
-            IOobject::NO_READ,
-            IOobject::AUTO_WRITE
-        ),
-        fluid.mesh(),
-        dimensionedScalar("0", dimless, 0.0),
-        wordList
-        (
-            alphap_.boundaryField().size(),
-            zeroGradientFvPatchScalarField::typeName
-        )
-    ),
-    residualAlpha_
-    (
-        "residualAlpha",
-        dimless,
-        dict_
     )
 {}
 
@@ -274,11 +274,26 @@ void Foam::polydisperseKineticTheoryModel::addPhase
     const word& phaseName(ktModel.phase().name());
     phases_.append(phaseName);
 
-    forAll(phases, phasei)
+    forAll(phases_, phasei)
     {
-        phasePairKey key(phaseName, fluid_.phases()[phases_[phasei]]);
-        phasePair pair(fluid_.pairs()[key]);
-        pairs_.insert(key, pair, false);
+        phasePairKey key
+        (
+            phaseName,
+            phases_[phasei],
+            false
+        );
+        pairs_.insert
+        (
+            key,
+            autoPtr<phasePair>
+            (
+                new phasePair
+                (
+                    fluid_.phases()[phaseName],
+                    fluid_.phases()[phases_[phasei]]
+                )
+            )
+        );
 
         PsCoeffs_.insert
         (
@@ -287,9 +302,9 @@ void Foam::polydisperseKineticTheoryModel::addPhase
             (
                 IOobject
                 (
-                    IOobject::groupName("PsCoeff", pair.name()),
+                    IOobject::groupName("PsCoeff", pairs_[key]().name()),
                     fluid_.mesh().time().timeName(),
-                    fluid_.mesh(),
+                    fluid_.mesh()
                 ),
                 fluid_.mesh(),
                 dimensionedScalar("PsCoeff", dimless, 0.0)
