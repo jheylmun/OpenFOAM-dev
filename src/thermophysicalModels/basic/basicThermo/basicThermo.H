@@ -258,10 +258,9 @@ public:
             return;
         }
 
-<<<<<<< HEAD
         //- Return the name of the thermo physics
         virtual word thermoName() const = 0;
-=======
+
         //- Correct temperature and update pressure
         virtual void heRho()
         {
@@ -282,7 +281,6 @@ public:
             NotImplemented;
             return p_;
         }
->>>>>>> fc03c7b31b0f2259a9c8dcdb28760646e8f72484
 
         //- Return true if the equation of state is incompressible
         //  i.e. rho != f(p)
