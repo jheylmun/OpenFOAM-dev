@@ -88,6 +88,18 @@ public:
 
         //- Update pressure calculated from T and rho
         virtual void correctP();
+
+        //- Update pressure calculated from T and rho
+        virtual void heRho();
+
+        //- Calculate ensity [kg/m^3]
+        virtual void calcRho();
+
+        //- Change in internal energy with respect to pressure
+        virtual tmp<volScalarField> dHEdp() const;
+
+        //- Change in internal energy with respect to density
+        virtual tmp<volScalarField> dHEdrho() const;
 };
 
 

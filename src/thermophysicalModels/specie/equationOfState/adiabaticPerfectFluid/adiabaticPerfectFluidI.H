@@ -196,9 +196,7 @@ inline Foam::scalar Foam::adiabaticPerfectFluid<Specie>::dpdv
     scalar rho
 ) const
 {
-    scalar V = rho/this->W();
-    scalar V0 = rho0_/this->W();
-    return -gamma_*(p0_ + B_)*pow(rho/rho0_, gamma_ + 1);
+    return -gamma_*(p0_ + B_)*rho0_*pow(rho/rho0_, gamma_ + 1);
 }
 
 

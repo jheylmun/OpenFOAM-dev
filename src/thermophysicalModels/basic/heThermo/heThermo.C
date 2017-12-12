@@ -533,7 +533,7 @@ Foam::heThermo<BasicThermo, MixtureType>::speedOfSound() const
         (
             IOobject
             (
-                IOobject::groupName("a", this->phaseName_),
+                IOobject::groupName("a", this->T_.group()),
                 this->p_.time().timeName(),
                 this->p_.mesh(),
                 IOobject::NO_READ,
