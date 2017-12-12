@@ -22,17 +22,17 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::Lun
+    Foam::Huilin
 
 Description
 
 SourceFiles
-    LunPressure.C
+    HuilinPressure.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef Lun_H
-#define Lun_H
+#ifndef Huilin_H
+#define Huilin_H
 
 #include "granularPressureModel.H"
 
@@ -46,10 +46,10 @@ namespace granularPressureModels
 {
 
 /*---------------------------------------------------------------------------*\
-                           Class Lun Declaration
+                           Class Huilin Declaration
 \*---------------------------------------------------------------------------*/
 
-class Lun
+class Huilin
 :
     public granularPressureModel
 {
@@ -57,17 +57,17 @@ class Lun
 public:
 
     //- Runtime type information
-    TypeName("Lun");
+    TypeName("Huilin");
 
 
     // Constructors
 
         //- Construct from components
-        Lun(const dictionary& dict, const polydisperseKineticTheoryModel& kt);
+        Huilin(const dictionary& dict, const polydisperseKineticTheoryModel& kt);
 
 
     //- Destructor
-    virtual ~Lun();
+    virtual ~Huilin();
 
 
     // Member Functions
@@ -76,8 +76,10 @@ public:
         virtual tmp<volScalarField> granularPressureCoeff
         (
             const phaseModel& phase1,
+            const phaseModel& phase2,
+            const volScalarField& Theta1,
+            const volScalarField& Theta2,
             const volScalarField& g0,
-            const volScalarField& rho1,
             const dimensionedScalar& e
         ) const;
 
@@ -85,9 +87,11 @@ public:
         virtual tmp<volScalarField> granularPressureCoeffPrime
         (
             const phaseModel& phase1,
+            const phaseModel& phase2,
+            const volScalarField& Theta1,
+            const volScalarField& Theta2,
             const volScalarField& g0,
             const volScalarField& g0prime,
-            const volScalarField& rho1,
             const dimensionedScalar& e
         ) const;
 };

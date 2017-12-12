@@ -71,8 +71,10 @@ Foam::tmp<Foam::volScalarField>
 Foam::kineticTheoryModels::granularPressureModels::Chao::granularPressureCoeff
 (
     const phaseModel& phase1,
+    const phaseModel& phase2,
+    const volScalarField& Theta1,
+    const volScalarField& Theta2,
     const volScalarField& g0,
-    const volScalarField& rho1,
     const dimensionedScalar& e
 ) const
 {
@@ -93,9 +95,11 @@ Foam::kineticTheoryModels::granularPressureModels::Chao::
 granularPressureCoeffPrime
 (
     const phaseModel& phase1,
+    const phaseModel& phase2,
+    const volScalarField& Theta1,
+    const volScalarField& Theta2,
     const volScalarField& g0,
     const volScalarField& g0prime,
-    const volScalarField& rho1,
     const dimensionedScalar& e
 ) const
 {

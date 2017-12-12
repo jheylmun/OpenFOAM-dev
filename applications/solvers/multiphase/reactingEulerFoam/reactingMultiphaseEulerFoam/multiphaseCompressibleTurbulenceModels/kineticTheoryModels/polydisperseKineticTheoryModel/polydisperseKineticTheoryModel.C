@@ -28,7 +28,7 @@ License
 #include "multiphaseSystem.H"
 #include "radialModel.H"
 #include "frictionalStressModel.H"
-// #include "granularPressureModel.H"
+#include "granularPressureModel.H"
 #include "phaseSystem.H"
 #include "mathematicalConstants.H"
 #include "SortableList.H"
@@ -86,10 +86,44 @@ Foam::polydisperseKineticTheoryModel::polydisperseKineticTheoryModel
     fluid_(fluid),
     dict_(fluid.subDict("kineticTheory")),
     name_(dict_.lookup("name")),
+    alphap_
+    (
+        IOobject
+        (
+            IOobject::groupName("alpha", name_),
+            fluid.mesh().time().timeName(),
+            fluid.mesh(),
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
+        fluid.mesh(),
+        dimensionedScalar("0", dimless, 0.0)
+    ),
+    Up_
+    (
+        IOobject
+        (
+            IOobject::groupName("U", name_),
+            fluid.mesh().time().timeName(),
+            fluid.mesh(),
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
+        fluid.mesh(),
+        dimensionedVector("0", dimVelocity, Zero)
+    ),
     phases_(),
     radialModel_
     (
         kineticTheoryModels::radialModel::New
+        (
+            dict_,
+            *this
+        )
+    ),
+    granularPressureModel_
+    (
+        kineticTheoryModels::granularPressureModel::New
         (
             dict_,
             *this
@@ -103,14 +137,6 @@ Foam::polydisperseKineticTheoryModel::polydisperseKineticTheoryModel
             *this
         )
     ),
-//     granularPressureModel_
-//     (
-//         kineticTheoryModels::granularPressureModel::New
-//         (
-//             dict_,
-//             *this
-//         )
-//     ),
     eTable_
     (
         dict_.lookup("coeffRest")
@@ -142,32 +168,6 @@ Foam::polydisperseKineticTheoryModel::polydisperseKineticTheoryModel
         "residualAlpha",
         dimless,
         dict_
-    ),
-    alphap_
-    (
-        IOobject
-        (
-            IOobject::groupName("alpha", name_),
-            fluid.mesh().time().timeName(),
-            fluid.mesh(),
-            IOobject::NO_READ,
-            IOobject::AUTO_WRITE
-        ),
-        fluid.mesh(),
-        dimensionedScalar("0", dimless, 0.0)
-    ),
-    Up_
-    (
-        IOobject
-        (
-            IOobject::groupName("U", name_),
-            fluid.mesh().time().timeName(),
-            fluid.mesh(),
-            IOobject::NO_READ,
-            IOobject::AUTO_WRITE
-        ),
-        fluid.mesh(),
-        dimensionedVector("0", dimVelocity, Zero)
     )
 {}
 
@@ -188,6 +188,7 @@ bool Foam::polydisperseKineticTheoryModel::read()
 
         radialModel_->read();
         frictionalStressModel_->read();
+        granularPressureModel_->read();
 
         return true;
     }
@@ -215,6 +216,86 @@ Foam::tmp<Foam::volScalarField> Foam::polydisperseKineticTheoryModel::gs0Prime
 ) const
 {
     return radialModel_->g0prime(phase1, phase2);
+}
+
+
+Foam::tmp<Foam::volScalarField>
+Foam::polydisperseKineticTheoryModel::PsCoeff(const phaseModel& phase) const
+{
+    tmp<volScalarField> tmpPsCoeff
+    (
+        new volScalarField
+        (
+            IOobject
+            (
+                IOobject::groupName("PsCoeff", phase.name()),
+                fluid_.mesh().time().timeName(),
+                fluid_.mesh(),
+                IOobject::NO_READ,
+                IOobject::NO_WRITE,
+                false
+            ),
+            fluid_.mesh(),
+            dimensionedScalar("0", dimDensity, 0.0)
+        )
+    );
+    volScalarField& psCoeff = tmpPsCoeff.ref();
+
+    forAll(phases_, phasei)
+    {
+        const phaseModel& phase2 = fluid_.phases()[phases_[phasei]];
+        phasePairKey key(phase.name(), phase2.name(), false);
+        const volScalarField& Theta =
+            fluid_.mesh().lookupObject<volScalarField>
+            (
+                IOobject::groupName("Theta", phase.name())
+            );
+
+        psCoeff +=
+            (*PsCoeffs_[key])
+           /max(Theta, dimensionedScalar("SMALL", sqr(dimVelocity), 1e-6));
+    }
+    return tmpPsCoeff;
+}
+
+
+Foam::tmp<Foam::volScalarField>
+Foam::polydisperseKineticTheoryModel::PsCoeffPrime(const phaseModel& phase) const
+{
+    tmp<volScalarField> tmpPsCoeffPrime
+    (
+        new volScalarField
+        (
+            IOobject
+            (
+                IOobject::groupName("PsCoeffPrime", phase.name()),
+                fluid_.mesh().time().timeName(),
+                fluid_.mesh(),
+                IOobject::NO_READ,
+                IOobject::NO_WRITE,
+                false
+            ),
+            fluid_.mesh(),
+            dimensionedScalar("0", dimDensity, 0.0)
+        )
+    );
+    volScalarField& psCoeffPrime = tmpPsCoeffPrime.ref();
+
+    forAll(phases_, phasei)
+    {
+        const phaseModel& phase2 = fluid_.phases()[phases_[phasei]];
+        phasePairKey key(phase.name(), phase2.name(), false);
+        const volScalarField& Theta =
+            fluid_.mesh().lookupObject<volScalarField>
+            (
+                IOobject::groupName("Theta", phase.name())
+            );
+
+        psCoeffPrime +=
+            (*PsCoeffsPrime_[key])
+           /max(Theta, dimensionedScalar("SMALL", sqr(dimVelocity), 1e-6));
+    }
+    return tmpPsCoeffPrime;
 }
 
 
@@ -282,18 +363,7 @@ void Foam::polydisperseKineticTheoryModel::addPhase
             phases_[phasei],
             false
         );
-        pairs_.insert
-        (
-            key,
-            autoPtr<phasePair>
-            (
-                new phasePair
-                (
-                    fluid_.phases()[phaseName],
-                    fluid_.phases()[phases_[phasei]]
-                )
-            )
-        );
+        pairs_.append(key);
 
         PsCoeffs_.insert
         (
@@ -302,12 +372,36 @@ void Foam::polydisperseKineticTheoryModel::addPhase
             (
                 IOobject
                 (
-                    IOobject::groupName("PsCoeff", pairs_[key]().name()),
+                    IOobject::groupName
+                    (
+                        "PsCoeff",
+                        key.first()+"And"+key.second()
+                    ),
                     fluid_.mesh().time().timeName(),
                     fluid_.mesh()
                 ),
                 fluid_.mesh(),
-                dimensionedScalar("PsCoeff", dimless, 0.0)
+                dimensionedScalar("PsCoeff", dimDensity*sqr(dimVelocity), 0.0)
+            )
+        );
+
+        PsCoeffsPrime_.insert
+        (
+            key,
+            new volScalarField
+            (
+                IOobject
+                (
+                    IOobject::groupName
+                    (
+                        "PsCoeffPrime",
+                        key.first()+"And"+key.second()
+                    ),
+                    fluid_.mesh().time().timeName(),
+                    fluid_.mesh()
+                ),
+                fluid_.mesh(),
+                dimensionedScalar("PsCoeffPrime", dimDensity*sqr(dimVelocity), 0.0)
             )
         );
 
@@ -341,6 +435,46 @@ void Foam::polydisperseKineticTheoryModel::correct()
     }
     Up_ /= max(alphap(), residualAlpha_);
 
+    forAll(pairs_, pairi)
+    {
+        const phasePairKey& key = pairs_[pairi];
+        const phaseModel& phase1 = fluid_.phases()[key.first()];
+        const phaseModel& phase2 = fluid_.phases()[key.second()];
+        const volScalarField& Theta1 =
+            fluid_.mesh().lookupObject<volScalarField>
+            (
+                IOobject::groupName("Theta", phase1.name())
+            );
+        const volScalarField& Theta2 =
+            fluid_.mesh().lookupObject<volScalarField>
+            (
+                IOobject::groupName("Theta", phase2.name())
+            );
+
+        PsCoeffs_[key] =
+            granularPressureModel_->granularPressureCoeff
+            (
+                phase1,
+                phase2,
+                Theta1,
+                Theta2,
+                gs0(phase1, phase2),
+                eTable_[key]
+            ).ptr();
+
+        PsCoeffsPrime_[key] =
+            granularPressureModel_->granularPressureCoeffPrime
+            (
+                phase1,
+                phase2,
+                Theta1,
+                Theta2,
+                gs0(phase1, phase2),
+                gs0Prime(phase1, phase2),
+                eTable_[key]
+            ).ptr();
+    }
+
     if (Switch(dict_.lookup("constantPackingLimit")))
     {
         alphaMax_ = dimensionedScalar("alphaMax", dimless, dict_);
@@ -371,5 +505,6 @@ void Foam::polydisperseKineticTheoryModel::correctAlphap()
     {
         alphap_ += fluid_.phases()[phases_[phasei]];
     }
+    alphap_.correctBoundaryConditions();
 }
 // ************************************************************************* //

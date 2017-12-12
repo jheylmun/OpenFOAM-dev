@@ -65,7 +65,7 @@ namespace kineticTheoryModels
 {
     class radialModel;
     class frictionalStressModel;
-//     class granularPressureModel;
+    class granularPressureModel;
 }
 
 /*---------------------------------------------------------------------------*\
@@ -87,19 +87,27 @@ class polydisperseKineticTheoryModel
         //- Name of total partical phase
         const word name_;
 
+        // Total granualr fields
+
+            //- Total granular phase-fraction
+            volScalarField alphap_;
+
+            //- Phase averaged velocity
+            volVectorField Up_;
+
+
         //- List of granular phase names
         wordList phases_;
 
         //- Table of granular pairs
-        HashTable
-        <
-            autoPtr<phasePair>,
-            phasePairKey,
-            phasePairKey::hash
-        > pairs_;
+        List<phasePairKey> pairs_;
 
         //- Run-time selected radial distribution model
         autoPtr<kineticTheoryModels::radialModel> radialModel_;
+
+        //- Run-time selected granular pressure model
+        autoPtr<kineticTheoryModels::granularPressureModel>
+            granularPressureModel_;
 
         //- Run-time selected frictional stress model
         autoPtr<kineticTheoryModels::frictionalStressModel>
@@ -121,15 +129,6 @@ class polydisperseKineticTheoryModel
             dimensionedScalar residualAlpha_;
 
 
-        // Total granualr fields
-
-            //- Total granular phase-fraction
-            volScalarField alphap_;
-
-            //- Phase averaged velocity
-            volVectorField Up_;
-
-
         // Stored tables of coefficients
 
             //- Granular pressure coeffients for granular pairs
@@ -139,6 +138,14 @@ class polydisperseKineticTheoryModel
                 phasePairKey,
                 phasePairKey::hash
             > PsCoeffs_;
+
+            //- Derivative of granular pressure coeffients for granular pairs
+            HashPtrTable
+            <
+                volScalarField,
+                phasePairKey,
+                phasePairKey::hash
+            > PsCoeffsPrime_;
 
             //- Thermal conductivity between granular pairs
             HashPtrTable

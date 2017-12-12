@@ -100,14 +100,6 @@ Foam::RASModels::kineticTheoryModel::kineticTheoryModel
             KTs_
         )
     ),
-    granularPressureModel_
-    (
-        kineticTheoryModels::granularPressureModel::New
-        (
-            coeffDict_,
-            KTs_
-        )
-    ),
     equilibrium_(coeffDict_.lookup("equilibrium")),
     residualAlpha_
     (
@@ -224,7 +216,6 @@ bool Foam::RASModels::kineticTheoryModel::read()
 
         viscosityModel_->read();
         conductivityModel_->read();
-        granularPressureModel_->read();
 
         return true;
     }
@@ -276,25 +267,10 @@ Foam::RASModels::kineticTheoryModel::R() const
 Foam::tmp<Foam::volScalarField>
 Foam::RASModels::kineticTheoryModel::pPrime() const
 {
-    const volScalarField& rho = phase_.rho();
-    dimensionedScalar e
-    (
-        "e",
-        dimless,
-        KTs_.es()[phasePairKey(phase_.name(), phase_.name(), false)]
-    );
-
     tmp<volScalarField> tpPrime
     (
         Theta_
-       *granularPressureModel_->granularPressureCoeffPrime
-        (
-            phase_,
-            KTs_.gs0(phase_, phase_)(),
-            KTs_.gs0Prime(phase_, phase_)(),
-            rho,
-            e
-        )
+       *KTs_.PsCoeffPrime(phase_)
      +  KTs_.frictionalPressurePrime(phase_)
     );
 
@@ -495,16 +471,7 @@ void Foam::RASModels::kineticTheoryModel::correct()
 
 
         // particle pressure - coefficient in front of Theta (Eq. 3.22, p. 45)
-        volScalarField PsCoeff
-        (
-            granularPressureModel_->granularPressureCoeff
-            (
-                phase_,
-                gs0_,
-                rho,
-                e
-            )
-        );
+        tmp<volScalarField> PsCoeff(KTs_.PsCoeff(phase_));
 
         // 'thermal' conductivity (Table 3.3, p. 49)
         kappa_ = conductivityModel_->kappa(phase_, Theta_, gs0_, rho, da, e);

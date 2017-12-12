@@ -55,7 +55,6 @@ SourceFiles
 #include "polydisperseKineticTheoryModel.H"
 #include "viscosityModel.H"
 #include "conductivityModel.H"
-#include "granularPressureModel.H"
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -111,10 +110,6 @@ class kineticTheoryModel
 
             //- Run-time selected conductivity model
             autoPtr<kineticTheoryModels::conductivityModel> conductivityModel_;
-
-            //- Run-time selected granular pressure model
-            autoPtr<kineticTheoryModels::granularPressureModel>
-                granularPressureModel_;
 
 
         // Kinetic Theory Model coefficients

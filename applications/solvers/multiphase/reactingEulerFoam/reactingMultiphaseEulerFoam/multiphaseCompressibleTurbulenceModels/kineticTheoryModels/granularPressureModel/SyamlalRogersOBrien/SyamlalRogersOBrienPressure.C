@@ -74,13 +74,15 @@ Foam::kineticTheoryModels::granularPressureModels::SyamlalRogersOBrien::
 granularPressureCoeff
 (
     const phaseModel& phase1,
+    const phaseModel& phase2,
+    const volScalarField& Theta1,
+    const volScalarField& Theta2,
     const volScalarField& g0,
-    const volScalarField& rho1,
     const dimensionedScalar& e
 ) const
 {
 
-    return 2.0*rho1*(1.0 + e)*sqr(phase1)*g0;
+    return 2.0*phase1.rho()*Theta1*(1.0 + e)*sqr(phase1)*g0;
 }
 
 
@@ -89,13 +91,15 @@ Foam::kineticTheoryModels::granularPressureModels::SyamlalRogersOBrien::
 granularPressureCoeffPrime
 (
     const phaseModel& phase1,
+    const phaseModel& phase2,
+    const volScalarField& Theta1,
+    const volScalarField& Theta2,
     const volScalarField& g0,
     const volScalarField& g0prime,
-    const volScalarField& rho1,
     const dimensionedScalar& e
 ) const
 {
-    return rho1*phase1*(1.0 + e)*(4.0*g0 + 2.0*g0prime*phase1);
+    return phase1.rho()*Theta1*phase1*(1.0 + e)*(4.0*g0 + 2.0*g0prime*phase1);
 }
 
 

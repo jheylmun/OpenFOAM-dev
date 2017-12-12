@@ -177,7 +177,6 @@ void Foam::multiphaseSystem::solveAlphas
             );
         }
     }
-//     MULES::limitSum(alphaPhiCorrs);
 
     // Limit total granular flux
     if
@@ -229,6 +228,11 @@ void Foam::multiphaseSystem::solveAlphas
             )
         );
 
+        forAll(granularPhases, phasei)
+        {
+            alphaPhiCorrs[phases()[granularPhases[phasei]].index()] =
+                alphaPhips[phasei];
+        }
 //         surfaceScalarField lambda
 //         (
 //             IOobject
@@ -240,28 +244,28 @@ void Foam::multiphaseSystem::solveAlphas
 //             alphap.mesh(),
 //             dimensionedScalar("0", phi_.dimensions(), 0.0)
 //         );
-
-        forAll(granularPhases, phasei)
-        {
+//
+//         forAll(granularPhases, phasei)
+//         {
 //             lambda +=
 //             (
 //                 alphaPhips[phasei]
 //               - alphaPhiCorrs[phases()[granularPhases[phasei]].index()]
 //             );
-
-            alphaPhiCorrs[phases()[granularPhases[phasei]].index()] =
-                alphaPhips[phasei];
+//
+//             alphaPhiCorrs[phases()[granularPhases[phasei]].index()] =
+//                 alphaPhips[phasei];
 //             granularIndicies[phasei] =
 //                 phases()[granularPhases[phasei]].index();
-
+//
 //             if (alphaDbyAFluxes.set(phasei))
 //             {
 //                 alphaPhiCorrs[phasei] += alphaDbyAFluxes[phasei];
 //             }
-        }
-
-        //  Add removed flux to fluid phases to ensure total volume fraction
-        //  sums to 1
+//         }
+//
+//         //  Add removed flux to fluid phases to ensure total volume fraction
+//         //  sums to 1
 //         {
 //             surfaceScalarField alphaf
 //             (
@@ -861,9 +865,9 @@ void Foam::multiphaseSystem::solve()
 
     forAll(phases(), phasei)
     {
-        phaseModel& phase = phases()[phasei];
-        volScalarField& alpha = phase;
-
+//         phaseModel& phase = phases()[phasei];
+//         volScalarField& alpha = phase;
+//
 //         if (alphaDbyAs.set(phasei))
 //         {
 //             fvScalarMatrix alphaEqn
@@ -878,6 +882,7 @@ void Foam::multiphaseSystem::solve()
 //             phase.alphaPhi() += alphaEqn.flux();
 //         }
 
+        phaseModel& phase = phases()[phasei];
         phase.alphaRhoPhi() = fvc::interpolate(phase.rho())*phase.alphaPhi();
 
         // Ensure the phase-fractions are bounded

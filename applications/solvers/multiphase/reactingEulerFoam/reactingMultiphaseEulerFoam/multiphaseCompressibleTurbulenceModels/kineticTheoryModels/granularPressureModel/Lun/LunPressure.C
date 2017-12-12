@@ -71,13 +71,35 @@ Foam::tmp<Foam::volScalarField>
 Foam::kineticTheoryModels::granularPressureModels::Lun::granularPressureCoeff
 (
     const phaseModel& phase1,
+    const phaseModel& phase2,
+    const volScalarField& Theta1,
+    const volScalarField& Theta2,
     const volScalarField& g0,
-    const volScalarField& rho1,
     const dimensionedScalar& e
 ) const
 {
+    if (&phase1 != &phase2)
+    {
+        return tmp<volScalarField>
+        (
+            new volScalarField
+            (
+                IOobject
+                (
+                    "granularPressureCoeff",
+                    phase1.time().timeName(),
+                    phase1.mesh(),
+                    IOobject::NO_READ,
+                    IOobject::NO_WRITE,
+                    false
+                ),
+                phase1.mesh(),
+                dimensionedScalar("0", dimDensity*sqr(dimVelocity), 0.0)
+            )
+        );
+    }
 
-    return rho1*phase1*(1.0 + 2.0*(1.0 + e)*phase1*g0);
+    return phase1.rho()*Theta1*phase1*(1.0 + 2.0*(1.0 + e)*phase1*g0);
 }
 
 
@@ -86,13 +108,41 @@ Foam::kineticTheoryModels::granularPressureModels::Lun::
 granularPressureCoeffPrime
 (
     const phaseModel& phase1,
+    const phaseModel& phase2,
+    const volScalarField& Theta1,
+    const volScalarField& Theta2,
     const volScalarField& g0,
     const volScalarField& g0prime,
-    const volScalarField& rho1,
     const dimensionedScalar& e
 ) const
 {
-    return rho1*(1.0 + phase1*(1.0 + e)*(4.0*g0 + 2.0*g0prime*phase1));
+    if (&phase1 != &phase2)
+    {
+        return tmp<volScalarField>
+        (
+            new volScalarField
+            (
+                IOobject
+                (
+                    "granularPressureCoeff",
+                    phase1.time().timeName(),
+                    phase1.mesh(),
+                    IOobject::NO_READ,
+                    IOobject::NO_WRITE,
+                    false
+                ),
+                phase1.mesh(),
+                dimensionedScalar("0", dimDensity*sqr(dimVelocity), 0.0)
+            )
+        );
+    }
+
+    return
+        phase1.rho()*Theta1
+       *(
+            1.0
+          + phase1*(1.0 + e)*(4.0*g0 + 2.0*g0prime*phase1)
+        );
 }
 
 
