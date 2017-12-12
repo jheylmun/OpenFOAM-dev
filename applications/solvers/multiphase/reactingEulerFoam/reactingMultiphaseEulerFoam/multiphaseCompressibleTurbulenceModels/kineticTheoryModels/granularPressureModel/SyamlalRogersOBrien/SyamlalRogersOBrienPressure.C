@@ -81,6 +81,26 @@ granularPressureCoeff
     const dimensionedScalar& e
 ) const
 {
+    if (&phase1 != &phase2)
+    {
+        return tmp<volScalarField>
+        (
+            new volScalarField
+            (
+                IOobject
+                (
+                    "granularPressureCoeff",
+                    phase1.time().timeName(),
+                    phase1.mesh(),
+                    IOobject::NO_READ,
+                    IOobject::NO_WRITE,
+                    false
+                ),
+                phase1.mesh(),
+                dimensionedScalar("0", dimDensity*sqr(dimVelocity), 0.0)
+            )
+        );
+    }
 
     return 2.0*phase1.rho()*Theta1*(1.0 + e)*sqr(phase1)*g0;
 }
@@ -99,6 +119,26 @@ granularPressureCoeffPrime
     const dimensionedScalar& e
 ) const
 {
+    if (&phase1 != &phase2)
+    {
+        return tmp<volScalarField>
+        (
+            new volScalarField
+            (
+                IOobject
+                (
+                    "granularPressureCoeff",
+                    phase1.time().timeName(),
+                    phase1.mesh(),
+                    IOobject::NO_READ,
+                    IOobject::NO_WRITE,
+                    false
+                ),
+                phase1.mesh(),
+                dimensionedScalar("0", dimDensity*sqr(dimVelocity), 0.0)
+            )
+        );
+    }
     return phase1.rho()*Theta1*phase1*(1.0 + e)*(4.0*g0 + 2.0*g0prime*phase1);
 }
 
