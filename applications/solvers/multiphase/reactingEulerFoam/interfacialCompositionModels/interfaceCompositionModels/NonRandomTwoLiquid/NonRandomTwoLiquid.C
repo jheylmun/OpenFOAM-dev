@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2015 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2015-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -104,14 +104,16 @@ NonRandomTwoLiquid
     (
         saturationModel::New
         (
-            dict.subDict(species1Name_).subDict("interaction")
+            dict.subDict(species1Name_).subDict("interaction"),
+            pair.phase1().mesh()
         ).ptr()
     );
     saturationModel21_.reset
     (
         saturationModel::New
         (
-            dict.subDict(species2Name_).subDict("interaction")
+            dict.subDict(species2Name_).subDict("interaction"),
+            pair.phase1().mesh()
         ).ptr()
     );
 
@@ -214,7 +216,7 @@ Foam::interfaceCompositionModels::NonRandomTwoLiquid<Thermo, OtherThermo>::Yf
            *speciesModel1_->Yf(speciesName, Tf)
            *gamma1_;
     }
-    else if(speciesName == species2Name_)
+    else if (speciesName == species2Name_)
     {
         return
             this->otherThermo_.composition().Y(speciesName)
@@ -246,7 +248,7 @@ YfPrime
            *speciesModel1_->YfPrime(speciesName, Tf)
            *gamma1_;
     }
-    else if(speciesName == species2Name_)
+    else if (speciesName == species2Name_)
     {
         return
             this->otherThermo_.composition().Y(speciesName)

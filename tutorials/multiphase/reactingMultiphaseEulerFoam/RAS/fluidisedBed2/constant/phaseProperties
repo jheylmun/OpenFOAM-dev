@@ -159,6 +159,8 @@ kineticTheory
     alphaMax 0.63;
 
     radialModel                 Gao;
+    granularPressureModel       Huilin;
+    frictionalStressModel   JohnsonJackson;
     residualAlpha               1e-4;
 
     coeffRest
@@ -175,8 +177,6 @@ kineticTheory
         (particles1 and particles1) 0.1
         (particles and particles2)  0.1
     );
-
-    frictionalStressModel   JohnsonJackson;
 
     SchaefferCoeffs
     {

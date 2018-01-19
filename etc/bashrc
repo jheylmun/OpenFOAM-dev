@@ -215,5 +215,5 @@ unset cleaned foamClean foamOldDirs
 
 # number of processors used
 # ~~~~~~~~~~~~~~~~~~~~~~~~~
-export WM_NCOMPPROCS=3
+export WM_NCOMPPROCS=32
 #------------------------------------------------------------------------------

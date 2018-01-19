@@ -359,6 +359,9 @@ public:
         //- Solve for the phase fractions
         virtual void solve();
 
+        //- Return the total interfacial mass transfer rate for a phase
+        virtual tmp<volScalarField> dmdt(const phaseModel& phase) const;
+
         //- Correct the fluid properties other than the thermo and turbulence
         virtual void correct();
 
@@ -378,6 +381,11 @@ public:
         virtual bool read();
 };
 
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+tmp<volScalarField> byDt(const volScalarField& vf);
+tmp<surfaceScalarField> byDt(const surfaceScalarField& sf);
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

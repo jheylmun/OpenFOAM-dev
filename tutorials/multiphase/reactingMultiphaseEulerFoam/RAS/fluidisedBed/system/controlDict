@@ -17,19 +17,19 @@ FoamFile
 
 application     reactingMuliphaseEulerFoam;
 
-startFrom       startTime;
+startFrom       latestTime;
 
 startTime       0;
 
 stopAt          endTime;
 
-endTime         55;
+endTime         20;
 
 deltaT          1e-4;
 
 writeControl    adjustableRunTime;
 
-writeInterval   .01;
+writeInterval   .1;
 
 purgeWrite      100;
 
@@ -58,7 +58,7 @@ functions
         type            fieldAverage;
         libs            ("libfieldFunctionObjects.so");
         writeControl    writeTime;
-        timeStart       15;
+        timeStart       5;
         fields
         (
             U.Particles
@@ -74,6 +74,12 @@ functions
                  base        time;
             }
             U.particles1
+            {
+                 mean        on;
+                 prime2Mean  off;
+                 base        time;
+            }
+            U.particles2
             {
                  mean        on;
                  prime2Mean  off;
@@ -100,6 +106,12 @@ functions
                  base        time;
             }
             alpha.particles1
+            {
+                 mean        on;
+                 prime2Mean  off;
+                 base        time;
+            }
+            alpha.particles2
             {
                  mean        on;
                  prime2Mean  off;

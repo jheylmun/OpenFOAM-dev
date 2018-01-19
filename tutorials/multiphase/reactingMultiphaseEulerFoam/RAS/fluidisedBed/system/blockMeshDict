@@ -17,7 +17,7 @@ FoamFile
 convertToMeters .001;
 
 pi  3.141529;
-h   2000;
+h   1500;
 D   150;
 depth 10;
 R   #calc "$D/2";
@@ -42,7 +42,7 @@ vertices
 
 blocks
 (
-    hex (0 1 2 3 4 5 6 7) (38 200 1)
+    hex (0 1 2 3 4 5 6 7) (38 150 1)
     simpleGrading
     (
         (

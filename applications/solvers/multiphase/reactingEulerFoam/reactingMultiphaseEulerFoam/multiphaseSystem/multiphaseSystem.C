@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2013-2017 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2013-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -365,7 +365,7 @@ void Foam::multiphaseSystem::solveAlphas
                 {
                     Sp[celli] +=
                         dgdt[celli]
-                       *(1.0 - alpha[celli])/max(alpha[celli], 1e-4);
+                       *(1 - alpha[celli])/max(alpha[celli], 1e-4);
                 }
             }
         }
@@ -387,7 +387,7 @@ void Foam::multiphaseSystem::solveAlphas
                     {
                         Sp[celli] +=
                             dgdt2[celli]
-                           *(1.0 - alpha2[celli])/max(alpha2[celli], 1e-4);
+                           *(1 - alpha2[celli])/max(alpha2[celli], 1e-4);
 
                         Su[celli] -=
                             dgdt2[celli]
@@ -571,7 +571,7 @@ void Foam::multiphaseSystem::correctContactAngle
                 b2[facei] = cos(acos(a12[facei]) - theta[facei]);
             }
 
-            scalarField det(1.0 - a12*a12);
+            scalarField det(1 - a12*a12);
 
             scalarField a((b1 - a12*b2)/det);
             scalarField b((b2 - a12*b1)/det);

@@ -23,7 +23,7 @@ solvers
         implicitPhasePressure no;
         solver          GAMG;
         smoother        DIC;
-        tolerance       1e-12;
+        tolerance       1e-10;
         relTol          0;
         minIter         1;
     }
@@ -33,7 +33,7 @@ solvers
         solver          GAMG;
         preconditioner  DIC;
         smoother        DIC;
-        tolerance       1e-10;
+        tolerance       1e-8;
         relTol          0;
     }
 
@@ -86,7 +86,7 @@ PIMPLE
     nCorrectors      2;
     nNonOrthogonalCorrectors 0;
     faceMomentum     no;
-    pRefPoint       (0.01 0.99 0.005);
+    pRefPoint       (0 0.99 0);
     pRefValue       1e5;
 
     residualControl
