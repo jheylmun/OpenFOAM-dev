@@ -68,10 +68,7 @@ void Foam::multiphaseSystem::calcAlphas()
 }
 
 
-void Foam::multiphaseSystem::solveAlphas
-(
-    PtrList<surfaceScalarField>& alphaDbyAFluxes
-)
+void Foam::multiphaseSystem::solveAlphas()
 {
     bool LTS = fv::localEulerDdt::enabled(mesh_);
 
@@ -79,6 +76,11 @@ void Foam::multiphaseSystem::solveAlphas
     {
         phases()[phasei].correctBoundaryConditions();
     }
+
+    bool polydisperse = mesh_.foundObject<polydisperseKineticTheoryModel>
+    (
+        "polydisperseKineticTheory"
+    );
 
     PtrList<surfaceScalarField> alphaPhiCorrs(phases().size());
 
@@ -179,13 +181,7 @@ void Foam::multiphaseSystem::solveAlphas
     }
 
     // Limit total granular flux
-    if
-    (
-        mesh_.foundObject<polydisperseKineticTheoryModel>
-        (
-            "polydisperseKineticTheory"
-        )
-    )
+    if(polydisperse)
     {
         polydisperseKineticTheoryModel& kineticTheoryModel =
             mesh_.lookupObjectRef<polydisperseKineticTheoryModel>
@@ -418,6 +414,18 @@ void Foam::multiphaseSystem::solveAlphas
             << endl;
 
         sumAlpha += phase;
+    }
+
+    //- Final correction of total granular volume fraction
+    if(polydisperse)
+    {
+        polydisperseKineticTheoryModel& kineticTheoryModel =
+            mesh_.lookupObjectRef<polydisperseKineticTheoryModel>
+            (
+                "polydisperseKineticTheory"
+            );
+
+        kineticTheoryModel.correctAlphap();
     }
 
     Info<< "Phase-sum volume fraction, min, max = "
@@ -736,8 +744,8 @@ void Foam::multiphaseSystem::solve()
     label nAlphaSubCycles(readLabel(alphaControls.lookup("nAlphaSubCycles")));
 
     bool LTS = fv::localEulerDdt::enabled(mesh_);
-    PtrList<surfaceScalarField> alphaDbyAFluxes(phases().size());
-    PtrList<surfaceScalarField> alphaDbyAs(phases().size());
+//     PtrList<surfaceScalarField> alphaDbyAFluxes(phases().size());
+//     PtrList<surfaceScalarField> alphaDbyAs(phases().size());
 
 //     forAll(phases(), phasei)
 //     {
@@ -834,7 +842,7 @@ void Foam::multiphaseSystem::solve()
             !(++alphaSubCycle).end();
         )
         {
-            solveAlphas(alphaDbyAFluxes);
+            solveAlphas();
 
             forAll(phases(), phasei)
             {
@@ -860,7 +868,7 @@ void Foam::multiphaseSystem::solve()
     }
     else
     {
-        solveAlphas(alphaDbyAFluxes);
+        solveAlphas();
     }
 
     forAll(phases(), phasei)

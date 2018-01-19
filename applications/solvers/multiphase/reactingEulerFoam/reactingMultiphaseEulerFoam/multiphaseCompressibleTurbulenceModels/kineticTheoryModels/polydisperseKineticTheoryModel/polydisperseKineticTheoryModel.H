@@ -95,6 +95,9 @@ class polydisperseKineticTheoryModel
             //- Phase averaged velocity
             volVectorField Up_;
 
+            //- Phase averaged granular temperature
+            volScalarField Thetap_;
+
 
         //- List of granular phase names
         wordList phases_;

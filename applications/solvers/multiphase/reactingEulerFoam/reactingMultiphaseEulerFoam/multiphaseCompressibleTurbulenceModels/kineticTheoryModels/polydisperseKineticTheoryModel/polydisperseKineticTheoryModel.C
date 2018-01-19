@@ -44,15 +44,21 @@ Foam::scalar Foam::polydisperseKineticTheoryModel::calcAlphaMax
     const scalarList& ds
 ) const
 {
-    if (phasei + 1 == phases_.size())
-    {
-        return fluid_.phases()[phasei].alphaMax();
-    }
+//  Includes allphases
+//     if (phasei + 1 == phases_.size())
+//     {
+//         return fluid_.phases()[phasei].alphaMax();
+//     }
+//     const label phaseJ(phasei + 1);
+//     scalar alphaMax2 = calcAlphaMax(phaseJ, cellI, ds);
+
+//  Bi-disperse limit
+    const label phaseJ(phases().size() - 1);
+
     const phaseModel& phase1 = fluid_.phases()[phasei];
-    const label phaseJ(phasei + 1);
     const phaseModel& phase2 = fluid_.phases()[phaseJ];
 
-    scalar alphaMax2 = calcAlphaMax(phaseJ, cellI, ds);
+    scalar alphaMax2 = phase2.alphaMax();
 
     return
         phase1.alphaMax()
@@ -111,6 +117,19 @@ Foam::polydisperseKineticTheoryModel::polydisperseKineticTheoryModel
         ),
         fluid.mesh(),
         dimensionedVector("0", dimVelocity, Zero)
+    ),
+    Thetap_
+    (
+        IOobject
+        (
+            IOobject::groupName("Theta", name_),
+            fluid.mesh().time().timeName(),
+            fluid.mesh(),
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
+        fluid.mesh(),
+        dimensionedScalar("0", sqr(dimVelocity), 0.0)
     ),
     phases_(),
     radialModel_
@@ -426,14 +445,27 @@ void Foam::polydisperseKineticTheoryModel::correct()
 {
     alphap_ = 0.0;
     Up_ = dimensionedVector("0", dimVelocity, Zero);
+    Thetap_ = dimensionedScalar("0", sqr(dimVelocity), 0.0);
 
     forAll(phases_, phasei)
     {
+        const phaseModel& phase = fluid_.phases()[phases_[phasei]];
         const volScalarField& alpha = fluid_.phases()[phases_[phasei]];
+        const volScalarField& Theta =
+            fluid_.mesh().lookupObject<volScalarField>
+            (
+                IOobject::groupName
+                (
+                    "Theta",
+                    phase.name()
+                )
+            );
         alphap_ += alpha;
-        Up_ += alpha*fluid_.phases()[phases_[phasei]].U();
+        Up_ += alpha*phase.U();
+        Thetap_ +=  alpha*Theta;
     }
     Up_ /= max(alphap(), residualAlpha_);
+    Thetap_ /= max(alphap(), residualAlpha_);
 
     forAll(pairs_, pairi)
     {
@@ -500,7 +532,7 @@ void Foam::polydisperseKineticTheoryModel::correct()
 
 void Foam::polydisperseKineticTheoryModel::correctAlphap()
 {
-    alphap_ = 0;
+    alphap_ = 0.0;
     forAll(phases_, phasei)
     {
         alphap_ += fluid_.phases()[phases_[phasei]];
