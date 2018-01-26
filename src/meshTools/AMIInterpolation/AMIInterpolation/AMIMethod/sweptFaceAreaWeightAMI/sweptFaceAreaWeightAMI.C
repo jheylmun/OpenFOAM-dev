@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2017 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2017-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -32,7 +32,7 @@ License
 
 template<class SourcePatch, class TargetPatch>
 const Foam::scalar Foam::sweptFaceAreaWeightAMI<SourcePatch, TargetPatch>::
-minCutRatio_ = 10*SMALL;
+minCutRatio_ = 10*small;
 
 template<class SourcePatch, class TargetPatch>
 const Foam::scalar Foam::sweptFaceAreaWeightAMI<SourcePatch, TargetPatch>::
@@ -318,7 +318,7 @@ Foam::plane Foam::sweptFaceAreaWeightAMI<SourcePatch, TargetPatch>::getCutPlane
             if (us.type(j) == roots::real)
             {
                 const vector den = ca + da*us[j];
-                if (magSqr(den) > VSMALL)
+                if (magSqr(den) > vSmall)
                 {
                     const vector vNum = ka - ba*us[j];
                     const vector wNum = (- k + b*us[j]) ^ (c + d*us[j]);
@@ -475,12 +475,14 @@ Foam::scalar Foam::sweptFaceAreaWeightAMI<SourcePatch, TargetPatch>::interArea
                         srcNrm[i+1],
                         tgtTri
                     );
+
                 cutTriList<8> cutTrisTmp;
-                for (label i = 0; i < cutTris.size(); ++ i)
+
+                for (label j = 0; j < cutTris.size(); ++j)
                 {
                     triCut
                     (
-                        cutTris[i],
+                        cutTris[j],
                         cutPlane,
                         cut::noOp(),
                         cut::appendOp<cutTriList<8>>(cutTrisTmp)
@@ -578,7 +580,7 @@ template<class SourcePatch, class TargetPatch>
 Foam::scalar
 Foam::sweptFaceAreaWeightAMI<SourcePatch, TargetPatch>::minWeight() const
 {
-    return SMALL;
+    return small;
 }
 
 

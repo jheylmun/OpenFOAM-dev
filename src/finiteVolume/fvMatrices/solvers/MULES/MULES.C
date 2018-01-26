@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2015 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -90,7 +90,7 @@ void Foam::MULES::limitSum(UPtrList<scalarField>& phiPsiCorrs)
 
         scalar sum = sumPos + sumNeg;
 
-        if (sum > 0 && sumPos > VSMALL)
+        if (sum > 0 && sumPos > vSmall)
         {
             scalar lambda = -sumNeg/sumPos;
 
@@ -102,7 +102,7 @@ void Foam::MULES::limitSum(UPtrList<scalarField>& phiPsiCorrs)
                 }
             }
         }
-        else if (sum < 0 && sumNeg < -VSMALL)
+        else if (sum < 0 && sumNeg < -vSmall)
         {
             scalar lambda = -sumPos/sumNeg;
 
