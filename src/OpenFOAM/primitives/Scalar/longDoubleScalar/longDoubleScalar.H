@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -22,18 +22,18 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Typedef
-    Foam::floatScalar
+    Foam::longDoubleScalar
 
 Description
-    Float precision floating point scalar type.
+    Lang double precision floating point scalar type.
 
 SourceFiles
-    floatScalar.C
+    longDoubleScalar.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef floatScalar_H
-#define floatScalar_H
+#ifndef longDoubleScalar_H
+#define longDoubleScalar_H
 
 #include "doubleFloat.H"
 #include "direction.H"
@@ -49,42 +49,49 @@ namespace Foam
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-typedef float floatScalar;
+typedef long double longDoubleScalar;
 
-// Largest and smallest scalar values allowed in certain parts of the code
-static const floatScalar floatScalarVGreat = numeric_limits<float>::max()/10;
-static const floatScalar floatScalarVSmall = numeric_limits<float>::min();
+// Largest and smallest scalar values allowed in certain parts of the code.
+static const longDoubleScalar longDoubleScalarVGreat
+    = numeric_limits<long double>::max()/10;
+static const longDoubleScalar longDoubleScalarVSmall
+    = numeric_limits<double>::min();
 
-static const floatScalar floatScalarSmall = numeric_limits<float>::epsilon();
-static const floatScalar floatScalarGreat = 1.0/floatScalarSmall;
+static const longDoubleScalar longDoubleScalarSmall
+    = 1e3*numeric_limits<long double>::epsilon();
+static const longDoubleScalar longDoubleScalarGreat
+    = 1.0/longDoubleScalarSmall;
 
-static const floatScalar floatScalarRootVGreat = ::sqrt(floatScalarVGreat);
-static const floatScalar floatScalarRootVSmall = ::sqrt(floatScalarVSmall);
+static const longDoubleScalar longDoubleScalarRootVGreat
+    = ::sqrtl(longDoubleScalarVGreat);
+static const longDoubleScalar longDoubleScalarRootVSmall
+    = ::sqrtl(longDoubleScalarVSmall);
 
-static const floatScalar floatScalarRootGreat = ::sqrt(floatScalarGreat);
-static const floatScalar floatScalarRootSmall = ::sqrt(floatScalarSmall);
+static const longDoubleScalar longDoubleScalarRootGreat
+    = ::sqrtl(longDoubleScalarGreat);
+static const longDoubleScalar longDoubleScalarRootSmall
+    = ::sqrtl(longDoubleScalarSmall);
 
 //- Read whole of buf as a scalar. Return true if succesful.
-inline bool readScalar(const char* buf, floatScalar& s)
+inline bool readScalar(const char* buf, longDoubleScalar& s)
 {
     char* endPtr;
-    s = strtof(buf, &endPtr);
+    s = strtold(buf, &endPtr);
 
     return (*endPtr == '\0');
 }
 
-#define Scalar floatScalar
-#define ScalarVGreat floatScalarVGreat
-#define ScalarVSmall floatScalarVSmall
-#define ScalarRootVGreat floatScalarRootVGreat
-#define ScalarRootVSmall floatScalarRootVSmall
-#define readScalar readFloatScalar
+#define Scalar longDoubleScalar
+#define ScalarVGreat longDoubleScalarVGreat
+#define ScalarVSmall longDoubleScalarVSmall
+#define ScalarRootVGreat longDoubleScalarRootVGreat
+#define ScalarRootVSmall longDoubleScalarRootVSmall
+#define readScalar readLongDoubleScalar
 
 inline Scalar mag(const Scalar s)
 {
-    return ::fabsf(s);
+    return ::fabsl(s);
 }
-
 
 #define MAXMINPOW(retType, type1, type2)          \
                                                   \
@@ -92,7 +99,7 @@ MAXMIN(retType, type1, type2)                     \
                                                   \
 inline double pow(const type1 s, const type2 e)   \
 {                                                 \
-    return ::powf(s, e);                          \
+    return ::powl(Scalar(s), Scalar(e));          \
 }
 
 MAXMINPOW(Scalar, Scalar, Scalar)
@@ -100,14 +107,17 @@ MAXMINPOW(Scalar, Scalar, int)
 MAXMINPOW(Scalar, int, Scalar)
 MAXMINPOW(Scalar, Scalar, long)
 MAXMINPOW(Scalar, long, Scalar)
+MAXMINPOW(Scalar, Scalar, float)
+MAXMINPOW(Scalar, float, Scalar)
+MAXMINPOW(Scalar, Scalar, double)
+MAXMINPOW(Scalar, double, Scalar)
 
 #undef MAXMINPOW
-
 
 #define transFunc(func)            \
 inline Scalar func(const Scalar s) \
 {                                  \
-    return ::func##f(s);           \
+    return ::func(s);              \
 }
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -127,22 +137,22 @@ namespace Foam
 
 inline Scalar hypot(const Scalar x, const Scalar y)
 {
-    return ::hypotf(x, y);
+    return ::hypotl(x, y);
 }
 
 inline Scalar atan2(const Scalar y, const Scalar x)
 {
-    return ::atan2f(y, x);
+    return ::atan2l(y, x);
 }
 
 inline Scalar jn(const int n, const Scalar s)
 {
-    return ::jnf(n, s);
+    return ::jnl(n, s);
 }
 
 inline Scalar yn(const int n, const Scalar s)
 {
-    return ::ynf(n, s);
+    return ::ynl(n, s);
 }
 
 #undef Scalar
