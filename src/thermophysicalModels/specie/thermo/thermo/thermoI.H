@@ -409,7 +409,7 @@ Foam::species::thermo<Thermo, Type>::K(const scalar p, const scalar T) const
     }
     else
     {
-        return vGreat;
+        return rootVGreat;
     }
 }
 
