@@ -211,9 +211,6 @@ unset cleaned foamClean foamOldDirs
 
 # Source the bash completion file:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-[ "$BASH" ] && . $WM_PROJECT_DIR/etc/config.sh/bash_completion
+. $WM_PROJECT_DIR/etc/config.sh/bash_completion
 
-# number of processors used
-# ~~~~~~~~~~~~~~~~~~~~~~~~~
-export WM_NCOMPPROCS=32
 #------------------------------------------------------------------------------
