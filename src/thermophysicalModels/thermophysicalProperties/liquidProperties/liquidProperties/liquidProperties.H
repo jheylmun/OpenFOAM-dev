@@ -202,6 +202,9 @@ public:
 
         // Fundamental equation of state properties
 
+            //- Liquid pressure [Pa]
+            inline scalar p(scalar T, scalar rho) const;
+
             //- Liquid compressibility rho/p [s^2/m^2]
             //  Note: currently it is assumed the liquid is incompressible
             inline scalar psi(scalar p, scalar T) const;
@@ -210,6 +213,20 @@ public:
             //  Note: currently it is assumed the liquid is incompressible
             //  so CpMCv = 0
             inline scalar CpMCv(scalar p, scalar T) const;
+
+            //- Return the derivative of pressure with respesct to temperature
+            inline scalar dpdT
+            (
+                scalar T,
+                scalar rho
+            ) const;
+
+            //- Return the derivative of pressure with respesct to molar volume
+            inline scalar dpdv
+            (
+                scalar T,
+                scalar rho
+            ) const;
 
 
         // Fundamental thermodynamic properties

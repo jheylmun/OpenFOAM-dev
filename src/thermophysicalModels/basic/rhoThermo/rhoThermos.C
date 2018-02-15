@@ -34,6 +34,7 @@ License
 #include "perfectFluid.H"
 #include "PengRobinsonGas.H"
 #include "adiabaticPerfectFluid.H"
+#include "stiffenedEoS.H"
 
 #include "hConstThermo.H"
 #include "janafThermo.H"
@@ -131,6 +132,18 @@ makeThermos
 );
 
 makeThermos
+(
+    rhoThermo,
+    heRhoThermo,
+    pureMixture,
+    constTransport,
+    sensibleEnthalpy,
+    hConstThermo,
+    stiffenedEoS,
+    specie
+);
+
+makeThermo
 (
     rhoThermo,
     heRhoThermo,
@@ -325,6 +338,18 @@ makeThermos
 );
 
 makeThermos
+(
+    rhoThermo,
+    heRhoThermo,
+    pureMixture,
+    constTransport,
+    sensibleInternalEnergy,
+    hConstThermo,
+    stiffenedEoS,
+    specie
+);
+
+makeThermo
 (
     rhoThermo,
     heRhoThermo,

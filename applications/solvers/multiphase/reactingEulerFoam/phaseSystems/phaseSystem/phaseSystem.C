@@ -153,7 +153,18 @@ Foam::phaseSystem::phaseSystem
         dimensionedScalar("dpdt", dimPressure/dimTime, 0)
     ),
 
-    MRF_(mesh_)
+    MRF_(mesh_),
+
+    implicitPhasePressure_
+    (
+        mesh_.solverDict
+        (
+            volScalarField(phaseModels_[0]).name()
+        ).lookupOrDefault<Switch>
+        (
+            "implicitPhasePressure", false
+        )
+    )
 {
     phi_.writeOpt() = IOobject::AUTO_WRITE;
 

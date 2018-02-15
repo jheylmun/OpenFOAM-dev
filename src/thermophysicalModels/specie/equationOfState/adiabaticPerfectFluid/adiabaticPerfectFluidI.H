@@ -101,6 +101,17 @@ inline Foam::scalar Foam::adiabaticPerfectFluid<Specie>::rho
 
 
 template<class Specie>
+inline Foam::scalar Foam::adiabaticPerfectFluid<Specie>::p
+(
+    scalar T,
+    scalar rho
+) const
+{
+    return (p0_ + B_)*pow(rho/rho0_, gamma_) - B_;
+}
+
+
+template<class Specie>
 inline Foam::scalar Foam::adiabaticPerfectFluid<Specie>::H
 (
     scalar p,
@@ -164,6 +175,28 @@ inline Foam::scalar Foam::adiabaticPerfectFluid<Specie>::CpMCv
 ) const
 {
     return 0;
+}
+
+
+template<class Specie>
+inline Foam::scalar Foam::adiabaticPerfectFluid<Specie>::dpdT
+(
+    scalar T,
+    scalar rho
+) const
+{
+    return 0;
+}
+
+
+template<class Specie>
+inline Foam::scalar Foam::adiabaticPerfectFluid<Specie>::dpdv
+(
+    scalar T,
+    scalar rho
+) const
+{
+    return -gamma_*(p0_ + B_)*rho0_*pow(rho/rho0_, gamma_ + 1);
 }
 
 

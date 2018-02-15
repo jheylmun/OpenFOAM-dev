@@ -39,6 +39,7 @@ Description
 #include "pimpleControl.H"
 #include "localEulerDdtScheme.H"
 #include "fvcSmooth.H"
+#include "phaseCompressibleTurbulenceModel.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -78,7 +79,6 @@ int main(int argc, char *argv[])
     // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
     Info<< "\nStarting time loop\n" << endl;
-
     while (runTime.run())
     {
         #include "readTimeControls.H"

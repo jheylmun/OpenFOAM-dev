@@ -81,6 +81,52 @@ inline Foam::scalar Foam::species::thermo<Thermo, Type>::T
 }
 
 
+template<class Thermo, template<class> class Type>
+inline Foam::scalar Foam::species::thermo<Thermo, Type>::Trho
+(
+    scalar f,
+    scalar rho,
+    scalar T0,
+    scalar (thermo<Thermo, Type>::*F)(const scalar, const scalar) const,
+    scalar (thermo<Thermo, Type>::*dFdT)(const scalar, const scalar) const,
+    scalar (thermo<Thermo, Type>::*limit)(const scalar) const
+) const
+{
+    if (T0 < 0)
+    {
+        FatalErrorInFunction
+            << "Negative initial temperature T0: " << T0
+            << abort(FatalError);
+    }
+
+    scalar pEst = Thermo::p(T0, rho);
+    scalar Test = T0;
+    scalar Tnew = T0;
+    scalar Ttol = T0*tol_;
+    int    iter = 0;
+
+    do
+    {
+        Test = Tnew;
+        Tnew =
+            (this->*limit)
+            (Test - ((this->*F)(pEst, Test) - f)/(this->*dFdT)(pEst, Test));
+        pEst = Thermo::p(Tnew, rho);
+
+        if (iter++ > maxIter_)
+        {
+            FatalErrorInFunction
+                << "Maximum number of iterations exceeded: " << maxIter_
+                << " , Error = " << mag(Tnew - Test)
+                << abort(FatalError);
+        }
+
+    } while (mag(Tnew - Test) > Ttol);
+
+    return Tnew;
+}
+
+
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 template<class Thermo, template<class> class Type>
@@ -95,6 +141,48 @@ inline Foam::species::thermo<Thermo, Type>::thermo
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
+
+template<class Thermo, template<class> class Type>
+inline Foam::scalar Foam::species::thermo<Thermo, Type>::TpRho
+(
+    scalar p,
+    scalar rho,
+    scalar T0
+) const
+{
+    if (T0 < 0)
+    {
+        FatalErrorInFunction
+            << "Negative initial temperature T0: " << T0
+            << abort(FatalError);
+    }
+    if (this->dpdT(T0, rho) == 0)
+    {
+        return T0;
+    }
+
+    scalar Test = T0;
+    scalar Tnew = T0;
+    scalar Ttol = T0*tol_;
+    int    iter = 0;
+
+    do
+    {
+        Test = Tnew;
+        Tnew = Test - (this->p(Test, rho) - p)/this->dpdT(Test, rho);
+
+        if (iter++ > maxIter_)
+        {
+            FatalErrorInFunction
+                << "Maximum number of iterations exceeded: " << maxIter_
+                << abort(FatalError);
+        }
+
+    } while (mag(Tnew - Test) > Ttol);
+
+    return Tnew;
+}
+
 
 template<class Thermo, template<class> class Type>
 inline Foam::word
@@ -178,6 +266,46 @@ inline Foam::scalar
 Foam::species::thermo<Thermo, Type>::A(const scalar p, const scalar T) const
 {
     return this->Ea(p, T) - T*this->S(p, T);
+}
+
+
+template<class Thermo, template<class> class Type>
+inline Foam::scalar
+Foam::species::thermo<Thermo, Type>::dHEdp
+(
+    const scalar T,
+    const scalar rho
+) const
+{
+    scalar P = this->p(T, rho);
+    scalar dPdT = this->dpdT(T, rho);
+    scalar dHEdp = (T*dPdT - P)/this->dpdv(T, rho);
+
+    if (dPdT != 0)
+    {
+        dHEdp +=  Cv(P, T)/dPdT;
+    }
+    return dHEdp;
+}
+
+
+template<class Thermo, template<class> class Type>
+inline Foam::scalar
+Foam::species::thermo<Thermo, Type>::dHEdrho
+(
+    const scalar T,
+    const scalar rho
+) const
+{
+    scalar P = this->p(T, rho);
+    scalar dPdT = this->dpdT(T, rho);
+    scalar dHEdv = (T*dPdT - P);
+
+    if (dPdT != 0)
+    {
+        dHEdv +=  Cv(P, T)*this->dpdv(T, rho)/dPdT;
+    }
+    return -dHEdv/sqr(rho);
 }
 
 
@@ -436,6 +564,98 @@ inline Foam::scalar Foam::species::thermo<Thermo, Type>::TEa
     (
         ea,
         p,
+        T0,
+        &thermo<Thermo, Type>::Ea,
+        &thermo<Thermo, Type>::Cv,
+        &thermo<Thermo, Type>::limit
+    );
+}
+
+
+template<class Thermo, template<class> class Type>
+inline Foam::scalar Foam::species::thermo<Thermo, Type>::THErho
+(
+    const scalar he,
+    const scalar rho,
+    const scalar T0
+) const
+{
+    return Type<thermo<Thermo, Type>>::THErho(*this, he, rho, T0);
+}
+
+
+template<class Thermo, template<class> class Type>
+inline Foam::scalar Foam::species::thermo<Thermo, Type>::THsrho
+(
+    const scalar hs,
+    const scalar rho,
+    const scalar T0
+) const
+{
+    return Trho
+    (
+        hs,
+        rho,
+        T0,
+        &thermo<Thermo, Type>::Hs,
+        &thermo<Thermo, Type>::Cp,
+        &thermo<Thermo, Type>::limit
+    );
+}
+
+
+template<class Thermo, template<class> class Type>
+inline Foam::scalar Foam::species::thermo<Thermo, Type>::THarho
+(
+    const scalar ha,
+    const scalar rho,
+    const scalar T0
+) const
+{
+    return Trho
+    (
+        ha,
+        rho,
+        T0,
+        &thermo<Thermo, Type>::Ha,
+        &thermo<Thermo, Type>::Cp,
+        &thermo<Thermo, Type>::limit
+    );
+}
+
+
+template<class Thermo, template<class> class Type>
+inline Foam::scalar Foam::species::thermo<Thermo, Type>::TEsrho
+(
+    const scalar es,
+    const scalar rho,
+    const scalar T0
+) const
+{
+    return Trho
+    (
+        es,
+        rho,
+        T0,
+        &thermo<Thermo, Type>::Es,
+        &thermo<Thermo, Type>::Cv,
+        &thermo<Thermo, Type>::limit
+    );
+}
+
+
+template<class Thermo, template<class> class Type>
+inline Foam::scalar Foam::species::thermo<Thermo, Type>::TEarho
+(
+    const scalar ea,
+    const scalar rho,
+    const scalar T0
+) const
+{
+    return Trho
+    (
+        ea,
+        rho,
         T0,
         &thermo<Thermo, Type>::Ea,
         &thermo<Thermo, Type>::Cv,

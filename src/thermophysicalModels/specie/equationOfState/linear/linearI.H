@@ -85,6 +85,13 @@ inline Foam::scalar Foam::linear<Specie>::rho(scalar p, scalar T) const
 
 
 template<class Specie>
+inline Foam::scalar Foam::linear<Specie>::p(scalar T, scalar rho) const
+{
+    return (rho - rho0_)/psi_;
+}
+
+
+template<class Specie>
 inline Foam::scalar Foam::linear<Specie>::H(scalar p, scalar T) const
 {
     return 0;
@@ -123,6 +130,20 @@ template<class Specie>
 inline Foam::scalar Foam::linear<Specie>::CpMCv(scalar p, scalar T) const
 {
     return 0;
+}
+
+
+template<class Specie>
+inline Foam::scalar Foam::linear<Specie>::dpdT(scalar T, scalar rho) const
+{
+    return 0;
+}
+
+
+template<class Specie>
+inline Foam::scalar Foam::linear<Specie>::dpdT(scalar T, scalar rho) const
+{
+    return -sqr(rho)/psi_;
 }
 
 

@@ -71,7 +71,8 @@ unset regionName optTouch
 export LC_ALL=C
 
 # Reader extension
-extension=OpenFOAM
+# extension=OpenFOAM
+extension=foam
 
 requirePV=1
 

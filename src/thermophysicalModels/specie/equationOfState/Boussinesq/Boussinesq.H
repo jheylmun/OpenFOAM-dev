@@ -157,6 +157,9 @@ public:
             //- Return density [kg/m^3]
             inline scalar rho(scalar p, scalar T) const;
 
+            //- return pressure[Pa]
+            inline scalar p(scalar R, scalar rho) const;
+
             //- Return enthalpy departure [J/kg]
             inline scalar H(const scalar p, const scalar T) const;
 
@@ -175,6 +178,19 @@ public:
             //- Return (Cp - Cv) [J/(kg K]
             inline scalar CpMCv(scalar p, scalar T) const;
 
+            //- Return the derivative of pressure with respesct to temperature
+            inline scalar dpdT
+            (
+                scalar T,
+                scalar rho
+            ) const;
+
+            //- Return the derivative of pressure with respesct to molar volume
+            inline scalar dpdv
+            (
+                scalar T,
+                scalar rho
+            ) const;
 
         // IO
 

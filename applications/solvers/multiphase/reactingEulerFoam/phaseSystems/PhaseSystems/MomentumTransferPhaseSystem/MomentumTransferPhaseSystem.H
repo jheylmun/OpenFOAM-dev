@@ -233,13 +233,13 @@ public:
         virtual autoPtr<PtrList<surfaceScalarField>> phiDs
         (
             const PtrList<volScalarField>& rAUs
-        ) const;
+        );
 
         //- Return the face based turbulent dispersion force for phase pair
         virtual autoPtr<PtrList<surfaceScalarField>> phiDfs
         (
             const PtrList<surfaceScalarField>& rAUfs
-        ) const;
+        );
 
         //- Return the combined face-force (lift + wall-lubrication)
         virtual tmp<surfaceScalarField> Ff(const phasePairKey& key) const;

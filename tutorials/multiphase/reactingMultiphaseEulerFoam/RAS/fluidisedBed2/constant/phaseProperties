@@ -1,0 +1,207 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  dev                                   |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      phaseProperties;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+type heatAndMomentumTransferMultiphaseSystem;
+
+phases (particles particles1 air);
+
+particles
+{
+    type          purePhaseModel;
+
+    diameterModel constant;
+    constantCoeffs
+    {
+        d               120e-6;
+    }
+
+    alphaMax        0.63;
+    residualAlpha   1e-6;
+}
+
+particles1
+{
+    type          purePhaseModel;
+
+    diameterModel constant;
+    constantCoeffs
+    {
+        d               185e-6;
+    }
+
+    alphaMax        0.63;
+    residualAlpha   1e-6;
+}
+
+air
+{
+    type          purePhaseModel;
+
+    diameterModel constant;
+    constantCoeffs
+    {
+        d               1;
+    }
+
+    residualAlpha   0;
+}
+
+blending
+{
+    default
+    {
+        type                linear;
+        minFullyContinuousAlpha.air 0;
+        minPartlyContinuousAlpha.air 0;
+        minFullyContinuousAlpha.particles 1;
+        minPartlyContinuousAlpha.particles 1;
+        minFullyContinuousAlpha.particles1 1;
+        minPartlyContinuousAlpha.particles1 1;
+    }
+}
+
+interfaceCompression
+();
+
+surfaceTension
+(
+    (air and particles)
+    {
+        type            constant;
+        sigma           0;
+    }
+    (air and particles1)
+    {
+        type            constant;
+        sigma           0;
+    }
+    (particles and particles1)
+    {
+        type            constant;
+        sigma           0;
+    }
+);
+
+
+aspectRatio
+(
+);
+
+drag
+(
+    (particles in air)
+    {
+        type            GidaspowErgunWenYu;
+        residualRe      1e-3;
+        swarmCorrection
+        {
+            type        none;
+        }
+    }
+    (particles1 in air)
+    {
+        type            GidaspowErgunWenYu;
+        residualRe      1e-3;
+        swarmCorrection
+        {
+            type        none;
+        }
+    }
+    (particles and particles1)
+    {
+        type            Syamlal;
+        residualRe      1e-3;
+        swarmCorrection
+        {
+            type        none;
+        }
+    }
+);
+
+virtualMass
+(
+);
+
+heatTransfer
+(
+);
+
+lift
+(
+);
+
+wallLubrication
+(
+);
+
+turbulentDispersion
+(
+);
+
+kineticTheory
+{
+    name    Particles;
+    constantPackingLimit yes;
+    alphaMax 0.63;
+
+    radialModel                 Gao;
+    granularPressureModel       Huilin;
+    frictionalStressModel   JohnsonJackson;
+    residualAlpha               1e-4;
+
+    coeffRest
+    (
+        (particles and particles)   0.8
+        (particles and particles1)  0.8
+        (particles1 and particles1) 0.8
+        (particles and particles2)  0.8
+    );
+    coeffFric
+    (
+        (particles and particles)   0.1
+        (particles and particles1)  0.1
+        (particles1 and particles1) 0.1
+        (particles and particles2)  0.1
+    );
+
+    SchaefferCoeffs
+    {
+        alphaMinFrictionByAlphap 0.97;
+        alphaMinFriction        0.5;
+        Fr                      0.05;
+        eta                     2;
+        p                       5;
+        phi                     28.5;
+        alphaDeltaMin           0.05;
+    }
+
+    JohnsonJacksonCoeffs
+    {
+        alphaMinFriction        0.5;
+        Fr                      0.05;
+        eta                     2;
+        p                       5;
+        phi                     28.5;
+        alphaDeltaMin           0.05;
+    }
+}
+
+// Minimum allowable pressure
+pMin            10000;
+
+
+// ************************************************************************* //

@@ -95,6 +95,12 @@ inline Foam::scalar Foam::liquidProperties::delta() const
 }
 
 
+inline Foam::scalar Foam::liquidProperties::p(scalar T, scalar rho) const
+{
+    return 0;
+}
+
+
 inline Foam::scalar Foam::liquidProperties::psi(scalar p, scalar T) const
 {
     return 0;
@@ -102,6 +108,18 @@ inline Foam::scalar Foam::liquidProperties::psi(scalar p, scalar T) const
 
 
 inline Foam::scalar Foam::liquidProperties::CpMCv(scalar p, scalar T) const
+{
+    return 0;
+}
+
+
+inline Foam::scalar Foam::liquidProperties::dpdT(scalar T, scalar rho) const
+{
+    return 0;
+}
+
+
+inline Foam::scalar Foam::liquidProperties::dpdv(scalar T, scalar rho) const
 {
     return 0;
 }

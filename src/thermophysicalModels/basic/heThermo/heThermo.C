@@ -26,6 +26,7 @@ License
 #include "heThermo.H"
 #include "gradientEnergyFvPatchScalarField.H"
 #include "mixedEnergyFvPatchScalarField.H"
+#include "thermodynamicConstants.H"
 
 // * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
 
@@ -521,6 +522,95 @@ Foam::heThermo<BasicThermo, MixtureType>::gamma() const
     return tgamma;
 }
 
+
+template<class BasicThermo, class MixtureType>
+Foam::tmp<Foam::volScalarField>
+Foam::heThermo<BasicThermo, MixtureType>::speedOfSound() const
+{
+    tmp<volScalarField> aTmp
+    (
+        new volScalarField
+        (
+            IOobject
+            (
+                IOobject::groupName("a", this->T_.group()),
+                this->p_.time().timeName(),
+                this->p_.mesh(),
+                IOobject::NO_READ,
+                IOobject::NO_WRITE,
+                false
+            ),
+            this->p_.mesh(),
+            dimensionedScalar("0", dimVelocity, 0.0)
+        )
+    );
+    scalarField& aCells = aTmp.ref().primitiveFieldRef();
+    tmp<volScalarField> Rho(BasicThermo::rho());
+
+    const scalarField& pCells = this->p_;
+    const scalarField& TCells = this->T_;
+    const scalarField& rhoCells = Rho();
+
+    forAll(TCells, celli)
+    {
+        const typename MixtureType::thermoType& mixture_ =
+            this->cellMixture(celli);
+
+        aCells[celli] =
+            sqrt
+            (
+                1/mixture_.Cv(pCells[celli], TCells[celli])
+               *sqr
+                (
+                    mixture_.dpdT
+                    (
+                        TCells[celli],
+                        rhoCells[celli]
+                    )
+                )*TCells[celli]
+              - mixture_.dpdv(TCells[celli], rhoCells[celli])
+            )/rhoCells[celli];
+    }
+
+    const volScalarField::Boundary& pBf = this->p_.boundaryField();
+    const volScalarField::Boundary& TBf = this->T_.boundaryField();
+    const volScalarField::Boundary& rhoBf = Rho().boundaryField();
+    volScalarField::Boundary& aBf = aTmp.ref().boundaryFieldRef();
+
+
+    forAll(this->T_.boundaryField(), patchi)
+    {
+        forAll(TBf[patchi], facei)
+        {
+            const typename MixtureType::thermoType& mixture_ =
+                this->patchFaceMixture(patchi, facei);
+
+            aBf[patchi][facei] =
+                sqrt
+                (
+                    1/mixture_.Cv
+                    (
+                        pBf[patchi][facei],
+                        TBf[patchi][facei]
+                    )
+                   *sqr
+                    (
+                        mixture_.dpdT
+                        (
+                            TBf[patchi][facei],
+                            rhoBf[patchi][facei]
+                        )
+                    )*TBf[patchi][facei]
+                  - mixture_.dpdv
+                    (
+                        TBf[patchi][facei],
+                        rhoBf[patchi][facei]
+                    )
+                )/rhoBf[patchi][facei];
+        }
+    }
+    return aTmp;
+}
 
 template<class BasicThermo, class MixtureType>
 Foam::tmp<Foam::scalarField> Foam::heThermo<BasicThermo, MixtureType>::Cpv

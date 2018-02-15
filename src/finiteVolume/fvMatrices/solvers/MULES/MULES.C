@@ -48,6 +48,27 @@ void Foam::MULES::explicitSolve
 }
 
 
+void Foam::MULES::explicitSolve
+(
+    volScalarField& psi,
+    const surfaceScalarField& phi,
+    surfaceScalarField& phiPsi,
+    const volScalarField& psiMax,
+    const volScalarField& psiMin
+)
+{
+    explicitSolve
+    (
+        geometricOneField(),
+        psi,
+        phi,
+        phiPsi,
+        zeroField(), zeroField(),
+        psiMax, psiMin
+    );
+}
+
+
 void Foam::MULES::limitSum(UPtrList<scalarField>& phiPsiCorrs)
 {
     forAll(phiPsiCorrs[0], facei)

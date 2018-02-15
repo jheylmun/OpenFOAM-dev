@@ -208,10 +208,10 @@ then
         else
             echo "version changed from previous build" 1>&2
         fi
-        exit $rc
+#        exit $rc
     else
         echo "no git description found" 1>&2
-        exit 0
+#        exit 0
     fi
 fi
 

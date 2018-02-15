@@ -192,14 +192,14 @@ public:
         virtual autoPtr<PtrList<Foam::surfaceScalarField>> phiDs
         (
             const PtrList<volScalarField>& rAUs
-        ) const = 0;
+        ) = 0;
 
         //- Return the face based turbulent dispersion force on faces
         //  for phase pair
         virtual autoPtr<PtrList<Foam::surfaceScalarField>> phiDfs
         (
             const PtrList<surfaceScalarField>& rAUfs
-        ) const = 0;
+        ) = 0;
 
         //- Return true if there is mass transfer for phase
         virtual bool transfersMass(const phaseModel& phase) const = 0;
