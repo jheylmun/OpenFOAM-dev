@@ -5,6 +5,7 @@ EXE_INC = \
     -I../../interfacialModels/lnInclude\
     -I../../interfacialCompositionModels/lnInclude \
     -I../../derivedFvPatchFields/lnInclude \
+    -ImultiphaseCompressibleTurbulenceModels/lnInclude \
     -I$(LIB_SRC)/transportModels/compressible/lnInclude \
     -I$(LIB_SRC)/thermophysicalModels/basic/lnInclude \
     -I$(LIB_SRC)/thermophysicalModels/specie/lnInclude \
@@ -22,6 +23,7 @@ LIB_LIBS = \
     -lreactingEulerianInterfacialModels \
     -lreactingEulerianInterfacialCompositionModels \
     -lreactingEulerianFvPatchFields \
+    -lmultiphaseReactingTurbulenceModels \
     -lfiniteVolume \
     -lfvOptions \
     -lmeshTools
