@@ -66,6 +66,7 @@ namespace kineticTheoryModels
     class radialModel;
     class frictionalStressModel;
     class granularPressureModel;
+    class packingLimitModel;
 }
 
 /*---------------------------------------------------------------------------*\
@@ -104,6 +105,9 @@ class polydisperseKineticTheoryModel
 
         //- Table of granular pairs
         List<phasePairKey> pairs_;
+
+        //- Run-time selected packing limit model
+        autoPtr<kineticTheoryModels::packingLimitModel> packingLimitModel_;
 
         //- Run-time selected radial distribution model
         autoPtr<kineticTheoryModels::radialModel> radialModel_;

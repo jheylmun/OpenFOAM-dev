@@ -216,6 +216,7 @@ kineticTheory
     constantPackingLimit    no;
     alphaMax                0.63;
 
+    packingLimitModel       constant;
     radialModel             Lebowitz;
     frictionalStressModel   JohnsonJackson;
     granularPressureModel   Huilin;
