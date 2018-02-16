@@ -115,12 +115,12 @@ make="make"
 
 useAllCores()
 {
-#     if [ -r /proc/cpuinfo ]
-#     then
-#         WM_NCOMPPROCS=$(egrep "^processor" /proc/cpuinfo | wc -l)
-#     else
-        WM_NCOMPPROCS=3
-#     fi
+    if [ -r /proc/cpuinfo ]
+    then
+        WM_NCOMPPROCS=$(egrep "^processor" /proc/cpuinfo | wc -l)
+    else
+        WM_NCOMPPROCS=1
+    fi
 
     export WM_NCOMPPROCS
 }

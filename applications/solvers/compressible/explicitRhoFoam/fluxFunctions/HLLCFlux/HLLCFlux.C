@@ -69,7 +69,7 @@ void Foam::fluxFunctions::HLLC::updateFluxes
     const volScalarField& a
 )
 {
-    surfaceVectorField normal = mesh_.Sf()/mesh_.magSf();
+    surfaceVectorField normal(mesh_.Sf()/mesh_.magSf());
 
     surfaceScalarField rhoOwn
     (
@@ -93,7 +93,7 @@ void Foam::fluxFunctions::HLLC::updateFluxes
     (
         "thermophysicalProperties"
     );
-    volScalarField gamma = thermo.gamma();
+    volScalarField gamma(thermo.gamma());
     surfaceScalarField gammaOwn
     (
         fvc::interpolate(gamma, own_, interpScheme(gamma.name()))

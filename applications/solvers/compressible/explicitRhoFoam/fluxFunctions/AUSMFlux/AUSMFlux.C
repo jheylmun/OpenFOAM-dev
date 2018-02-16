@@ -68,7 +68,7 @@ void Foam::fluxFunctions::AUSM::updateFluxes
     const volScalarField& a
 )
 {
-    surfaceVectorField normal = mesh_.Sf()/mesh_.magSf();
+    surfaceVectorField normal(mesh_.Sf()/mesh_.magSf());
     dimensionedScalar minU("smallU", dimVelocity, SMALL);
 
     surfaceScalarField rhoOwn

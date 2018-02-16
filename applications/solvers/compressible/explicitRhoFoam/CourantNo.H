@@ -29,8 +29,10 @@ Description
 
 \*---------------------------------------------------------------------------*/
 
-surfaceScalarField amaxSf =
-    mag(phi) + fvc::interpolate(fluid.thermo().speedOfSound())*mesh.magSf();
+surfaceScalarField amaxSf
+(
+    mag(phi) + fvc::interpolate(fluid.thermo().speedOfSound())*mesh.magSf()
+);
 {
     scalarField sumAmaxSf
     (

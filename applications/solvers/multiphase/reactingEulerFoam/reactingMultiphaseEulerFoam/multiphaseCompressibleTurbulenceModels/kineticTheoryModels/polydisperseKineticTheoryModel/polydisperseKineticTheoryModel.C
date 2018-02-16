@@ -26,6 +26,7 @@ License
 #include "polydisperseKineticTheoryModel.H"
 #include "kineticTheoryModel.H"
 #include "multiphaseSystem.H"
+#include "packingLimitModel.H"
 #include "radialModel.H"
 #include "frictionalStressModel.H"
 #include "granularPressureModel.H"
@@ -33,41 +34,6 @@ License
 #include "mathematicalConstants.H"
 #include "SortableList.H"
 #include "zeroGradientFvPatchFields.H"
-
-
-// * * * * * * * * * * * * * * *  Private Funtions * * * * * * * * * * * * * //
-
-Foam::scalar Foam::polydisperseKineticTheoryModel::calcAlphaMax
-(
-    const label phasei,
-    const label cellI,
-    const scalarList& ds
-) const
-{
-//  Includes allphases
-//     if (phasei + 1 == phases_.size())
-//     {
-//         return fluid_.phases()[phasei].alphaMax();
-//     }
-//     const label phaseJ(phasei + 1);
-//     scalar alphaMax2 = calcAlphaMax(phaseJ, cellI, ds);
-
-//  Bi-disperse limit
-    const label phaseJ(phases().size() - 1);
-
-    const phaseModel& phase1 = fluid_.phases()[phasei];
-    const phaseModel& phase2 = fluid_.phases()[phaseJ];
-
-    scalar alphaMax2 = phase2.alphaMax();
-
-    return
-        phase1.alphaMax()
-      + (1.0 - sqrt(ds[phaseJ]/ds[phasei]))
-       *(
-            phase1.alphaMax()
-          + (1.0 - phase1.alphaMax())*alphaMax2
-        )*phase2[cellI]/max(alphap_[cellI], 1e-6);
-}
 
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
@@ -132,6 +98,14 @@ Foam::polydisperseKineticTheoryModel::polydisperseKineticTheoryModel
         dimensionedScalar("0", sqr(dimVelocity), 0.0)
     ),
     phases_(),
+    packingLimitModel_
+    (
+        kineticTheoryModels::packingLimitModel::New
+        (
+            dict_,
+         *this
+        )
+    ),
     radialModel_
     (
         kineticTheoryModels::radialModel::New
@@ -507,25 +481,7 @@ void Foam::polydisperseKineticTheoryModel::correct()
             ).ptr();
     }
 
-    if (Switch(dict_.lookup("constantPackingLimit")))
-    {
-        alphaMax_ = dimensionedScalar("alphaMax", dimless, dict_);
-    }
-    else
-    {
-        // Set packing limit
-        forAll(alphap_, celli)
-        {
-            SortableList<scalar> ds(phases_.size());
-            forAll(phases_, phasei)
-            {
-                ds[phasei] = fluid_.phases()[phases_[phasei]].d()()[celli];
-            }
-
-            ds.reverseSort();
-            alphaMax_[celli] = calcAlphaMax(0, celli, ds);
-        }
-    }
+    alphaMax_ = packingLimitModel_->alphaMax();
     alphaMax_.correctBoundaryConditions();
 }
 

@@ -261,27 +261,6 @@ public:
         //- Return the name of the thermo physics
         virtual word thermoName() const = 0;
 
-        //- Correct temperature and update pressure
-        virtual void heRho()
-        {
-            NotImplemented;
-            return;
-        }
-
-        //- Change in internal energy with respect to presssure
-        virtual tmp<volScalarField> dHEdp() const
-        {
-            NotImplemented;
-            return p_;
-        }
-
-        //- Change in internal energy with respect to density
-        virtual tmp<volScalarField> dHEdrho() const
-        {
-            NotImplemented;
-            return p_;
-        }
-
         //- Return true if the equation of state is incompressible
         //  i.e. rho != f(p)
         virtual bool incompressible() const = 0;

@@ -23,6 +23,6 @@ autoPtr<compressible::turbulenceModel> turbulence
     )
 );
 
-const volScalarField& muEff = fluid.thermo().mu();
+const volScalarField& muEff(fluid.thermo().mu());
 
 #include "createMRF.H"

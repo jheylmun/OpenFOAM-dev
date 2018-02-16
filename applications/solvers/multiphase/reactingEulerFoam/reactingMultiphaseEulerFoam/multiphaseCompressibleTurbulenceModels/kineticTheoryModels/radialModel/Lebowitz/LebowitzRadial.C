@@ -81,7 +81,7 @@ Foam::kineticTheoryModels::radialModels::Lebowitz::g0
 ) const
 {
     const volScalarField& alphap = kt_.alphap();
-    volScalarField alphag = 1.0 - alphap;
+    volScalarField alphag(1.0 - alphap);
     volScalarField alphard
     (
         IOobject
@@ -118,7 +118,7 @@ Foam::kineticTheoryModels::radialModels::Lebowitz::g0prime
 ) const
 {
     const volScalarField& alphap = kt_.alphap();
-    volScalarField alphag = 1.0 - alphap;
+    volScalarField alphag(1.0 - alphap);
     volScalarField alphard
     (
         IOobject

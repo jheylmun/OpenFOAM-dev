@@ -80,8 +80,8 @@ Foam::kineticTheoryModels::radialModels::Gao::g0
     const phaseModel& phase2
 ) const
 {
-    volScalarField g1 = 1.0/(1.0 - cbrt(min(phase1/phase1.alphaMax(), 0.999)));
-    volScalarField g2 = 1.0/(1.0 - cbrt(min(phase2/phase2.alphaMax(), 0.999)));
+    volScalarField g1(1.0/(1.0 - cbrt(min(phase1/phase1.alphaMax(), 0.999))));
+    volScalarField g2(1.0/(1.0 - cbrt(min(phase2/phase2.alphaMax(), 0.999))));
 
     return (phase1.d()*g1 + phase2.d()*g2)/(phase1.d() + phase2.d());
 }
