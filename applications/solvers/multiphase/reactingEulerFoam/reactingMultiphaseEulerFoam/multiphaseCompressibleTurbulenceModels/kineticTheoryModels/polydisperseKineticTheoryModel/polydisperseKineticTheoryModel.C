@@ -420,9 +420,11 @@ void Foam::polydisperseKineticTheoryModel::addPhase
 
     if (phases_.size() == 2)
     {
+        Info<<alphap_.writeOpt()<<endl;
         alphap_.writeOpt() = AUTO_WRITE;
         Up_.writeOpt() = AUTO_WRITE;
         Thetap_.writeOpt() = AUTO_WRITE;
+        Info<<alphap_.writeOpt()<<endl;
     }
 
     forAll(phases_, phasei)
@@ -434,6 +436,12 @@ void Foam::polydisperseKineticTheoryModel::addPhase
             false
         );
         pairs_.append(key);
+        word name = key.first() + "And" + key.second();
+
+        if (phaseName == phases_[phasei])
+        {
+            name = phaseName;
+        }
 
         gs0Table_.insert
         (
@@ -445,7 +453,7 @@ void Foam::polydisperseKineticTheoryModel::addPhase
                     IOobject::groupName
                     (
                         "gs0",
-                        key.first()+"And"+key.second()
+                        name
                     ),
                     fluid_.mesh().time().timeName(),
                     fluid_.mesh()
@@ -465,7 +473,7 @@ void Foam::polydisperseKineticTheoryModel::addPhase
                     IOobject::groupName
                     (
                         "PsCoeff",
-                        key.first()+"And"+key.second()
+                        name
                     ),
                     fluid_.mesh().time().timeName(),
                     fluid_.mesh()
@@ -485,7 +493,7 @@ void Foam::polydisperseKineticTheoryModel::addPhase
                     IOobject::groupName
                     (
                         "PsCoeffPrime",
-                        key.first()+"And"+key.second()
+                        name
                     ),
                     fluid_.mesh().time().timeName(),
                     fluid_.mesh()

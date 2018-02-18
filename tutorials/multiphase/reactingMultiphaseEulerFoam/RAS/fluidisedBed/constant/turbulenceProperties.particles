@@ -31,8 +31,6 @@ RAS
         alphaMax    0.63;
 
         viscosityModel          Gidaspow;
-        conductivityModel       Gidaspow;
-        granularPressureModel   Lun;
     }
 }
 
