@@ -95,7 +95,7 @@ void Foam::fluxFunctions::Roe::updateFluxes
         fvc::interpolate(a, nei_, interpScheme(a.name()))
     );
 
-    surfaceVectorField normal = mesh_.Sf()/mesh_.magSf();
+    surfaceVectorField normal(mesh_.Sf()/mesh_.magSf());
 
     surfaceScalarField wOwn(sqrt(rhoOwn)/(sqrt(rhoOwn) + sqrt(rhoNei)));
     surfaceScalarField wNei(1.0 - wOwn);
@@ -118,7 +118,7 @@ void Foam::fluxFunctions::Roe::updateFluxes
         "UTilde",
         UOwn*wOwn + UNei*wNei
     );
-    surfaceScalarField UvTilde = UTilde & normal;
+    surfaceScalarField UvTilde(UTilde & normal);
     surfaceScalarField HTilde
     (
         "HTilde",
@@ -130,34 +130,41 @@ void Foam::fluxFunctions::Roe::updateFluxes
         aOwn*wOwn + aNei*wNei
     );
 
-    surfaceScalarField deltaRho = rhoNei - rhoOwn;
-    surfaceVectorField deltaU = UNei - UOwn;
-    surfaceScalarField deltaUv = deltaU & normal;
-    surfaceScalarField deltaP = pNei - pOwn;
+    surfaceScalarField deltaRho(rhoNei - rhoOwn);
+    surfaceVectorField deltaU(UNei - UOwn);
+    surfaceScalarField deltaUv(deltaU & normal);
+    surfaceScalarField deltaP(pNei - pOwn);
 
-    surfaceScalarField lambda1 = mag(UvTilde);
-    surfaceScalarField lambda2 = mag(UvTilde + aTilde);
-    surfaceScalarField lambda3 = mag(UvTilde - aTilde);
+    surfaceScalarField lambda1(mag(UvTilde));
+    surfaceScalarField lambda2(mag(UvTilde + aTilde));
+    surfaceScalarField lambda3(mag(UvTilde - aTilde));
 
-    surfaceScalarField alpha1 = deltaRho - deltaP/sqr(aTilde);
-    surfaceScalarField alpha2 =
-        (deltaP + rhoTilde*aTilde*deltaUv)/(2.0*sqr(aTilde));
-    surfaceScalarField alpha3 =
-        (deltaP - rhoTilde*aTilde*deltaUv)/(2.0*sqr(aTilde));
+    surfaceScalarField alpha1
+    (
+        deltaRho - deltaP/sqr(aTilde)
+    );
+    surfaceScalarField alpha2
+    (
+        (deltaP + rhoTilde*aTilde*deltaUv)/(2.0*sqr(aTilde))
+    );
+    surfaceScalarField alpha3
+    (
+        (deltaP - rhoTilde*aTilde*deltaUv)/(2.0*sqr(aTilde))
+    );
 
     // U Row
-    surfaceVectorField K21 = UTilde;
-    surfaceVectorField K224 = (UTilde + aTilde*normal);
-    surfaceVectorField K25 = (UTilde - aTilde*normal);
+    surfaceVectorField K21(UTilde);
+    surfaceVectorField K224((UTilde + aTilde*normal));
+    surfaceVectorField K25((UTilde - aTilde*normal));
 
     // E row
-    surfaceScalarField K31 = 0.5*magSqr(UTilde);
-    surfaceScalarField K324 = (HTilde + aTilde*UvTilde);
-    surfaceScalarField K35 = (HTilde - aTilde*UvTilde);
+    surfaceScalarField K31(0.5*magSqr(UTilde));
+    surfaceScalarField K324((HTilde + aTilde*UvTilde));
+    surfaceScalarField K35((HTilde - aTilde*UvTilde));
 
     // Compute owner and neighbour fluxes
-    surfaceScalarField UvOwn = UOwn & normal;
-    surfaceScalarField UvNei = UNei & normal;
+    surfaceScalarField UvOwn(UOwn & normal);
+    surfaceScalarField UvNei(UNei & normal);
 
 //     forAll(lambda1, facei)
 //     {
@@ -201,16 +208,20 @@ void Foam::fluxFunctions::Roe::updateFluxes
 //         }
 //     }
 
-    surfaceScalarField massFluxOwn = rhoOwn*UvOwn;
-    surfaceScalarField massFluxNei = rhoNei*UvNei;
+    surfaceScalarField massFluxOwn(rhoOwn*UvOwn);
+    surfaceScalarField massFluxNei(rhoNei*UvNei);
 
-    surfaceVectorField momentumFluxOwn =
-        UOwn*massFluxOwn + pOwn*normal;
-    surfaceVectorField momentumFluxNei =
-        UNei*massFluxNei + pNei*normal;
+    surfaceVectorField momentumFluxOwn
+    (
+        UOwn*massFluxOwn + pOwn*normal
+    );
+    surfaceVectorField momentumFluxNei
+    (
+        UNei*massFluxNei + pNei*normal
+    );
 
-    surfaceScalarField energyFluxOwn = HOwn*massFluxOwn;
-    surfaceScalarField energyFluxNei = HNei*massFluxNei;
+    surfaceScalarField energyFluxOwn(HOwn*massFluxOwn);
+    surfaceScalarField energyFluxNei(HNei*massFluxNei);
 
     // Compute fluxes
     massFlux =

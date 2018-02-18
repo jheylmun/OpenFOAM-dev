@@ -68,7 +68,7 @@ void Foam::fluxFunctions::HLL::updateFluxes
     const volScalarField& a
 )
 {
-    surfaceVectorField normal = mesh_.Sf()/mesh_.magSf();
+    surfaceVectorField normal(mesh_.Sf()/mesh_.magSf());
 
     surfaceScalarField rhoOwn
     (
