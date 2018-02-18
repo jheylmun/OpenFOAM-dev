@@ -77,10 +77,20 @@ void Foam::multiphaseSystem::solveAlphas()
         phases()[phasei].correctBoundaryConditions();
     }
 
-    bool polydisperse = mesh_.foundObject<polydisperseKineticTheoryModel>
-    (
-        "polydisperseKineticTheory"
-    );
+    bool polydisperse =
+        mesh_.foundObject<polydisperseKineticTheoryModel>
+        (
+            "polydisperseKineticTheory"
+        );
+
+    if (polydisperse)
+    {
+        polydisperse =
+            mesh_.lookupObject<polydisperseKineticTheoryModel>
+            (
+                "polydisperseKineticTheory"
+            ).polydisperse();
+    }
 
     PtrList<surfaceScalarField> alphaPhiCorrs(phases().size());
 

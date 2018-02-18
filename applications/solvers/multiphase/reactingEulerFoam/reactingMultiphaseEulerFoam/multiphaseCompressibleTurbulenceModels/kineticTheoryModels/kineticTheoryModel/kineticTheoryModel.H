@@ -54,7 +54,6 @@ SourceFiles
 #include "dragModel.H"
 #include "polydisperseKineticTheoryModel.H"
 #include "viscosityModel.H"
-#include "conductivityModel.H"
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -108,9 +107,6 @@ class kineticTheoryModel
             //- Run-time selected viscosity model
             autoPtr<kineticTheoryModels::viscosityModel> viscosityModel_;
 
-            //- Run-time selected conductivity model
-            autoPtr<kineticTheoryModels::conductivityModel> conductivityModel_;
-
 
         // Kinetic Theory Model coefficients
 
@@ -134,9 +130,6 @@ class kineticTheoryModel
 
             //- The granular bulk viscosity
             volScalarField lambda_;
-
-            //- The granular radial distribution
-            volScalarField gs0_;
 
             //- The granular "thermal" conductivity
             volScalarField kappa_;
@@ -237,17 +230,11 @@ public:
             return phase_;
         }
 
-        //- Return granular temperature
-        const volScalarField& Theta() const
-        {
-            return Theta_;
-        }
-
-        //- Return radial distribution function
-        const volScalarField& gs0() const
-        {
-            return gs0_;
-        }
+//         //- Return granular temperature
+//         const volScalarField& Theta() const
+//         {
+//             return Theta_;
+//         }
 };
 
 

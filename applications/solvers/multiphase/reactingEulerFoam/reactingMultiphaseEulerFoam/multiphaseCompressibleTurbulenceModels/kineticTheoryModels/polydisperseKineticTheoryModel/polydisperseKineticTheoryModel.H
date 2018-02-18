@@ -66,6 +66,7 @@ namespace kineticTheoryModels
     class radialModel;
     class frictionalStressModel;
     class granularPressureModel;
+    class conductivityModel;
     class packingLimitModel;
 }
 
@@ -116,6 +117,10 @@ class polydisperseKineticTheoryModel
         autoPtr<kineticTheoryModels::granularPressureModel>
             granularPressureModel_;
 
+        //- Run-time selected thermal conductivity model
+        autoPtr<kineticTheoryModels::conductivityModel>
+            conductivityModel_;
+
         //- Run-time selected frictional stress model
         autoPtr<kineticTheoryModels::frictionalStressModel>
             frictionalStressModel_;
@@ -138,6 +143,14 @@ class polydisperseKineticTheoryModel
 
         // Stored tables of coefficients
 
+            //- Radial distribution functions between granular pairs
+            HashPtrTable
+            <
+                volScalarField,
+                phasePairKey,
+                phasePairKey::hash
+            > gs0Table_;
+
             //- Granular pressure coeffients for granular pairs
             HashPtrTable
             <
@@ -153,14 +166,6 @@ class polydisperseKineticTheoryModel
                 phasePairKey,
                 phasePairKey::hash
             > PsCoeffsPrime_;
-
-            //- Thermal conductivity between granular pairs
-            HashPtrTable
-            <
-                volScalarField,
-                phasePairKey,
-                phasePairKey::hash
-            > kappas_;
 
 
     // Private Member Functions
@@ -195,6 +200,9 @@ public:
 
 
     // Member Functions
+
+        //- Return if granular system is polydiserse
+        bool polydisperse() const;
 
         //- Re-read model coefficients if they have changed
         bool read();
@@ -260,6 +268,13 @@ public:
         //- Return the sum of the derivative of granular pressure
         //  for a given phase
         tmp<volScalarField> PsCoeffPrime(const phaseModel&) const;
+
+        //- Return the thermal conductivity
+        tmp<volScalarField> kappa
+        (
+            const phaseModel&,
+            const volScalarField&
+        ) const;
 
         //- Return the fricitional-pressure
         tmp<volScalarField> frictionalPressure(const phaseModel&) const;

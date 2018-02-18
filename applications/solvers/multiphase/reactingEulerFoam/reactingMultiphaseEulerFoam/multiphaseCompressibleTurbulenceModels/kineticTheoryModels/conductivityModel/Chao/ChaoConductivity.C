@@ -80,16 +80,30 @@ Foam::kineticTheoryModels::conductivityModels::Chao::kappa
     const dimensionedScalar& e
 ) const
 {
-    volScalarField kCoeff
+
+    const scalar pi = Foam::constant::mathematical::pi;
+
+    volScalarField alphaCoeff
     (
         IOobject
         (
-            "kCoeff",
+            "alphaCoeff",
             Theta.time().timeName(),
             Theta.mesh()
         ),
         Theta.mesh(),
-        dimensionedScalar("0", dimLength, 0.0)
+        dimensionedScalar("0", dimless, 0.0)
+    );
+    volScalarField coeff
+    (
+        IOobject
+        (
+            "coeff",
+         Theta.time().timeName(),
+         Theta.mesh()
+        ),
+     Theta.mesh(),
+     dimensionedScalar("0", dimless, 0.0)
     );
 
     forAll(kt_.phases(), phasei)
@@ -97,20 +111,20 @@ Foam::kineticTheoryModels::conductivityModels::Chao::kappa
         const word& name2(kt_.phases()[phasei]);
         const phaseModel& phase2 = kt_.fluid().phases()[name2];
         const scalar& eij(kt_.es()[phasePairKey(phase.name(), name2)]);
+        tmp<volScalarField> gs0ij(kt_.gs0(phase, phase2));
 
-        volScalarField m0
-        (
-            Foam::constant::mathematical::pi/6.0
-           *(phase.rho()*pow3(da) + phase2.rho()*pow3(phase2.d()))
-        );
-        volScalarField dij(0.5*(da + phase2.d()));
-
-        kCoeff +=
-            phase2*phase2.rho()/m0*(1.0 + eij)*kt_.gs0(phase, phase2)*pow4(dij);
+        alphaCoeff += gs0ij*phase2*(1.0 + eij);
+        coeff += gs0ij*(1.0 + eij);
     }
 
+    coeff /= kt_.phases().size();
+
     return
-        constant::mathematical::pi*2.0/5.0*rho1*sqrt(Theta)*kCoeff;
+    (
+        150.0/(384.0*coeff)*sqr(1.0 + 6.0/5.0*alphaCoeff)
+      + 2.0*phase/pi*alphaCoeff
+    )*rho1*da*sqrt(Theta*pi);
+
 
 }
 

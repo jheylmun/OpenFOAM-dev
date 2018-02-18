@@ -92,14 +92,6 @@ Foam::RASModels::kineticTheoryModel::kineticTheoryModel
             KTs_
         )
     ),
-    conductivityModel_
-    (
-        kineticTheoryModels::conductivityModel::New
-        (
-            coeffDict_,
-            KTs_
-        )
-    ),
     equilibrium_(coeffDict_.lookup("equilibrium")),
     residualAlpha_
     (
@@ -140,20 +132,6 @@ Foam::RASModels::kineticTheoryModel::kineticTheoryModel
         ),
         U.mesh(),
         dimensionedScalar("zero", dimensionSet(0, 2, -1, 0, 0), 0.0)
-    ),
-
-    gs0_
-    (
-        IOobject
-        (
-            IOobject::groupName("gs0", phase.name()),
-            U.time().timeName(),
-            U.mesh(),
-            IOobject::NO_READ,
-            IOobject::NO_WRITE
-        ),
-        U.mesh(),
-        dimensionedScalar("zero", dimensionSet(0, 0, 0, 0, 0), 0.0)
     ),
 
     kappa_
@@ -215,7 +193,6 @@ bool Foam::RASModels::kineticTheoryModel::read()
         alphaMax_.readIfPresent(coeffDict());
 
         viscosityModel_->read();
-        conductivityModel_->read();
 
         return true;
     }
@@ -370,17 +347,17 @@ void Foam::RASModels::kineticTheoryModel::correct()
     );
 
     // Calculating the radial distribution function
-    gs0_ = KTs_.gs0(phase_, phase_);
+    volScalarField gs0(KTs_.gs0(phase_, phase_));
 
     if (!equilibrium_)
     {
         // Particle viscosity (Table 3.2, p.47)
-        nut_ = viscosityModel_->nu(phase_, Theta_, gs0_, rho, da, e);
+        nut_ = viscosityModel_->nu(phase_, Theta_, gs0, rho, da, e);
 
         volScalarField ThetaSqrt("sqrtTheta", sqrt(Theta_));
 
         // Bulk viscosity  p. 45 (Lun et al. 1984).
-        lambda_ = (4.0/3.0)*sqr(alpha)*da*gs0_*(1.0 + e)*ThetaSqrt/sqrtPi;
+        lambda_ = (4.0/3.0)*sqr(alpha)*da*gs0*(1.0 + e)*ThetaSqrt/sqrtPi;
 
         // Stress tensor, Definitions, Table 3.1, p. 43
         volSymmTensorField tau
@@ -394,7 +371,7 @@ void Foam::RASModels::kineticTheoryModel::correct()
             "gammaCoeff",
             12.0*(1.0 - sqr(e))
            *max(sqr(alpha), residualAlpha_)
-           *rho*gs0_*(1.0/da)*ThetaSqrt/sqrtPi
+           *rho*gs0*(1.0/da)*ThetaSqrt/sqrtPi
         );
 
         //- NEEDS TO BE REDEFINED FOR MULTIPLE GRANULAR PHASES
@@ -474,7 +451,7 @@ void Foam::RASModels::kineticTheoryModel::correct()
         tmp<volScalarField> PsCoeff(KTs_.PsCoeff(phase_));
 
         // 'thermal' conductivity (Table 3.3, p. 49)
-        kappa_ = conductivityModel_->kappa(phase_, Theta_, gs0_, rho, da, e);
+        kappa_ = KTs_.kappa(phase_, Theta_);
 
         fv::options& fvOptions(fv::options::New(mesh_));
 
@@ -493,7 +470,6 @@ void Foam::RASModels::kineticTheoryModel::correct()
           - fvm::laplacian(kappa_, Theta_, "laplacian(kappa,Theta)")
          ==
           - fvm::SuSp((PsCoeff*I) && gradU, Theta_)
-          - (tau && gradU)
           + (tau && gradU)
           + fvm::Sp(-gammaCoeff, Theta_)
           + fvm::Sp(-J1, Theta_)
@@ -510,25 +486,25 @@ void Foam::RASModels::kineticTheoryModel::correct()
     {
         // Equilibrium => dissipation == production
         // Eq. 4.14, p.82
-        volScalarField K1("K1", 2.0*(1.0 + e)*rho*gs0_);
+        volScalarField K1("K1", 2.0*(1.0 + e)*rho*gs0);
         volScalarField K3
         (
             "K3",
             0.5*da*rho*
             (
                 (sqrtPi/(3.0*(3.0 - e)))
-               *(1.0 + 0.4*(1.0 + e)*(3.0*e - 1.0)*alpha*gs0_)
-               +1.6*alpha*gs0_*(1.0 + e)/sqrtPi
+               *(1.0 + 0.4*(1.0 + e)*(3.0*e - 1.0)*alpha*gs0)
+               +1.6*alpha*gs0*(1.0 + e)/sqrtPi
             )
         );
 
         volScalarField K2
         (
             "K2",
-            4.0*da*rho*(1.0 + e)*alpha*gs0_/(3.0*sqrtPi) - 2.0*K3/3.0
+            4.0*da*rho*(1.0 + e)*alpha*gs0/(3.0*sqrtPi) - 2.0*K3/3.0
         );
 
-        volScalarField K4("K4", 12.0*(1.0 - sqr(e))*rho*gs0_/(da*sqrtPi));
+        volScalarField K4("K4", 12.0*(1.0 - sqr(e))*rho*gs0/(da*sqrtPi));
 
         volScalarField trD
         (
@@ -557,7 +533,7 @@ void Foam::RASModels::kineticTheoryModel::correct()
            /(2.0*max(alpha, residualAlpha_)*K4)
         );
 
-        kappa_ = conductivityModel_->kappa(phase_, Theta_, gs0_, rho, da, e);
+        kappa_ = KTs_.kappa(phase_, Theta_);
     }
 
     Theta_.max(0);
@@ -565,12 +541,12 @@ void Foam::RASModels::kineticTheoryModel::correct()
 
     {
         // particle viscosity (Table 3.2, p.47)
-        nut_ = viscosityModel_->nu(phase_, Theta_, gs0_, rho, da, e);
+        nut_ = viscosityModel_->nu(phase_, Theta_, gs0, rho, da, e);
 
         volScalarField ThetaSqrt("sqrtTheta", sqrt(Theta_));
 
         // Bulk viscosity  p. 45 (Lun et al. 1984).
-        lambda_ = (4.0/3.0)*sqr(alpha)*da*gs0_*(1.0 + e)*ThetaSqrt/sqrtPi;
+        lambda_ = (4.0/3.0)*sqr(alpha)*da*gs0*(1.0 + e)*ThetaSqrt/sqrtPi;
 
         nuFric_ = KTs_.nuFrictional(phase_);
 

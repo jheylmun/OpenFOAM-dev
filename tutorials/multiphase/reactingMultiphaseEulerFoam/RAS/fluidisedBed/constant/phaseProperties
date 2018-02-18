@@ -17,7 +17,7 @@ FoamFile
 
 type heatAndMomentumTransferMultiphaseSystem;
 
-phases (particles particles1 particles2 air);
+phases (particles air);
 
 particles
 {
@@ -26,40 +26,40 @@ particles
     diameterModel constant;
     constantCoeffs
     {
-        d               1e-4;
+        d               250e-6;
     }
 
     alphaMax        0.63;
     residualAlpha   1e-6;
 }
 
-particles1
-{
-    type          purePhaseModel;
-
-    diameterModel constant;
-    constantCoeffs
-    {
-        d               3e-4;
-    }
-
-    alphaMax        0.63;
-    residualAlpha   1e-6;
-}
-
-particles2
-{
-    type          purePhaseModel;
-
-    diameterModel constant;
-    constantCoeffs
-    {
-        d               5e-4;
-    }
-
-    alphaMax        0.63;
-    residualAlpha   1e-6;
-}
+// particles1
+// {
+//     type          purePhaseModel;
+//
+//     diameterModel constant;
+//     constantCoeffs
+//     {
+//         d               3e-4;
+//     }
+//
+//     alphaMax        0.63;
+//     residualAlpha   1e-6;
+// }
+//
+// particles2
+// {
+//     type          purePhaseModel;
+//
+//     diameterModel constant;
+//     constantCoeffs
+//     {
+//         d               5e-4;
+//     }
+//
+//     alphaMax        0.63;
+//     residualAlpha   1e-6;
+// }
 
 air
 {
@@ -83,10 +83,10 @@ blending
         minPartlyContinuousAlpha.air 0;
         minFullyContinuousAlpha.particles 1;
         minPartlyContinuousAlpha.particles 1;
-        minFullyContinuousAlpha.particles1 1;
-        minPartlyContinuousAlpha.particles1 1;
-        minFullyContinuousAlpha.particles2 1;
-        minPartlyContinuousAlpha.particles2 1;
+//         minFullyContinuousAlpha.particles1 1;
+//         minPartlyContinuousAlpha.particles1 1;
+//         minFullyContinuousAlpha.particles2 1;
+//         minPartlyContinuousAlpha.particles2 1;
     }
 }
 
@@ -100,31 +100,31 @@ surfaceTension
         type            constant;
         sigma           0;
     }
-    (air and particles1)
-    {
-        type            constant;
-        sigma           0;
-    }
-    (air and particles2)
-    {
-        type            constant;
-        sigma           0;
-    }
-    (particles and particles1)
-    {
-        type            constant;
-        sigma           0;
-    }
-    (particles and particles2)
-    {
-        type            constant;
-        sigma           0;
-    }
-    (particles1 and particles2)
-    {
-        type            constant;
-        sigma           0;
-    }
+//     (air and particles1)
+//     {
+//         type            constant;
+//         sigma           0;
+//     }
+//     (air and particles2)
+//     {
+//         type            constant;
+//         sigma           0;
+//     }
+//     (particles and particles1)
+//     {
+//         type            constant;
+//         sigma           0;
+//     }
+//     (particles and particles2)
+//     {
+//         type            constant;
+//         sigma           0;
+//     }
+//     (particles1 and particles2)
+//     {
+//         type            constant;
+//         sigma           0;
+//     }
 );
 
 
@@ -143,51 +143,51 @@ drag
             type        none;
         }
     }
-    (particles1 in air)
-    {
-        type            Tenneti;
-        residualRe      1e-3;
-        swarmCorrection
-        {
-            type        none;
-        }
-    }
-    (particles2 in air)
-    {
-        type            GidaspowErgunWenYu;
-        residualRe      1e-3;
-        swarmCorrection
-        {
-            type        none;
-        }
-    }
-    (particles and particles1)
-    {
-        type            Syamlal;
-        residualRe      1e-3;
-        swarmCorrection
-        {
-            type        none;
-        }
-    }
-    (particles and particles2)
-    {
-        type            Syamlal;
-        residualRe      1e-3;
-        swarmCorrection
-        {
-            type        none;
-        }
-    }
-    (particles1 and particles2)
-    {
-        type            Syamlal;
-        residualRe      1e-3;
-        swarmCorrection
-        {
-            type        none;
-        }
-    }
+//     (particles1 in air)
+//     {
+//         type            Tenneti;
+//         residualRe      1e-3;
+//         swarmCorrection
+//         {
+//             type        none;
+//         }
+//     }
+//     (particles2 in air)
+//     {
+//         type            GidaspowErgunWenYu;
+//         residualRe      1e-3;
+//         swarmCorrection
+//         {
+//             type        none;
+//         }
+//     }
+//     (particles and particles1)
+//     {
+//         type            Syamlal;
+//         residualRe      1e-3;
+//         swarmCorrection
+//         {
+//             type        none;
+//         }
+//     }
+//     (particles and particles2)
+//     {
+//         type            Syamlal;
+//         residualRe      1e-3;
+//         swarmCorrection
+//         {
+//             type        none;
+//         }
+//     }
+//     (particles1 and particles2)
+//     {
+//         type            Syamlal;
+//         residualRe      1e-3;
+//         swarmCorrection
+//         {
+//             type        none;
+//         }
+//     }
 );
 
 virtualMass
@@ -220,25 +220,26 @@ kineticTheory
     radialModel             Lebowitz;
     frictionalStressModel   JohnsonJackson;
     granularPressureModel   Huilin;
+    conductivityModel       Chao;
     residualAlpha               1e-4;
 
     coeffRest
     (
         (particles and particles)   0.8
-        (particles and particles1)  0.8
-        (particles1 and particles1) 0.8
-        (particles and particles2)  0.8
-        (particles1 and particles2) 0.8
-        (particles2 and particles2) 0.8
+//         (particles and particles1)  0.8
+//         (particles1 and particles1) 0.8
+//         (particles and particles2)  0.8
+//         (particles1 and particles2) 0.8
+//         (particles2 and particles2) 0.8
     );
     coeffFric
     (
         (particles and particles)   0.1
-        (particles and particles1)  0.1
-        (particles1 and particles1) 0.1
-        (particles and particles2)  0.1
-        (particles1 and particles2) 0.1
-        (particles2 and particles2) 0.1
+//         (particles and particles1)  0.1
+//         (particles1 and particles1) 0.1
+//         (particles and particles2)  0.1
+//         (particles1 and particles2) 0.1
+//         (particles2 and particles2) 0.1
     );
 
     SchaefferCoeffs

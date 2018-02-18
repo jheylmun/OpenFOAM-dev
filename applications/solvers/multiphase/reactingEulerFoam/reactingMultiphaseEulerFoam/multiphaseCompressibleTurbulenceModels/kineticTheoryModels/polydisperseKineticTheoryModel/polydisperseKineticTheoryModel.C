@@ -30,6 +30,7 @@ License
 #include "radialModel.H"
 #include "frictionalStressModel.H"
 #include "granularPressureModel.H"
+#include "conductivityModel.H"
 #include "phaseSystem.H"
 #include "mathematicalConstants.H"
 #include "SortableList.H"
@@ -66,7 +67,7 @@ Foam::polydisperseKineticTheoryModel::polydisperseKineticTheoryModel
             fluid.mesh().time().timeName(),
             fluid.mesh(),
             IOobject::NO_READ,
-            IOobject::AUTO_WRITE
+            IOobject::NO_WRITE
         ),
         fluid.mesh(),
         dimensionedScalar("0", dimless, 0.0)
@@ -79,7 +80,7 @@ Foam::polydisperseKineticTheoryModel::polydisperseKineticTheoryModel
             fluid.mesh().time().timeName(),
             fluid.mesh(),
             IOobject::NO_READ,
-            IOobject::AUTO_WRITE
+            IOobject::NO_WRITE
         ),
         fluid.mesh(),
         dimensionedVector("0", dimVelocity, Zero)
@@ -92,7 +93,7 @@ Foam::polydisperseKineticTheoryModel::polydisperseKineticTheoryModel
             fluid.mesh().time().timeName(),
             fluid.mesh(),
             IOobject::NO_READ,
-            IOobject::AUTO_WRITE
+            IOobject::NO_WRITE
         ),
         fluid.mesh(),
         dimensionedScalar("0", sqr(dimVelocity), 0.0)
@@ -120,6 +121,14 @@ Foam::polydisperseKineticTheoryModel::polydisperseKineticTheoryModel
         (
             dict_,
             *this
+        )
+    ),
+    conductivityModel_
+    (
+        kineticTheoryModels::conductivityModel::New
+        (
+            dict_,
+         *this
         )
     ),
     frictionalStressModel_
@@ -182,6 +191,7 @@ bool Foam::polydisperseKineticTheoryModel::read()
         radialModel_->read();
         frictionalStressModel_->read();
         granularPressureModel_->read();
+        conductivityModel_->read();
 
         return true;
     }
@@ -192,13 +202,19 @@ bool Foam::polydisperseKineticTheoryModel::read()
 }
 
 
+bool Foam::polydisperseKineticTheoryModel::polydisperse() const
+{
+    return (phases_.size() > 1);
+}
+
+
 Foam::tmp<Foam::volScalarField> Foam::polydisperseKineticTheoryModel::gs0
 (
     const phaseModel& phase1,
     const phaseModel& phase2
 ) const
 {
-    return radialModel_->g0(phase1, phase2);
+    return *gs0Table_[phasePairKey(phase1.name(), phase2.name(), false)];
 }
 
 
@@ -215,6 +231,24 @@ Foam::tmp<Foam::volScalarField> Foam::polydisperseKineticTheoryModel::gs0Prime
 Foam::tmp<Foam::volScalarField>
 Foam::polydisperseKineticTheoryModel::PsCoeff(const phaseModel& phase) const
 {
+    if (phases_.size() == 1)
+    {
+        phasePairKey key(phase.name(), phase.name(), false);
+        const volScalarField& Theta =
+            fluid_.mesh().lookupObject<volScalarField>
+            (
+                IOobject::groupName("Theta", phase.name())
+            );
+
+        return
+            (*PsCoeffs_[key])
+           /max
+            (
+                Theta,
+                dimensionedScalar("SMALL", sqr(dimVelocity), 1e-6)
+            );
+    }
+
     tmp<volScalarField> tmpPsCoeff
     (
         new volScalarField
@@ -255,6 +289,24 @@ Foam::polydisperseKineticTheoryModel::PsCoeff(const phaseModel& phase) const
 Foam::tmp<Foam::volScalarField>
 Foam::polydisperseKineticTheoryModel::PsCoeffPrime(const phaseModel& phase) const
 {
+    if (phases_.size() == 1)
+    {
+        phasePairKey key(phase.name(), phase.name(), false);
+        const volScalarField& Theta =
+        fluid_.mesh().lookupObject<volScalarField>
+        (
+            IOobject::groupName("Theta", phase.name())
+        );
+
+        return
+        (*PsCoeffsPrime_[key])
+        /max
+        (
+            Theta,
+         dimensionedScalar("SMALL", sqr(dimVelocity), 1e-6)
+        );
+    }
+
     tmp<volScalarField> tmpPsCoeffPrime
     (
         new volScalarField
@@ -291,6 +343,24 @@ Foam::polydisperseKineticTheoryModel::PsCoeffPrime(const phaseModel& phase) cons
     return tmpPsCoeffPrime;
 }
 
+Foam::tmp<Foam::volScalarField>
+Foam::polydisperseKineticTheoryModel::kappa
+(
+    const phaseModel& phase,
+    const volScalarField& Theta
+) const
+{
+    phasePairKey key(phase.name(), phase.name(), false);
+    return conductivityModel_->kappa
+    (
+        phase,
+        Theta,
+        *gs0Table_[key],
+        phase.rho(),
+        phase.d(),
+        dimensionedScalar("e", dimless, eTable_[key])
+    );
+}
 
 Foam::tmp<Foam::volScalarField>
 Foam::polydisperseKineticTheoryModel::
@@ -348,6 +418,13 @@ void Foam::polydisperseKineticTheoryModel::addPhase
     const word& phaseName(ktModel.phase().name());
     phases_.append(phaseName);
 
+    if (phases_.size() == 2)
+    {
+        alphap_.writeOpt() = AUTO_WRITE;
+        Up_.writeOpt() = AUTO_WRITE;
+        Thetap_.writeOpt() = AUTO_WRITE;
+    }
+
     forAll(phases_, phasei)
     {
         phasePairKey key
@@ -357,6 +434,26 @@ void Foam::polydisperseKineticTheoryModel::addPhase
             false
         );
         pairs_.append(key);
+
+        gs0Table_.insert
+        (
+            key,
+            new volScalarField
+            (
+                IOobject
+                (
+                    IOobject::groupName
+                    (
+                        "gs0",
+                        key.first()+"And"+key.second()
+                    ),
+                    fluid_.mesh().time().timeName(),
+                    fluid_.mesh()
+                ),
+                fluid_.mesh(),
+                dimensionedScalar("gs0", dimless, 0.0)
+            )
+        );
 
         PsCoeffs_.insert
         (
@@ -457,6 +554,7 @@ void Foam::polydisperseKineticTheoryModel::correct()
                 IOobject::groupName("Theta", phase2.name())
             );
 
+        gs0Table_[key] = radialModel_->g0(phase1, phase2).ptr();
         PsCoeffs_[key] =
             granularPressureModel_->granularPressureCoeff
             (
