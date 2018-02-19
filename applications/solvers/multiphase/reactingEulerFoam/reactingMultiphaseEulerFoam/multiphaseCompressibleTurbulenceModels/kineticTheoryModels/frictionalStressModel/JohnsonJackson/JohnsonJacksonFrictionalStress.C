@@ -112,7 +112,7 @@ frictionalPressurePrime
     return Fr_*
     (
         eta_*pow(max(alphap - alphaMinFriction_, scalar(0)), eta_ - 1.0)
-       *(alphaMax-alphap)
+       *(alphaMax - alphap)
       + p_*pow(max(alphap - alphaMinFriction_, scalar(0)), eta_)
     )/pow(max(alphaMax - alphap, alphaDeltaMin_), p_ + 1.0);
 }

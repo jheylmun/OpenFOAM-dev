@@ -14,45 +14,62 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-convertToMeters .001;
+convertToMeters 1;
 
-pi  3.141529;
-h   1500;
-D   150;
-depth 10;
-R   #calc "$D/2";
-nR  #calc "-$R";
-r   #calc "$R/2";
-nr  #calc "-$r";
-xy  #calc "$R*sin($pi/4)";
-nxy #calc "-$xy";
+// pi  3.141529;
+// h   1500;
+// D   150;
+// depth 10;
+// R   #calc "$D/2";
+// nR  #calc "-$R";
+// r   #calc "$R/2";
+// nr  #calc "-$r";
+// xy  #calc "$R*sin($pi/4)";
+// nxy #calc "-$xy";
+//
+// vertices
+// (
+//     ($nR 0  0)
+//     ($R  0  0)
+//     ($R  $h 0)
+//     ($nR $h 0)
+//
+//     ($nR 0  $depth)
+//     ($R  0  $depth)
+//     ($R  $h $depth)
+//     ($nR $h $depth)
+// );
+//
+// blocks
+// (
+//     hex (0 1 2 3 4 5 6 7) (38 150 1)
+//     simpleGrading
+//     (
+//         (
+//             (   0.0621352389 0.107142857143 4)    // 20% y-dir, 30% cells, expansion = 4
+//             (   0.8757295222 0.785714285714 1)    // 60% y-dir, 40% cells, expansion = 1
+//             (   0.0621352389 0.107142857143 0.25)  // 20% y-dir, 30% cells, expansion = 0.25 (1/4)
+//         )
+// 	    1                  // y-direction expansion ratio
+//         1                  // z-direction expansion ratio
+//     )
+// );
 
 vertices
 (
-    ($nR 0  0)
-    ($R  0  0)
-    ($R  $h 0)
-    ($nR $h 0)
-
-    ($nR 0  $depth)
-    ($R  0  $depth)
-    ($R  $h $depth)
-    ($nR $h $depth)
+    (0 0 -0.01)
+    (0.15 0 -0.01)
+    (0.15 1.5 -0.01)
+    (0 1.5 -0.01)
+    (0 0 0.01)
+    (0.15 0 0.01)
+    (0.15 1.5 0.01)
+    (0 1.5 0.01)
 );
 
 blocks
 (
-    hex (0 1 2 3 4 5 6 7) (38 150 1)
-    simpleGrading
-    (
-        (
-            (   0.0621352389 0.107142857143 4)    // 20% y-dir, 30% cells, expansion = 4
-            (   0.8757295222 0.785714285714 1)    // 60% y-dir, 40% cells, expansion = 1
-            (   0.0621352389 0.107142857143 0.25)  // 20% y-dir, 30% cells, expansion = 0.25 (1/4)
-        )
-	    1                  // y-direction expansion ratio
-        1                  // z-direction expansion ratio
-    )
+    hex (0 1 2 3 4 5 6 7) (30 300 1) simpleGrading (1 1 1)
 );
 
 edges

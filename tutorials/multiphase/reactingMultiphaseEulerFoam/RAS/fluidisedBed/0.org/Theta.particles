@@ -35,12 +35,13 @@ boundaryField
 
     walls
     {
-        type            JohnsonJacksonParticleTheta;
-        restitutionCoefficient 0.96;
-        specularityCoefficient   0.1;
-        muF             0.25;
-        sigma           2;
-        value uniform 1e-4;
+        type                zeroGradient;
+//         type            JohnsonJacksonParticleTheta;
+//         restitutionCoefficient 0.96;
+//         specularityCoefficient   0.1;
+//         muF             0.25;
+//         sigma           2;
+//         value uniform 1e-4;
     }
 
     defaultFaces

@@ -424,11 +424,8 @@ void Foam::RASModels::kineticTheoryModel::correct()
             const phasePair& pair(phasePairIter());
             if
             (
-               !pair.ordered()
-             && (
-                    pair.phase1().name() == phase_.name()
-                 || pair.phase2().name() == phase_.name()
-                )
+                pair.phase1().name() == phase_.name()
+             || pair.phase2().name() == phase_.name()
             )
             {
                 if (!kdtable.found(pair))
@@ -436,7 +433,7 @@ void Foam::RASModels::kineticTheoryModel::correct()
                     continue;
                 }
                 tmp<volScalarField> beta(*kdtable[pair]);
-                J1 += 3.0*beta;
+                J1 += 3.0*beta();
                 J2 +=
                     0.25*sqr(beta)*da*sqr(pair.magUr())
                    /(

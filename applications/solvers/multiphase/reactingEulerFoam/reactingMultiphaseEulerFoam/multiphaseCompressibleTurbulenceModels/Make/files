@@ -26,6 +26,9 @@ kineticTheoryModels/radialModel/radialModel/radialModel.C
 kineticTheoryModels/radialModel/radialModel/newRadialModel.C
 kineticTheoryModels/radialModel/Lebowitz/LebowitzRadial.C
 kineticTheoryModels/radialModel/Gao/GaoRadial.C
+kineticTheoryModels/radialModel/CarnahanStarling/CarnahanStarlingRadial.C
+kineticTheoryModels/radialModel/LunSavage/LunSavageRadial.C
+kineticTheoryModels/radialModel/SinclairJackson/SinclairJacksonRadial.C
 
 kineticTheoryModels/granularPressureModel/granularPressureModel/granularPressureModel.C
 kineticTheoryModels/granularPressureModel/granularPressureModel/newGranularPressureModel.C

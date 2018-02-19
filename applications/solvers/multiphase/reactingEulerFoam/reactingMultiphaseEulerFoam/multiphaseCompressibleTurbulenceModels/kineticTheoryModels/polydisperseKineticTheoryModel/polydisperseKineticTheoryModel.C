@@ -300,10 +300,10 @@ Foam::polydisperseKineticTheoryModel::PsCoeffPrime(const phaseModel& phase) cons
 
         return
         (*PsCoeffsPrime_[key])
-        /max
+       /max
         (
             Theta,
-         dimensionedScalar("SMALL", sqr(dimVelocity), 1e-6)
+            dimensionedScalar("SMALL", sqr(dimVelocity), 1e-6)
         );
     }
 
@@ -389,7 +389,7 @@ frictionalPressurePrime(const phaseModel& phase) const
 Foam::tmp<Foam::volScalarField>
 Foam::polydisperseKineticTheoryModel::nuFrictional(const phaseModel& phase) const
 {
-    tmp<volTensorField> tgradU(fvc::grad(Up_));
+    tmp<volTensorField> tgradU(fvc::grad(phase.U()));
     const volTensorField& gradU(tgradU());
     volSymmTensorField D(symm(gradU));
 
@@ -418,13 +418,12 @@ void Foam::polydisperseKineticTheoryModel::addPhase
     const word& phaseName(ktModel.phase().name());
     phases_.append(phaseName);
 
+    // Print granular quantities only if more than 1 phase is present
     if (phases_.size() == 2)
     {
-        Info<<alphap_.writeOpt()<<endl;
         alphap_.writeOpt() = AUTO_WRITE;
         Up_.writeOpt() = AUTO_WRITE;
         Thetap_.writeOpt() = AUTO_WRITE;
-        Info<<alphap_.writeOpt()<<endl;
     }
 
     forAll(phases_, phasei)
@@ -543,8 +542,8 @@ void Foam::polydisperseKineticTheoryModel::correct()
         Up_ += alpha*phase.U();
         Thetap_ +=  alpha*Theta;
     }
-    Up_ /= max(alphap(), residualAlpha_);
-    Thetap_ /= max(alphap(), residualAlpha_);
+    Up_ /= max(alphap_, residualAlpha_);
+    Thetap_ /= max(alphap_, residualAlpha_);
 
     forAll(pairs_, pairi)
     {

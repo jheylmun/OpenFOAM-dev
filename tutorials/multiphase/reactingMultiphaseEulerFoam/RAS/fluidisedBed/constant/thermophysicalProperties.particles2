@@ -34,7 +34,7 @@ mixture
     }
     equationOfState
     {
-        rho         2400;
+        rho         2500;
     }
     thermodynamics
     {

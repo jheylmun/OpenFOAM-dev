@@ -68,28 +68,13 @@ void Foam::multiphaseSystem::calcAlphas()
 }
 
 
-void Foam::multiphaseSystem::solveAlphas()
+void Foam::multiphaseSystem::solveAlphas(const bool polydisperse)
 {
     bool LTS = fv::localEulerDdt::enabled(mesh_);
 
     forAll(phases(), phasei)
     {
         phases()[phasei].correctBoundaryConditions();
-    }
-
-    bool polydisperse =
-        mesh_.foundObject<polydisperseKineticTheoryModel>
-        (
-            "polydisperseKineticTheory"
-        );
-
-    if (polydisperse)
-    {
-        polydisperse =
-            mesh_.lookupObject<polydisperseKineticTheoryModel>
-            (
-                "polydisperseKineticTheory"
-            ).polydisperse();
     }
 
     PtrList<surfaceScalarField> alphaPhiCorrs(phases().size());
@@ -690,6 +675,79 @@ void Foam::multiphaseSystem::solve()
 
     bool LTS = fv::localEulerDdt::enabled(mesh_);
 
+    bool polydisperse =
+    mesh_.foundObject<polydisperseKineticTheoryModel>
+    (
+        "polydisperseKineticTheory"
+    );
+
+    if (polydisperse)
+    {
+        polydisperse =
+        mesh_.lookupObject<polydisperseKineticTheoryModel>
+        (
+            "polydisperseKineticTheory"
+        ).polydisperse();
+    }
+
+    PtrList<surfaceScalarField> alphaDbyAFluxes(phases().size());
+
+    forAll(phases(), phasei)
+    {
+        const phaseModel& phase = phases()[phasei];
+        alphaDbyAFluxes.set
+        (
+            phasei,
+            new surfaceScalarField
+            (
+                IOobject
+                (
+                    IOobject::groupName("DbyA", phase.name()),
+                    mesh_.time().timeName(),
+                    mesh_
+                ),
+                mesh_,
+                dimensionedScalar("0", dimVolume/dimTime, 0.0)
+            )
+        );
+    }
+
+    forAll(phases(), phasei)
+    {
+        const phaseModel& phase = phases()[phasei];
+        if (notNull(phase.DbyA()))
+        {
+            const volScalarField& alpha = phase;
+            surfaceScalarField DbyA(phase.DbyA());
+
+            surfaceScalarField alphaDbyA
+            (
+                IOobject::groupName("alphaDbyA", phase.name()),
+                fvc::interpolate(max(alpha, scalar(0)))
+                *fvc::interpolate(max(1.0 - alpha, scalar(0)))
+                *DbyA
+            );
+
+            fvScalarMatrix alphaEqn
+            (
+                fvm::ddt(alpha)
+              - fvm::laplacian(alphaDbyA, alpha), "bounded")
+            );
+
+            alphaEqn.relax();
+            alphaEqn.solve();
+
+            phases()[phasei] == alpha.oldTime();
+
+            alphaDbyAFluxes[phasei] = alphaEqn.flux();
+            phases()[phasei].alphaPhi() +=
+                (
+                    alphaEqn.flux()
+                  + alphaDbyA*fvc::snGrad(alpha, "bounded")*mesh_.magSf()
+                );
+        }
+    }
+
     if (nAlphaSubCycles > 1)
     {
         tmp<volScalarField> trSubDeltaT;
@@ -741,7 +799,7 @@ void Foam::multiphaseSystem::solve()
             !(++alphaSubCycle).end();
         )
         {
-            solveAlphas();
+            solveAlphas(polydisperse);
 
             forAll(phases(), phasei)
             {
@@ -767,12 +825,13 @@ void Foam::multiphaseSystem::solve()
     }
     else
     {
-        solveAlphas();
+        solveAlphas(polydisperse);
     }
 
     forAll(phases(), phasei)
     {
         phaseModel& phase = phases()[phasei];
+//         phase.alphaPhi() += alphaDbyAFluxes[phasei];
         phase.alphaRhoPhi() = fvc::interpolate(phase.rho())*phase.alphaPhi();
 
         // Ensure the phase-fractions are bounded

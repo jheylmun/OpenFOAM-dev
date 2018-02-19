@@ -837,7 +837,7 @@ Foam::MomentumTransferPhaseSystem<BasePhaseSystem>::phiDs
                 rAUs[phase.index()]*phase.turbulence().pPrime()
             )
         );
-        setPhiD(phiDs, phase.index()) += DbyA()*snGradAlpha;
+        setPhiD(phiDs, phase.index()) = DbyA()*snGradAlpha;
 
         if (this->implicitPhasePressure())
         {
@@ -855,37 +855,25 @@ Foam::MomentumTransferPhaseSystem<BasePhaseSystem>::phiDs
     {
         const phasePair&
             pair(this->phasePairs_[turbulentDispersionModelIter.key()]);
-        const phaseModel& phase = pair.phase1();
+        const phaseModel& phase1 = pair.phase1();
         const phaseModel& phase2 = pair.phase2();
 
         const volScalarField D(turbulentDispersionModelIter()->D());
         const surfaceScalarField snGradAlpha1
         (
-            fvc::snGrad(phase)*this->mesh_.magSf()
+            fvc::snGrad(phase1)*this->mesh_.magSf()
         );
         tmp<surfaceScalarField> DbyA1
         (
-            fvc::interpolate(rAUs[phase.index()]*D)
+            fvc::interpolate(rAUs[phase1.index()]*D)
         );
         tmp<surfaceScalarField> DbyA2
         (
-            fvc::interpolate(rAUs[phase.index()]*D)
+            fvc::interpolate(rAUs[phase2.index()]*D)
         );
 
         setPhiD(phiDs, pair.phase1().index()) += DbyA1()*snGradAlpha1;
         setPhiD(phiDs, pair.phase2().index()) -= DbyA2()*snGradAlpha1;
-
-        if (this->implicitPhasePressure())
-        {
-            this->phaseModels_[phase.index()].DbyA
-            (
-                phase.DbyA() + DbyA1
-            );
-            this->phaseModels_[phase2.index()].DbyA
-            (
-                phase2.DbyA() + DbyA2
-            );
-        }
     }
 
     return tphiDs;
@@ -920,7 +908,7 @@ Foam::MomentumTransferPhaseSystem<BasePhaseSystem>::phiDfs
            *fvc::interpolate(phase.turbulence().pPrime())
         );
 
-        setPhiD(phiDfs, phase.index()) += DbyAf()*snGradAlpha;
+        setPhiD(phiDfs, phase.index()) = DbyAf()*snGradAlpha;
         if (this->implicitPhasePressure())
         {
             this->phaseModels_[phase.index()].DbyA(DbyAf);
@@ -938,7 +926,7 @@ Foam::MomentumTransferPhaseSystem<BasePhaseSystem>::phiDfs
         const phasePair&
             pair(this->phasePairs_[turbulentDispersionModelIter.key()]);
 
-        const phaseModel& phase = pair.phase1();
+        const phaseModel& phase1 = pair.phase1();
         const phaseModel& phase2 = pair.phase2();
 
         const surfaceScalarField Df
@@ -947,25 +935,13 @@ Foam::MomentumTransferPhaseSystem<BasePhaseSystem>::phiDfs
         );
         const surfaceScalarField snGradAlpha1
         (
-            fvc::snGrad(phase)*this->mesh_.magSf()
+            fvc::snGrad(phase1)*this->mesh_.magSf()
         );
-        tmp<surfaceScalarField> DbyAf1(rAUfs[phase.index()]*Df);
-        tmp<surfaceScalarField> DbyAf2(rAUfs[phase.index()]*Df);
+        tmp<surfaceScalarField> DbyAf1(rAUfs[phase1.index()]*Df);
+        tmp<surfaceScalarField> DbyAf2(rAUfs[phase2.index()]*Df);
 
         setPhiD(phiDfs, pair.phase1().index()) += DbyAf1()*snGradAlpha1;
         setPhiD(phiDfs, pair.phase2().index()) -= DbyAf2()*snGradAlpha1;
-
-        if (this->implicitPhasePressure())
-        {
-            this->phaseModels_[phase.index()].DbyA
-            (
-                phase.DbyA() + DbyAf1
-            );
-            this->phaseModels_[phase2.index()].DbyA
-            (
-                phase2.DbyA() + DbyAf2
-            );
-        }
     }
 
     return tphiDfs;

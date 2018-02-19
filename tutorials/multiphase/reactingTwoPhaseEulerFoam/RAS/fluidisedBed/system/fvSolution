@@ -21,7 +21,7 @@ solvers
     {
         nAlphaCorr      1;
         nAlphaSubCycles 2;
-        implicitPhasePressure yes;
+        implicitPhasePressure no;
 
         solver          smoothSolver;
         smoother        symGaussSeidel;
