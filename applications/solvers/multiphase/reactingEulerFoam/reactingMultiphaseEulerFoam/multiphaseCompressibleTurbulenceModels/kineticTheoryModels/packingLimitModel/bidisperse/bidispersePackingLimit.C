@@ -79,21 +79,32 @@ bidispersePackingLimit::alphaMax
     const scalarList& ds
 ) const
 {
-    label index1 = 0;
-    label index2 = indices.size() - 1;
+    label index1 = indices.size() - 1;
+    label index2 = 0;
 
     const phaseModel& phase1 = kt_.fluid().phases()[indices[index1]];
     const phaseModel& phase2 = kt_.fluid().phases()[indices[index2]];
-
+// Info<<phase1.name() << ", " << phase2.name()<< endl;
+    scalar alpha1 = phase1[celli];
+    scalar alpha2 = phase2[celli];
+// Info<<sqrt(ds[index1]/ds[index2])<<endl;
+    scalar alphaMax1 = phase1.alphaMax();
     scalar alphaMax2 = phase2.alphaMax();
 
+    scalar Xi =
+        max
+        (
+            alpha1/max(alpha1 + alpha2, residualAlpha_),
+            alphaMax1/(alphaMax1 + (1.0 - alphaMax1)*alphaMax2)
+        );
+
     return
-        phase1.alphaMax()
+        alphaMax1
       + (1.0 - sqrt(ds[index2]/ds[index1]))
        *(
-            phase1.alphaMax()
-          + (1.0 - phase1.alphaMax())*alphaMax2
-        )*phase2[celli]/max(kt_.alphap()[celli], residualAlpha_);
+            alphaMax1
+          + (1.0 - alphaMax1)*alphaMax2
+        )*(1.0 - Xi);
 }
 
 

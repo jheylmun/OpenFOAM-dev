@@ -501,7 +501,6 @@ void Foam::polydisperseKineticTheoryModel::addPhase
                 dimensionedScalar("PsCoeffPrime", dimDensity*sqr(dimVelocity), 0.0)
             )
         );
-
     }
 }
 

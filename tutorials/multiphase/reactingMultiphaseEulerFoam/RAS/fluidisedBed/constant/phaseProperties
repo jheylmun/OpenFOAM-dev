@@ -17,7 +17,7 @@ FoamFile
 
 type heatAndMomentumTransferMultiphaseSystem;
 
-phases (particles air);
+phases (particles particles1 air);
 
 particles
 {
@@ -26,10 +26,10 @@ particles
     diameterModel constant;
     constantCoeffs
     {
-        d               3e-4;
+        d               1e-4;
     }
 
-    alphaMax        0.62;
+    alphaMax        0.63;
     residualAlpha   1e-6;
 }
 
@@ -43,7 +43,7 @@ particles1
         d               3e-4;
     }
 
-    alphaMax        0.62;
+    alphaMax        0.63;
     residualAlpha   1e-6;
 }
 
@@ -83,8 +83,8 @@ blending
         minPartlyContinuousAlpha.air 0;
         minFullyContinuousAlpha.particles 1;
         minPartlyContinuousAlpha.particles 1;
-//         minFullyContinuousAlpha.particles1 1;
-//         minPartlyContinuousAlpha.particles1 1;
+        minFullyContinuousAlpha.particles1 1;
+        minPartlyContinuousAlpha.particles1 1;
 //         minFullyContinuousAlpha.particles2 1;
 //         minPartlyContinuousAlpha.particles2 1;
     }
@@ -100,21 +100,21 @@ surfaceTension
         type            constant;
         sigma           0;
     }
-//     (air and particles1)
-//     {
-//         type            constant;
-//         sigma           0;
-//     }
+    (air and particles1)
+    {
+        type            constant;
+        sigma           0;
+    }
 //     (air and particles2)
 //     {
 //         type            constant;
 //         sigma           0;
 //     }
-//     (particles and particles1)
-//     {
-//         type            constant;
-//         sigma           0;
-//     }
+    (particles and particles1)
+    {
+        type            constant;
+        sigma           0;
+    }
 //     (particles and particles2)
 //     {
 //         type            constant;
@@ -143,15 +143,15 @@ drag
             type        none;
         }
     }
-//     (particles1 in air)
-//     {
-//         type            Tenneti;
-//         residualRe      1e-3;
-//         swarmCorrection
-//         {
-//             type        none;
-//         }
-//     }
+    (particles1 in air)
+    {
+        type            GidaspowErgunWenYu;
+        residualRe      1e-3;
+        swarmCorrection
+        {
+            type        none;
+        }
+    }
 //     (particles2 in air)
 //     {
 //         type            GidaspowErgunWenYu;
@@ -161,15 +161,15 @@ drag
 //             type        none;
 //         }
 //     }
-//     (particles and particles1)
-//     {
-//         type            Syamlal;
-//         residualRe      1e-3;
-//         swarmCorrection
-//         {
-//             type        none;
-//         }
-//     }
+    (particles and particles1)
+    {
+        type            Syamlal;
+        residualRe      1e-3;
+        swarmCorrection
+        {
+            type        none;
+        }
+    }
 //     (particles and particles2)
 //     {
 //         type            Syamlal;
@@ -213,22 +213,22 @@ turbulentDispersion
 kineticTheory
 {
     name                    Particles;
-    alphaMax                0.63;
+    alphaMax                0.7;
     alphaMinFriction        0.5;
 
     residualAlpha           1e-4;
 
-    packingLimitModel       constant;
+    packingLimitModel       bidisperse;
     conductivityModel       Gidaspow;
-    granularPressureModel   Lun;
+    granularPressureModel   Huilin;
     frictionalStressModel   JohnsonJackson;
-    radialModel             SinclairJackson;
+    radialModel             Gao;
 
     coeffRest
     (
         (particles and particles)   0.8
-//         (particles and particles1)  0.8
-//         (particles1 and particles1) 0.8
+        (particles and particles1)  0.8
+        (particles1 and particles1) 0.8
 //         (particles and particles2)  0.8
 //         (particles1 and particles2) 0.8
 //         (particles2 and particles2) 0.8
@@ -236,8 +236,8 @@ kineticTheory
     coeffFric
     (
         (particles and particles)   0.1
-//         (particles and particles1)  0.1
-//         (particles1 and particles1) 0.1
+        (particles and particles1)  0.1
+        (particles1 and particles1) 0.1
 //         (particles and particles2)  0.1
 //         (particles1 and particles2) 0.1
 //         (particles2 and particles2) 0.1

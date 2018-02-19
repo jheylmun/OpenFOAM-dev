@@ -111,6 +111,10 @@ do
         requirePV=0
         shift
         ;;
+    -oldStyle)
+        extension=foam
+        shift
+        ;;
     --)
         shift
         break    # Stop here, treat balance as paraview options

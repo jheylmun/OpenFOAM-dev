@@ -17,35 +17,15 @@ FoamFile
 
 solvers
 {
-//     "alpha.*"
-//     {
-//         nAlphaSubCycles 2;
-//         implicitPhasePressure yes;
-//
-//         solver          GAMG;
-//         smoother        DIC;
-//         tolerance       1e-12;
-//         relTol          0;
-//         minIter         1;
-//     }
-//
-//     p_rgh
-//     {
-//         solver          PCG;
-//         smoother        DIC;
-//         preconditioner  DIC;
-//         tolerance       1e-10;
-//         relTol          0;
-//     }
     "alpha.*"
     {
-        nAlphaCorr      1;
-        nAlphaSubCycles 2;
+        nAlphaSubCycles 3;
         implicitPhasePressure yes;
 
-        solver          smoothSolver;
-        smoother        symGaussSeidel;
-        tolerance       1e-9;
+        solver          GAMG;
+        preconditioner  DIC;
+        smoother        DIC;
+        tolerance       1e-12;
         relTol          0;
         minIter         1;
     }
@@ -54,7 +34,7 @@ solvers
     {
         solver          GAMG;
         smoother        DIC;
-        tolerance       1e-8;
+        tolerance       1e-10;
         relTol          0.01;
     }
 
@@ -106,25 +86,25 @@ PIMPLE
     nOuterCorrectors 3;
     nCorrectors      1;
     nNonOrthogonalCorrectors 0;
-    faceMomentum     yes;
+    faceMomentum     no;
     pRefCell    0;
     pRefValue   1e5;
 
-//     outerCorrectorResidualControl
-//     {
-//         p_rgh
-//         {
-//             tolerance   1e-4;
-//             relTol      0;
-//         }
-//     }
+    outerCorrectorResidualControl
+    {
+        p_rgh
+        {
+            tolerance   1e-4;
+            relTol      0;
+        }
+    }
 }
 
 relaxationFactors
 {
     equations
     {
-        ".*"          1;
+        p_rgh           1;
     }
 }
 

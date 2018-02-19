@@ -101,7 +101,7 @@ Foam::kineticTheoryModels::packingLimitModel::alphaMax() const
         {
             ds[phasei] = kt_.fluid().phases()[phases[phasei]].d()()[0];
         }
-        ds.reverseSort();
+        ds.sort();
         const labelList& indices = ds.indices();
 
 
@@ -130,7 +130,7 @@ Foam::kineticTheoryModels::packingLimitModel::alphaMax() const
             {
                 ds[phasei] = dList[phasei][celli];
             }
-            ds.reverseSort();
+            ds.sort();
             const labelList& indices = ds.indices();
 
             maxAlpha[celli] = alphaMax(celli, indices, ds);
