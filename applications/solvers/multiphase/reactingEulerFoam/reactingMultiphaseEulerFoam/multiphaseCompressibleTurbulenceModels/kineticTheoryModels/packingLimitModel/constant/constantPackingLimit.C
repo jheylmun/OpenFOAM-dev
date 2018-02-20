@@ -76,7 +76,6 @@ Foam::kineticTheoryModels::packingLimitModels::
 constantPackingLimit::alphaMax
 (
     const label celli,
-    const labelList& indices,
     const scalarList& ds
 ) const
 {

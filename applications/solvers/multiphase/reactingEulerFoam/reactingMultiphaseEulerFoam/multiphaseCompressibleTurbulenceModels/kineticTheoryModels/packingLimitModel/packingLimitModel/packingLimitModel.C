@@ -96,18 +96,15 @@ Foam::kineticTheoryModels::packingLimitModel::alphaMax() const
     if (constantDiameters_)
     {
         // Sort diameters from largest to smallest
-        SortableList<scalar> ds(phases.size());
+        scalarList ds(phases.size());
         forAll(phases, phasei)
         {
             ds[phasei] = kt_.fluid().phases()[phases[phasei]].d()()[0];
         }
-        ds.sort();
-        const labelList& indices = ds.indices();
-
 
         forAll(maxAlpha, celli)
         {
-            maxAlpha[celli] = alphaMax(celli, indices, ds);
+            maxAlpha[celli] = alphaMax(celli, ds);
         }
     }
     else
@@ -125,15 +122,13 @@ Foam::kineticTheoryModels::packingLimitModel::alphaMax() const
         forAll(maxAlpha, celli)
         {
             // Sort diameters from largest to smallest
-            SortableList<scalar> ds(phases.size());
+            scalar ds(phases.size());
             forAll(phases, phasei)
             {
                 ds[phasei] = dList[phasei][celli];
             }
-            ds.sort();
-            const labelList& indices = ds.indices();
 
-            maxAlpha[celli] = alphaMax(celli, indices, ds);
+            maxAlpha[celli] = alphaMax(celli, ds);
         }
     }
 
