@@ -71,13 +71,13 @@ void Foam::multiphaseSystem::calcAlphas()
 void Foam::multiphaseSystem::solveGranularAlphas()
 
 {
-    const dictionary& alphaControls =
-        mesh_.solverDict(volScalarField(phases()[0].name()));
+//     const dictionary& alphaControls =
+//         mesh_.solverDict(volScalarField(phases()[0]).name());
 
-    label nAlphaSubCycles(readLabel(alphaControls.lookup("nAlphaSubCycles")));
-    label nAlphaCorr(readLabel(alphaControls.lookup("nAlphaCorr")));
+//     label nAlphaSubCycles(readLabel(alphaControls.lookup("nAlphaSubCycles")));
+//     label nAlphaCorr(readLabel(alphaControls.lookup("nAlphaCorr")));
 
-    bool LTS = fv::localEulerDdt::enabled(mesh_);
+//     bool LTS = fv::localEulerDdt::enabled(mesh_);
 
     PtrList<surfaceScalarField> alphaDbyAs(phases().size());
 
@@ -133,7 +133,7 @@ void Foam::multiphaseSystem::solveGranularAlphas()
                     "div(phi," + alpha1.name() + ')'
                 )
               + alphaDbyAs[phasei]
-               *fvc::snGrad(phase, "bounded")*mesh_.magSf();
+               *fvc::snGrad(phase, "bounded")*mesh_.magSf()
             )
         );
 
@@ -177,38 +177,38 @@ void Foam::multiphaseSystem::solveGranularAlphas()
 
         phase.correctInflowOutflow(alphaPhiCorr);
 
-        if (LTS)
-        {
-            MULES::limit
-            (
-                fv::localEulerDdt::localRDeltaT(mesh_),
-             geometricOneField(),
-             phase,
-             phi_,
-             alphaPhiCorr,
-             zeroField(),
-             zeroField(),
-             phase.alphaMax(),
-             0,
-             true
-            );
-        }
-        else
+//         if (LTS)
+//         {
+//             MULES::limit
+//             (
+//                 fv::localEulerDdt::localRDeltaT(mesh_),
+//                 geometricOneField(),
+//                 phase,
+//                 phi_,
+//                 alphaPhiCorr,
+//                 zeroField(),
+//                 zeroField(),
+//                 phase.alphaMax(),
+//                 0,
+//                 true
+//             );
+//         }
+//         else
         {
             const scalar rDeltaT = 1.0/mesh_.time().deltaTValue();
 
             MULES::limit
             (
                 rDeltaT,
-             geometricOneField(),
-             phase,
-             phi_,
-             alphaPhiCorr,
-             zeroField(),
-             zeroField(),
-             phase.alphaMax(),
-             0,
-             true
+                geometricOneField(),
+                phase,
+                phi_,
+                alphaPhiCorr,
+                zeroField(),
+                zeroField(),
+                phase.alphaMax(),
+                0,
+                true
             );
         }
     }
@@ -427,7 +427,7 @@ void Foam::multiphaseSystem::solveGranularAlphas()
             sumAlpha += alpha;
         }
 
-        limitSum(alphaPhiCorrs, granularIndexes);
+        MULES::limitSum(alphaPhiCorrs, granularIndexes);
 
         forAll(fluidPhases, phasei)
         {
@@ -447,11 +447,6 @@ void Foam::multiphaseSystem::solveGranularAlphas()
 
             phase.alphaPhi() = alphaPhi;
             sumAlpha += alpha;
-        }
-
-        forAll(phases(), phasei)
-        {
-            alphaPhiSums[phasei] += phases()[phasei].alphaPhi();
         }
     }
 
@@ -488,16 +483,16 @@ void Foam::multiphaseSystem::solveAlphas()
         alphaPhiCorrs.set
         (
             phasei,
-         new surfaceScalarField
-         (
-             "phi" + alpha1.name() + "Corr",
-          fvc::flux
-          (
-              phi_,
-           phase,
-           "div(phi," + alpha1.name() + ')'
-          )
-         )
+            new surfaceScalarField
+            (
+                "phi" + alpha1.name() + "Corr",
+                fvc::flux
+                (
+                    phi_,
+                    phase,
+                    "div(phi," + alpha1.name() + ')'
+                )
+            )
         );
 
         surfaceScalarField& alphaPhiCorr = alphaPhiCorrs[phasei];
@@ -534,8 +529,8 @@ void Foam::multiphaseSystem::solveAlphas()
             alphaPhiCorr += fvc::flux
             (
                 -fvc::flux(-phir, phase2, phirScheme),
-             phase,
-             phirScheme
+                phase,
+                phirScheme
             );
         }
 
@@ -546,15 +541,15 @@ void Foam::multiphaseSystem::solveAlphas()
             MULES::limit
             (
                 fv::localEulerDdt::localRDeltaT(mesh_),
-             geometricOneField(),
-             phase,
-             phi_,
-             alphaPhiCorr,
-             zeroField(),
-             zeroField(),
-             phase.alphaMax(),
-             0,
-             true
+                geometricOneField(),
+                phase,
+                phi_,
+                alphaPhiCorr,
+                zeroField(),
+                zeroField(),
+                phase.alphaMax(),
+                0,
+                true
             );
         }
         else
@@ -564,15 +559,15 @@ void Foam::multiphaseSystem::solveAlphas()
             MULES::limit
             (
                 rDeltaT,
-             geometricOneField(),
-             phase,
-             phi_,
-             alphaPhiCorr,
-             zeroField(),
-             zeroField(),
-             phase.alphaMax(),
-             0,
-             true
+                geometricOneField(),
+                phase,
+                phi_,
+                alphaPhiCorr,
+                zeroField(),
+                zeroField(),
+                phase.alphaMax(),
+                0,
+                true
             );
         }
     }
@@ -707,250 +702,6 @@ void Foam::multiphaseSystem::solveAlphas()
 
     // Correct the sum of the phase-fractions to avoid 'drift'
     volScalarField sumCorr(1 - sumAlpha);
-    forAll(phases(), phasei)
-    {
-        volScalarField& alpha = phases()[phasei];
-        alpha += alpha*sumCorr;
-    }
-}
-
-
-void Foam::multiphaseSystem::solveAlphas()
-
-{
-    bool LTS = fv::localEulerDdt::enabled(mesh_);
-
-    forAll(phases(), phasei)
-    {
-        phases()[phasei].correctBoundaryConditions();
-    }
-
-    PtrList<surfaceScalarField> alphaPhiCorrs(phases().size());
-
-    forAll(phases(), phasei)
-    {
-        phaseModel& phase = phases()[phasei];
-        volScalarField& alpha1 = phase;
-
-        alphaPhiCorrs.set
-        (
-            phasei,
-            new surfaceScalarField
-            (
-                "phi" + alpha1.name() + "Corr",
-                fvc::flux
-                (
-                    phi_,
-                    phase,
-                    "div(phi," + alpha1.name() + ')'
-                )
-            )
-        );
-
-        surfaceScalarField& alphaPhiCorr = alphaPhiCorrs[phasei];
-        forAll(phases(), phasej)
-        {
-            phaseModel& phase2 = phases()[phasej];
-            volScalarField& alpha2 = phase2;
-
-            if (&phase2 == &phase) continue;
-
-            surfaceScalarField phir(phase.phi() - phase2.phi());
-
-            cAlphaTable::const_iterator cAlpha
-            (
-                cAlphas_.find(phasePairKey(phase.name(), phase2.name()))
-            );
-
-            if (cAlpha != cAlphas_.end())
-            {
-                surfaceScalarField phic
-                (
-                    (mag(phi_) + mag(phir))/mesh_.magSf()
-                );
-
-                phir += min(cAlpha()*phic, max(phic))*nHatf(phase, phase2);
-            }
-
-            word phirScheme
-            (
-                "div(phir," + alpha2.name() + ',' + alpha1.name() + ')'
-            );
-
-            alphaPhiCorr += fvc::flux
-            (
-                -fvc::flux(-phir, phase2, phirScheme),
-                phase,
-                phirScheme
-            );
-        }
-
-        phase.correctInflowOutflow(alphaPhiCorr);
-
-        if (LTS)
-        {
-            MULES::limit
-            (
-                fv::localEulerDdt::localRDeltaT(mesh_),
-                geometricOneField(),
-                phase,
-                phi_,
-                alphaPhiCorr,
-                zeroField(),
-                zeroField(),
-                phase.alphaMax(),
-                0,
-                true
-            );
-        }
-        else
-        {
-            const scalar rDeltaT = 1.0/mesh_.time().deltaTValue();
-
-            MULES::limit
-            (
-                rDeltaT,
-                geometricOneField(),
-                phase,
-                phi_,
-                alphaPhiCorr,
-                zeroField(),
-                zeroField(),
-                phase.alphaMax(),
-                0,
-                true
-            );
-        }
-    }
-
-    MULES::limitSum(alphaPhiCorrs);
-
-    volScalarField sumAlpha
-    (
-        IOobject
-        (
-            "sumAlpha",
-            mesh_.time().timeName(),
-            mesh_
-        ),
-        mesh_,
-        dimensionedScalar("sumAlpha", dimless, 0)
-    );
-
-
-    volScalarField divU(fvc::div(fvc::absolute(phi_, phases().first().U())));
-
-    forAll(phases(), phasei)
-    {
-        phaseModel& phase = phases()[phasei];
-        volScalarField& alpha = phase;
-
-        surfaceScalarField& alphaPhi = alphaPhiCorrs[phasei];
-        alphaPhi += upwind<scalar>(mesh_, phi_).flux(phase);
-        phase.correctInflowOutflow(alphaPhi);
-
-        volScalarField::Internal Sp
-        (
-            IOobject
-            (
-                "Sp",
-                mesh_.time().timeName(),
-                mesh_
-            ),
-            mesh_,
-            dimensionedScalar("Sp", divU.dimensions(), 0.0)
-        );
-
-        volScalarField::Internal Su
-        (
-            IOobject
-            (
-                "Su",
-                mesh_.time().timeName(),
-                mesh_
-            ),
-            // Divergence term is handled explicitly to be
-            // consistent with the explicit transport solution
-            divU*min(alpha, scalar(1))
-        );
-
-        if (phase.divU().valid())
-        {
-            const scalarField& dgdt = phase.divU()();
-
-            forAll(dgdt, celli)
-            {
-                if (dgdt[celli] > 0.0)
-                {
-                    Sp[celli] -= dgdt[celli];
-                    Su[celli] += dgdt[celli];
-                }
-                else if (dgdt[celli] < 0.0)
-                {
-                    Sp[celli] +=
-                        dgdt[celli]
-                       *(1 - alpha[celli])/max(alpha[celli], 1e-4);
-                }
-            }
-        }
-
-        forAll(phases(), phasej)
-        {
-            const phaseModel& phase2 = phases()[phasej];
-            const volScalarField& alpha2 = phase2;
-
-            if (&phase2 == &phase) continue;
-
-            if (phase2.divU().valid())
-            {
-                const scalarField& dgdt2 = phase2.divU()();
-
-                forAll(dgdt2, celli)
-                {
-                    if (dgdt2[celli] < 0.0)
-                    {
-                        Sp[celli] +=
-                            dgdt2[celli]
-                           *(1 - alpha2[celli])/max(alpha2[celli], 1e-4);
-
-                        Su[celli] -=
-                            dgdt2[celli]
-                           *alpha[celli]/max(alpha2[celli], 1e-4);
-                    }
-                    else if (dgdt2[celli] > 0.0)
-                    {
-                        Sp[celli] -= dgdt2[celli];
-                    }
-                }
-            }
-        }
-
-        MULES::explicitSolve
-        (
-            geometricOneField(),
-            alpha,
-            alphaPhi,
-            Sp,
-            Su
-        );
-        phase.alphaPhi() = alphaPhi;
-
-        Info<< phase.name() << " volume fraction, min, max = "
-            << phase.weightedAverage(mesh_.V()).value()
-            << ' ' << min(phase).value()
-            << ' ' << max(phase).value()
-            << endl;
-
-        sumAlpha += phase;
-    }
-
-    Info<< "Phase-sum volume fraction, min, max = "
-        << sumAlpha.weightedAverage(mesh_.V()).value()
-        << ' ' << min(sumAlpha).value()
-        << ' ' << max(sumAlpha).value()
-        << endl;
-
-    volScalarField sumCorr(1.0 - sumAlpha);
     forAll(phases(), phasei)
     {
         volScalarField& alpha = phases()[phasei];
@@ -1266,8 +1017,12 @@ void Foam::multiphaseSystem::solve()
         (
             "polydisperseKineticTheory"
         );
-
-
+    if (granular)
+    {
+        solveGranularAlphas();
+        calcAlphas();
+        return;
+    }
 
     if (nAlphaSubCycles > 1)
     {
@@ -1320,12 +1075,7 @@ void Foam::multiphaseSystem::solve()
             !(++alphaSubCycle).end();
         )
         {
-            forAll(phases(), phasei)
-            {
-                phases()[phasei].alphaPhi() += alphaDbyAFluxes[phasei];
-            }
-
-            solveAlphas(granular, alphaDbyAs);
+            solveAlphas();
 
             forAll(phases(), phasei)
             {
@@ -1351,7 +1101,7 @@ void Foam::multiphaseSystem::solve()
     }
     else
     {
-        solveAlphas(granular, alphaDbyAs);
+        solveAlphas();
     }
 
     forAll(phases(), phasei)

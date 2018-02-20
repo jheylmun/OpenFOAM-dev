@@ -193,7 +193,7 @@ void limitSum(UPtrList<scalarField>& phiPsiCorrs);
 void limitSum
 (
     UPtrList<scalarField>& phiPsiCorrs,
-    const UPtrList<scalarField>& fixedPhases
+    const labelList& fixedPhases
 );
 
 template<class PsiMaxType, class PsiMinType>

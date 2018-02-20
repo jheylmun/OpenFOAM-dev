@@ -19,7 +19,7 @@ solvers
 {
     "alpha.*"
     {
-        nAlphaSubCycles 3;
+        nAlphaSubCycles 1;
         implicitPhasePressure yes;
 
         solver          GAMG;

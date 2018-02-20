@@ -120,7 +120,7 @@ void Foam::MULES::limitSum(UPtrList<scalarField>& phiPsiCorrs)
 void Foam::MULES::limitSum
 (
     UPtrList<scalarField>& phiPsiCorrs,
-    const UPtrList<scalarField>& fixedFluxes
+    const labelList& fixedFluxes
 )
 {
     forAll(phiPsiCorrs[0], facei)
@@ -129,33 +129,43 @@ void Foam::MULES::limitSum
         scalar sumNeg = 0;
         scalar sumS = 0;
 
+        label index = 0;
         for (int phasei=0; phasei<phiPsiCorrs.size(); phasei++)
         {
-            if (phiPsiCorrs[phasei][facei] > 0)
+            if (phasei != fixedFluxes[index])
             {
-                sumPos += phiPsiCorrs[phasei][facei];
+                if (phiPsiCorrs[phasei][facei] > 0)
+                {
+                    sumPos += phiPsiCorrs[phasei][facei];
+                }
+                else
+                {
+                    sumNeg += phiPsiCorrs[phasei][facei];
+                }
             }
             else
             {
-                sumNeg += phiPsiCorrs[phasei][facei];
+                sumS += phiPsiCorrs[phasei][facei];
+                index++;
             }
-        }
-        for (int phasei=0; phasei<fixedFluxes.size(); phasei++)
-        {
-            sumS += phiPsiCorrs[phasei][facei];
         }
 
         scalar sum = sumPos + sumNeg;
 
+        index = 0;
         if (mag(sum) > vSmall)
         {
             scalar lambda = -sumS/(sum);
 
             for (int phasei=0; phasei<phiPsiCorrs.size(); phasei++)
             {
-                if (phiPsiCorrs[phasei][facei] > 0)
+                if (phasei != fixedFluxes[index])
                 {
                     phiPsiCorrs[phasei][facei] *= lambda;
+                }
+                else
+                {
+                    index++;
                 }
             }
         }
