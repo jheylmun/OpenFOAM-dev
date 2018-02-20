@@ -190,6 +190,12 @@ void limit
 
 void limitSum(UPtrList<scalarField>& phiPsiCorrs);
 
+void limitSum
+(
+    UPtrList<scalarField>& phiPsiCorrs,
+    const UPtrList<scalarField>& fixedPhases
+);
+
 template<class PsiMaxType, class PsiMinType>
 void limitSum
 (
@@ -199,6 +205,7 @@ void limitSum
     const PsiMaxType& psiMax,
     const PsiMinType& psiMin
 );
+
 
 template<class SurfaceScalarFieldList>
 void limitSum(SurfaceScalarFieldList& phiPsiCorrs);

@@ -73,7 +73,12 @@ class multiphaseSystem
 
         void calcAlphas();
 
-        void solveAlphas(const bool polydisperse);
+        void solveAlphas();
+
+        void solveGranularAlphas
+        (
+            const PtrList<surfaceScalarField>& alphaDbyAs
+        );
 
         tmp<surfaceVectorField> nHatfv
         (
