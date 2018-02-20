@@ -132,7 +132,6 @@ public:
         virtual scalar alphaMax
         (
             const label celli,
-            const labelList& indices,
             const scalarList& ds
         ) const = 0;
 };

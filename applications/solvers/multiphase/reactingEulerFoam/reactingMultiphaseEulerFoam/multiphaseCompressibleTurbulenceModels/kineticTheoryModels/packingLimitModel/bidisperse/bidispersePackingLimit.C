@@ -75,21 +75,27 @@ Foam::kineticTheoryModels::packingLimitModels::
 bidispersePackingLimit::alphaMax
 (
     const label celli,
-    const labelList& indices,
     const scalarList& ds
 ) const
 {
-    label index1 = indices.size() - 1;
-    label index2 = 0;
+    if (ds.size() != 2)
+    {
+        FatalErrorInFunction
+            << typeName << " packing limit model only supports bidisperse "
+            << "particle distributions, " << ds.size() << " in use."
+            << exit(FatalError);
+    }
 
-    const phaseModel& phase1 = kt_.fluid().phases()[indices[index1]];
-    const phaseModel& phase2 = kt_.fluid().phases()[indices[index2]];
-
-    scalar alpha1 = phase1[celli];
-    scalar alpha2 = phase2[celli];
+    const phaseModel& phase1 = kt_.fluid().phases()[0];
+    const phaseModel& phase2 = kt_.fluid().phases()[1];
 
     scalar alphaMax1 = phase1.alphaMax();
+    scalar alpha1 = phase1[celli];
+    scalar d1 = ds[0];
+
     scalar alphaMax2 = phase2.alphaMax();
+    scalar alpha2 = phase2[celli];
+    scalar d2 = ds[1];
 
     scalar Xi =
         max
@@ -98,9 +104,15 @@ bidispersePackingLimit::alphaMax
             alphaMax1/(alphaMax1 + (1.0 - alphaMax1)*alphaMax2)
         );
 
+    scalar dByd = d1/d2;
+    if (d1 > d2)
+    {
+        dByd = d2/d1;
+    }
+
     return
         alphaMax1
-      + (1.0 - sqrt(ds[index2]/ds[index1]))
+      + (1.0 - sqrt(dByd))
        *(
             alphaMax1
           + (1.0 - alphaMax1)*alphaMax2

@@ -75,7 +75,6 @@ Foam::kineticTheoryModels::packingLimitModels::
 YuStandishPackingLimit::alphaMax
 (
     const label celli,
-    const labelList& indices,
     const scalarList& ds
 ) const
 {
@@ -84,7 +83,7 @@ YuStandishPackingLimit::alphaMax
 
     forAll(ds, phasei)
     {
-        const phaseModel& phase1 = kt_.fluid().phases()[indices[phasei]];
+        const phaseModel& phase1 = kt_.fluid().phases()[phasei];
         scalar alpha1 = phase1[celli];
         scalar alphaMax1 = phase1.alphaMax();
         scalar d1 = ds[phasei];
@@ -100,10 +99,6 @@ YuStandishPackingLimit::alphaMax
             {
                 continue;
             }
-
-            const phaseModel& phase2 = kt_.fluid().phases()[indices[phasej]];
-            scalar alpha2 = phase2[celli];
-            scalar alphaMax2 = phase2.alphaMax();
             scalar d2 = ds[phasej];
 
             scalar rij = d1;
