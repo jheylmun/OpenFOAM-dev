@@ -356,6 +356,13 @@ void Foam::multiphaseSystem::solveAlphas(const bool polydisperse)
             );
 
         kineticTheoryModel.correctAlphap();
+        const volScalarField& alphap = kineticTheoryModel.alphap();
+
+        Info<< alphap.group() << " volume fraction, min, max = "
+            << alphap.weightedAverage(mesh_.V()).value()
+            << ' ' << min(alphap).value()
+            << ' ' << max(alphap).value()
+            << endl;
     }
 
     Info<< "Phase-sum volume fraction, min, max = "
@@ -710,11 +717,7 @@ void Foam::multiphaseSystem::solve()
                 dimensionedScalar("0", dimVolume/dimTime, 0.0)
             )
         );
-    }
 
-    forAll(phases(), phasei)
-    {
-        const phaseModel& phase = phases()[phasei];
         if (notNull(phase.DbyA()))
         {
             const volScalarField& alpha = phase;
@@ -739,7 +742,7 @@ void Foam::multiphaseSystem::solve()
 
             phases()[phasei] == alpha.oldTime();
 
-            alphaDbyAFluxes[phasei] = alphaEqn.flux();
+//             alphaDbyAFluxes[phasei] = alphaEqn.flux();
             phases()[phasei].alphaPhi() +=
                 (
                     alphaEqn.flux()

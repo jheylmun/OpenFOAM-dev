@@ -85,7 +85,7 @@ frictionalPressure
     const volScalarField& alphaMax
 ) const
 {
-    volScalarField alphap(max(kt_.alphap(), alphaMax));
+    volScalarField alphap(min(kt_.alphap(), alphaMax));
     volScalarField alphaMinFriction(alphaMinFrictionByAlphap_*alphaMax);
 
     return
@@ -102,7 +102,7 @@ frictionalPressurePrime
     const volScalarField& alphaMax
 ) const
 {
-    volScalarField alphap(max(kt_.alphap(), alphaMax));
+    volScalarField alphap(min(kt_.alphap(), alphaMax));
     volScalarField alphaMinFriction(alphaMinFrictionByAlphap_*alphaMax);
 
     return
