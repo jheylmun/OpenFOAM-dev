@@ -27,12 +27,6 @@ RAS
     kineticTheoryCoeffs
     {
         equilibrium             off;
-        residualAlpha           1e-4;
-
-        viscosityModel          Gidaspow;
-        conductivityModel       Gidaspow;
-        granularPressureModel   Lun;
-        alphaMax                0.63;
     }
 }
 

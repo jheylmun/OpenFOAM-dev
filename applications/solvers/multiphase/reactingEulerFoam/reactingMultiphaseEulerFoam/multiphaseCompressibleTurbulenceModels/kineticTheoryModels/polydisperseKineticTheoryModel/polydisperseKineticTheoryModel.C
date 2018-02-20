@@ -28,6 +28,7 @@ License
 #include "multiphaseSystem.H"
 #include "packingLimitModel.H"
 #include "radialModel.H"
+#include "viscosityModel.H"
 #include "frictionalStressModel.H"
 #include "granularPressureModel.H"
 #include "conductivityModel.H"
@@ -115,6 +116,14 @@ Foam::polydisperseKineticTheoryModel::polydisperseKineticTheoryModel
             *this
         )
     ),
+    viscosityModel_
+    (
+        kineticTheoryModels::viscosityModel::New
+        (
+            dict_,
+            *this
+        )
+    ),
     granularPressureModel_
     (
         kineticTheoryModels::granularPressureModel::New
@@ -158,7 +167,7 @@ Foam::polydisperseKineticTheoryModel::polydisperseKineticTheoryModel
             IOobject::AUTO_WRITE
         ),
         fluid.mesh(),
-        dimensionedScalar("0", dimless, 0.0),
+        dimensionedScalar("one", dimless, 1.0),
         wordList
         (
             alphap_.boundaryField().size(),
@@ -189,6 +198,7 @@ bool Foam::polydisperseKineticTheoryModel::read()
         residualAlpha_.readIfPresent(dict_);
 
         radialModel_->read();
+        viscosityModel_->read();
         frictionalStressModel_->read();
         granularPressureModel_->read();
         conductivityModel_->read();
@@ -225,6 +235,26 @@ Foam::tmp<Foam::volScalarField> Foam::polydisperseKineticTheoryModel::gs0Prime
 ) const
 {
     return radialModel_->g0prime(phase1, phase2);
+}
+
+
+Foam::tmp<Foam::volScalarField>
+Foam::polydisperseKineticTheoryModel::nu
+(
+    const phaseModel& phase,
+    const volScalarField& Theta
+) const
+{
+    phasePairKey key(phase.name(), phase.name(), false);
+    return viscosityModel_->nu
+    (
+        phase,
+        Theta,
+        *gs0Table_[key],
+        phase.rho(),
+        phase.d(),
+        dimensionedScalar("e", dimless, eTable_[key])
+    );
 }
 
 
@@ -389,7 +419,7 @@ frictionalPressurePrime(const phaseModel& phase) const
 Foam::tmp<Foam::volScalarField>
 Foam::polydisperseKineticTheoryModel::nuFrictional(const phaseModel& phase) const
 {
-    tmp<volTensorField> tgradU(fvc::grad(phase.U()));
+    tmp<volTensorField> tgradU(fvc::grad(Up_));
     const volTensorField& gradU(tgradU());
     volSymmTensorField D(symm(gradU));
 

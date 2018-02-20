@@ -51,7 +51,8 @@ Foam::RASModels::kineticTheoryModel::lookupOrConstruct
     }
 
     return
-        mesh_.objectRegistry::lookupObjectRef<polydisperseKineticTheoryModel>(name);
+        mesh_.objectRegistry::lookupObjectRef<polydisperseKineticTheoryModel>
+        (name);
 }
 
 Foam::RASModels::kineticTheoryModel::kineticTheoryModel
@@ -84,21 +85,8 @@ Foam::RASModels::kineticTheoryModel::kineticTheoryModel
     phase_(phase),
 
     KTs_(lookupOrConstruct("polydisperseKineticTheory")),
-    viscosityModel_
-    (
-        kineticTheoryModels::viscosityModel::New
-        (
-            coeffDict_,
-            KTs_
-        )
-    ),
     equilibrium_(coeffDict_.lookup("equilibrium")),
-    residualAlpha_
-    (
-        "residualAlpha",
-        dimless,
-        coeffDict_
-    ),
+    residualAlpha_(KTs_.residualAlpha()),
 
     maxNut_
     (
@@ -190,9 +178,6 @@ bool Foam::RASModels::kineticTheoryModel::read()
     )
     {
         coeffDict().lookup("equilibrium") >> equilibrium_;
-        alphaMax_.readIfPresent(coeffDict());
-
-        viscosityModel_->read();
 
         return true;
     }
@@ -352,7 +337,7 @@ void Foam::RASModels::kineticTheoryModel::correct()
     if (!equilibrium_)
     {
         // Particle viscosity (Table 3.2, p.47)
-        nut_ = viscosityModel_->nu(phase_, Theta_, gs0, rho, da, e);
+        nut_ = KTs_.nu(phase_, Theta_);
 
         volScalarField ThetaSqrt("sqrtTheta", sqrt(Theta_));
 
@@ -538,7 +523,7 @@ void Foam::RASModels::kineticTheoryModel::correct()
 
     {
         // particle viscosity (Table 3.2, p.47)
-        nut_ = viscosityModel_->nu(phase_, Theta_, gs0, rho, da, e);
+        nut_ = KTs_.nu(phase_, Theta_);;
 
         volScalarField ThetaSqrt("sqrtTheta", sqrt(Theta_));
 

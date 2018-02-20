@@ -63,11 +63,12 @@ namespace RASModels
 
 namespace kineticTheoryModels
 {
+    class packingLimitModel;
     class radialModel;
+    class viscosityModel;
     class frictionalStressModel;
     class granularPressureModel;
     class conductivityModel;
-    class packingLimitModel;
 }
 
 /*---------------------------------------------------------------------------*\
@@ -112,6 +113,9 @@ class polydisperseKineticTheoryModel
 
         //- Run-time selected radial distribution model
         autoPtr<kineticTheoryModels::radialModel> radialModel_;
+
+        //- Run-time selected viscosity model
+        autoPtr<kineticTheoryModels::viscosityModel> viscosityModel_;
 
         //- Run-time selected granular pressure model
         autoPtr<kineticTheoryModels::granularPressureModel>
@@ -222,6 +226,12 @@ public:
         //- Return true if phase is granular
         bool found(const word&) const;
 
+        //- Return residual alpha
+        const dimensionedScalar residualAlpha() const
+        {
+            return residualAlpha_;
+        }
+
         //- Return total granular phase volume fraction
         const volScalarField& alphap() const
         {
@@ -260,6 +270,13 @@ public:
         (
             const phaseModel&,
             const phaseModel&
+        ) const;
+
+        //- Return the viscosity
+        tmp<volScalarField> nu
+        (
+            const phaseModel&,
+            const volScalarField&
         ) const;
 
         //- Return the sum of all granular pressure for a given phase

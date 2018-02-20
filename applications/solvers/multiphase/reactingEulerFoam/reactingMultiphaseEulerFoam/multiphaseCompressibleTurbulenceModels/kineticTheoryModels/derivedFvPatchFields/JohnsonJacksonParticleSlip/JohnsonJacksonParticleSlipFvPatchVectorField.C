@@ -210,14 +210,7 @@ void Foam::JohnsonJacksonParticleSlipFvPatchVectorField::updateCoeffs()
     (
         "alphaMax",
         dimless,
-        db()
-       .lookupObject<IOdictionary>
-        (
-            IOobject::groupName("turbulenceProperties", phased.name())
-        )
-       .subDict("RAS")
-       .subDict("kineticTheoryCoeffs")
-       .lookup("alphaMax")
+        phased.alphaMax()
     );
 
     // calculate the slip value fraction

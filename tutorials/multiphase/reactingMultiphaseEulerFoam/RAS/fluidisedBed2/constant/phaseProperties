@@ -155,13 +155,15 @@ turbulentDispersion
 kineticTheory
 {
     name    Particles;
-    constantPackingLimit yes;
-    alphaMax 0.63;
+    residualAlpha   1e-4;
+    alphaMax        0.63;
 
-    radialModel                 Gao;
-    granularPressureModel       Huilin;
+    packingLimitModel       bidisperse;
+    radialModel             Gao;
+    viscosityModel          Gidaspow;
+    conductivityModel       Gidaspow;
+    granularPressureModel   Huilin;
     frictionalStressModel   JohnsonJackson;
-    residualAlpha               1e-4;
 
     coeffRest
     (
@@ -181,7 +183,6 @@ kineticTheory
     SchaefferCoeffs
     {
         alphaMinFrictionByAlphap 0.97;
-        alphaMinFriction        0.5;
         Fr                      0.05;
         eta                     2;
         p                       5;

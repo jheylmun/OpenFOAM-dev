@@ -53,7 +53,6 @@ SourceFiles
 #include "phasePairKey.H"
 #include "dragModel.H"
 #include "polydisperseKineticTheoryModel.H"
-#include "viscosityModel.H"
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -102,19 +101,10 @@ class kineticTheoryModel
             polydisperseKineticTheoryModel& KTs_;
 
 
-        // Sub-models
-
-            //- Run-time selected viscosity model
-            autoPtr<kineticTheoryModels::viscosityModel> viscosityModel_;
-
-
         // Kinetic Theory Model coefficients
 
             //- Use equilibrium approximation: generation == dissipation
             Switch equilibrium_;
-
-            //- Maximum packing phase-fraction
-            dimensionedScalar alphaMax_;
 
             //- Residual phase fraction
             dimensionedScalar residualAlpha_;
@@ -229,12 +219,6 @@ public:
         {
             return phase_;
         }
-
-//         //- Return granular temperature
-//         const volScalarField& Theta() const
-//         {
-//             return Theta_;
-//         }
 };
 
 

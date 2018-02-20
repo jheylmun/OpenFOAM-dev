@@ -224,14 +224,7 @@ void Foam::JohnsonJacksonParticleThetaFvPatchScalarField::updateCoeffs()
     (
         "alphaMax",
         dimless,
-        db()
-       .lookupObject<IOdictionary>
-        (
-            IOobject::groupName("turbulenceProperties", phased.name())
-        )
-       .subDict("RAS")
-       .subDict("kineticTheoryCoeffs")
-       .lookup("alphaMax")
+        phased.alphaMax()
     );
 
     // calculate the reference value and the value fraction
