@@ -84,10 +84,10 @@ bidispersePackingLimit::alphaMax
 
     const phaseModel& phase1 = kt_.fluid().phases()[indices[index1]];
     const phaseModel& phase2 = kt_.fluid().phases()[indices[index2]];
-// Info<<phase1.name() << ", " << phase2.name()<< endl;
+
     scalar alpha1 = phase1[celli];
     scalar alpha2 = phase2[celli];
-// Info<<sqrt(ds[index1]/ds[index2])<<endl;
+
     scalar alphaMax1 = phase1.alphaMax();
     scalar alphaMax2 = phase2.alphaMax();
 

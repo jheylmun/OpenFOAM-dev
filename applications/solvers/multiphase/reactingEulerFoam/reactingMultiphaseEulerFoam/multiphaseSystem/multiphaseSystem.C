@@ -697,26 +697,9 @@ void Foam::multiphaseSystem::solve()
         ).polydisperse();
     }
 
-    PtrList<surfaceScalarField> alphaDbyAFluxes(phases().size());
-
     forAll(phases(), phasei)
     {
         const phaseModel& phase = phases()[phasei];
-        alphaDbyAFluxes.set
-        (
-            phasei,
-            new surfaceScalarField
-            (
-                IOobject
-                (
-                    IOobject::groupName("DbyA", phase.name()),
-                    mesh_.time().timeName(),
-                    mesh_
-                ),
-                mesh_,
-                dimensionedScalar("0", dimVolume/dimTime, 0.0)
-            )
-        );
 
         if (notNull(phase.DbyA()))
         {
@@ -740,9 +723,8 @@ void Foam::multiphaseSystem::solve()
             alphaEqn.relax();
             alphaEqn.solve();
 
+            // Revert to old alpha, and correct granular flux
             phases()[phasei] == alpha.oldTime();
-
-//             alphaDbyAFluxes[phasei] = alphaEqn.flux();
             phases()[phasei].alphaPhi() +=
                 (
                     alphaEqn.flux()
@@ -834,7 +816,6 @@ void Foam::multiphaseSystem::solve()
     forAll(phases(), phasei)
     {
         phaseModel& phase = phases()[phasei];
-//         phase.alphaPhi() += alphaDbyAFluxes[phasei];
         phase.alphaRhoPhi() = fvc::interpolate(phase.rho())*phase.alphaPhi();
 
         // Ensure the phase-fractions are bounded
