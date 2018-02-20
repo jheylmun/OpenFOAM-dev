@@ -119,14 +119,13 @@ void Foam::MULES::limitSum(UPtrList<scalarField>& phiPsiCorrs)
 
 void Foam::MULES::limitSum
 (
-    UPtrList<scalarField>& phiPsiCorrs,
+    UPtrList<surfaceScalarField>& phiPsiCorrs,
     const labelList& fixedFluxes
 )
 {
     forAll(phiPsiCorrs[0], facei)
     {
-        scalar sumPos = 0;
-        scalar sumNeg = 0;
+        scalar sum = 0;
         scalar sumS = 0;
 
         label index = 0;
@@ -134,14 +133,7 @@ void Foam::MULES::limitSum
         {
             if (phasei != fixedFluxes[index])
             {
-                if (phiPsiCorrs[phasei][facei] > 0)
-                {
-                    sumPos += phiPsiCorrs[phasei][facei];
-                }
-                else
-                {
-                    sumNeg += phiPsiCorrs[phasei][facei];
-                }
+                sum += phiPsiCorrs[phasei][facei];
             }
             else
             {
@@ -150,7 +142,6 @@ void Foam::MULES::limitSum
             }
         }
 
-        scalar sum = sumPos + sumNeg;
 
         index = 0;
         if (mag(sum) > vSmall)

@@ -192,7 +192,7 @@ void limitSum(UPtrList<scalarField>& phiPsiCorrs);
 
 void limitSum
 (
-    UPtrList<scalarField>& phiPsiCorrs,
+    UPtrList<surfaceScalarField>& phiPsiCorrs,
     const labelList& fixedPhases
 );
 
