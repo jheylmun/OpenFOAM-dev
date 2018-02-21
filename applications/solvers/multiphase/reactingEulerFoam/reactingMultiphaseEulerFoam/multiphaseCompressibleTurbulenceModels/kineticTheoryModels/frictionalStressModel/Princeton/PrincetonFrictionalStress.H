@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2016 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2016 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -22,17 +22,17 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::kineticTheoryModels::frictionalStressModels::JohnsonJacksonSchaeffer
+    Foam::kineticTheoryModels::frictionalStressModels::Princeton
 
 Description
 
 SourceFiles
-    JohnsonJacksonSchaefferFrictionalStress.C
+    PrincetonFrictionalStress.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef JohnsonJacksonSchaefferFrictionalStress_H
-#define JohnsonJacksonSchaefferFrictionalStress_H
+#ifndef PrincetonFrictionalStress_H
+#define PrincetonFrictionalStress_H
 
 #include "frictionalStressModel.H"
 
@@ -46,10 +46,10 @@ namespace frictionalStressModels
 {
 
 /*---------------------------------------------------------------------------*\
-               Class JohnsonJacksonSchaeffer Declaration
+               Class Princeton Declaration
 \*---------------------------------------------------------------------------*/
 
-class JohnsonJacksonSchaeffer
+class Princeton
 :
     public frictionalStressModel
 {
@@ -75,21 +75,20 @@ class JohnsonJacksonSchaeffer
         //- Lower limit when friction is "turned on"
         dimensionedScalar alphaMinFriction_;
 
-        //- Ratio of minimum volume fraction that frictional pressures act to
-        //  the maximum packing limit
+        //- Lower limit when Schaeffer friction is "turned on"
         dimensionedScalar alphaMinFrictionByAlphap_;
 
 
 public:
 
     //- Runtime type information
-    TypeName("JohnsonJacksonSchaeffer");
+    TypeName("Princeton");
 
 
     // Constructors
 
         //- Construct from components
-        JohnsonJacksonSchaeffer
+        Princeton
         (
             const dictionary& dict,
             const polydisperseKineticTheoryModel& kt
@@ -97,7 +96,7 @@ public:
 
 
     //- Destructor
-    virtual ~JohnsonJacksonSchaeffer();
+    virtual ~Princeton();
 
 
     // Member functions

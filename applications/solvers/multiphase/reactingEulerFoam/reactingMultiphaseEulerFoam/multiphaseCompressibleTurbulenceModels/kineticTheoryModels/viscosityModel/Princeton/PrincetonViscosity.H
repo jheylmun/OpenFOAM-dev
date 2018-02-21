@@ -22,17 +22,17 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::kineticTheoryModels::viscosityModels::HrenyaSinclair
+    Foam::kineticTheoryModels::viscosityModels::Princeton
 
 Description
 
 SourceFiles
-    HrenyaSinclairViscosity.C
+    PrincetonViscosity.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef HrenyaSinclairViscosity_H
-#define HrenyaSinclairViscosity_H
+#ifndef PrincetonViscosity_H
+#define PrincetonViscosity_H
 
 #include "viscosityModel.H"
 
@@ -46,39 +46,48 @@ namespace viscosityModels
 {
 
 /*---------------------------------------------------------------------------*\
-                           Class HrenyaSinclair Declaration
+                           Class Princeton Declaration
 \*---------------------------------------------------------------------------*/
 
-class HrenyaSinclair
+class Princeton
 :
     public viscosityModel
 {
-    // Private data
 
-        dictionary coeffDict_;
+    typedef
+        HashTable
+        <
+            autoPtr<phasePair>,
+            phasePairKey,
+            phasePairKey::hash
+        >
+        phasePairTable;
 
-        //- Characteristic length of geometry
-        dimensionedScalar L_;
+    typedef
+        HashPtrTable
+        <
+            volScalarField,
+            phasePairKey,
+            phasePairKey::hash
+        >
+        KdTable;
 
 
 public:
 
     //- Runtime type information
-    TypeName("HrenyaSinclair");
+    TypeName("Princeton");
 
 
     // Constructors
 
         //- Construct from components
-        HrenyaSinclair
-        (
-            const dictionary& dict,
-            const polydisperseKineticTheoryModel& kt
-        );
+        Princeton(const dictionary& dict, const polydisperseKineticTheoryModel&
+kt);
 
 
     //- Destructor
-    virtual ~HrenyaSinclair();
+    virtual ~Princeton();
 
 
     // Member functions
@@ -92,8 +101,6 @@ public:
             const volScalarField& da,
             const dimensionedScalar& e
         ) const;
-
-        virtual bool read();
 };
 
 

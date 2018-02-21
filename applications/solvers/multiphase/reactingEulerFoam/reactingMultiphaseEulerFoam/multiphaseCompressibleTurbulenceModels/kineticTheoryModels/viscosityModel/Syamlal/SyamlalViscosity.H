@@ -31,8 +31,8 @@ SourceFiles
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef Syamlal_H
-#define Syamlal_H
+#ifndef SyamlalViscosity_H
+#define SyamlalViscosity_H
 
 #include "viscosityModel.H"
 

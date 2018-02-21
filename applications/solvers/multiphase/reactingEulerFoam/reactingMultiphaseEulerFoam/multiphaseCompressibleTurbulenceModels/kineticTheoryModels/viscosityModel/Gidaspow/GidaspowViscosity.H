@@ -31,8 +31,8 @@ SourceFiles
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef Gidaspow_H
-#define Gidaspow_H
+#ifndef GidaspowViscosity_H
+#define GidaspowViscosity_H
 
 #include "viscosityModel.H"
 

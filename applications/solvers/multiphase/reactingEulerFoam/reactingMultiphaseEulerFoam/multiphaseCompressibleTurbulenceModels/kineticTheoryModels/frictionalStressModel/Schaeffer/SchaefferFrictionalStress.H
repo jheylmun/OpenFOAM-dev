@@ -31,8 +31,8 @@ SourceFiles
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef Schaeffer_H
-#define Schaeffer_H
+#ifndef SchaefferFrictionalStress_H
+#define SchaefferFrictionalStress_H
 
 #include "frictionalStressModel.H"
 

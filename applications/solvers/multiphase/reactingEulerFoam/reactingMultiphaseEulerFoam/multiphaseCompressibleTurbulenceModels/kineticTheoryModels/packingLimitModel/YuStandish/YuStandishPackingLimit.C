@@ -78,20 +78,31 @@ YuStandishPackingLimit::alphaMax
     const scalarList& ds
 ) const
 {
-    scalar maxAlpha = 1.0;
     scalar alphap = kt_.alphap()[celli];
+
+    if(alphap < kt_.fluid().phases()[0].residualAlpha().value())
+    {
+        return kt_.fluid().phases()[0].alphaMax();
+    }
+
+    scalar maxAlpha = 1.0;
 
     forAll(ds, phasei)
     {
         const phaseModel& phase1 = kt_.fluid().phases()[phasei];
         scalar alpha1 = phase1[celli];
+
+        if (alpha1 < phase1.residualAlpha().value())
+        {
+            continue;
+        }
+
         scalar alphaMax1 = phase1.alphaMax();
         scalar d1 = ds[phasei];
 
         scalar cxi = alpha1/max(alphap, residualAlpha_);
 
-        scalar sum1 = 0.0;
-        scalar sum2 = 0.0;
+        scalar sum = 0.0;
 
         forAll(ds, phasej)
         {
@@ -105,7 +116,7 @@ YuStandishPackingLimit::alphaMax
             scalar Xij = 1.0;
             scalar pij = alphaMax1;
 
-            if (phasei < phasej)
+            if (d1 < d2)
             {
                 rij = d1/d2;
                 Xij = (1.0 - sqr(rij))/(2.0 - alphaMax1);
@@ -123,19 +134,11 @@ YuStandishPackingLimit::alphaMax
                    *(1.0 - alphaMax1)
                    *(1.0 - 2.35*rij + 1.35*sqr(rij));
             }
-
-            scalar cmpt = (1.0 - alphaMax1/pij)*cxi/Xij;
-            if (phasej < phasei)
-            {
-                sum1 += cmpt;
-            }
-            else if (phasej > phasei)
-            {
-                sum2 += cmpt;
-            }
+            sum += (1.0 - alphaMax1/pij)*cxi/Xij;
         }
-        maxAlpha = min(maxAlpha, alphaMax1/(1.0 - sum1 - sum2));
+        maxAlpha = min(maxAlpha, alphaMax1/(1.0 - sum));
     }
+
     return maxAlpha;
 }
 

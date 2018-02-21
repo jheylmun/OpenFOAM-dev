@@ -205,6 +205,12 @@ public:
 
     // Member Functions
 
+        //- Return total particle phase name
+        const word& name() const
+        {
+            return name_;
+        }
+
         //- Return if granular system is polydiserse
         bool polydisperse() const;
 

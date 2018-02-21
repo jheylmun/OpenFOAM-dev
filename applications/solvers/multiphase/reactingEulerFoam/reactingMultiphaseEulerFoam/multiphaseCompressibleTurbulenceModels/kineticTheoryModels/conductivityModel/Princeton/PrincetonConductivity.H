@@ -22,19 +22,19 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::kineticTheoryModels::viscosityModels::HrenyaSinclair
+    Foam::kineticTheoryModels::conductivityModels::Princeton
 
 Description
 
 SourceFiles
-    HrenyaSinclairViscosity.C
+    PrincetonConductivity.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef HrenyaSinclairViscosity_H
-#define HrenyaSinclairViscosity_H
+#ifndef PrincetonConductivity_H
+#define PrincetonConductivity_H
 
-#include "viscosityModel.H"
+#include "conductivityModel.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -42,48 +42,54 @@ namespace Foam
 {
 namespace kineticTheoryModels
 {
-namespace viscosityModels
+namespace conductivityModels
 {
 
 /*---------------------------------------------------------------------------*\
-                           Class HrenyaSinclair Declaration
+                           Class Princeton Declaration
 \*---------------------------------------------------------------------------*/
 
-class HrenyaSinclair
+class Princeton
 :
-    public viscosityModel
+    public conductivityModel
 {
-    // Private data
+    typedef
+        HashTable
+        <
+            autoPtr<phasePair>,
+            phasePairKey,
+            phasePairKey::hash
+        >
+        phasePairTable;
 
-        dictionary coeffDict_;
-
-        //- Characteristic length of geometry
-        dimensionedScalar L_;
-
-
+    typedef
+        HashPtrTable
+        <
+            volScalarField,
+            phasePairKey,
+            phasePairKey::hash
+        >
+        KdTable;
 public:
 
-    //- Runtime type information
-    TypeName("HrenyaSinclair");
+        //- Runtime type information
+        TypeName("Princeton");
 
 
     // Constructors
 
         //- Construct from components
-        HrenyaSinclair
-        (
-            const dictionary& dict,
-            const polydisperseKineticTheoryModel& kt
-        );
+        Princeton(const dictionary& dict, const polydisperseKineticTheoryModel&
+kt);
 
 
     //- Destructor
-    virtual ~HrenyaSinclair();
+    virtual ~Princeton();
 
 
-    // Member functions
+    // Member Functions
 
-        tmp<volScalarField> nu
+        tmp<volScalarField> kappa
         (
             const phaseModel& phase,
             const volScalarField& Theta,
@@ -99,7 +105,7 @@ public:
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-} // End namespace viscosityModels
+} // End namespace conductivityModels
 } // End namespace kineticTheoryModels
 } // End namespace Foam
 
