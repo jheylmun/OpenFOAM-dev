@@ -123,6 +123,7 @@ Foam::kineticTheoryModels::packingLimitModel::alphaMax() const
         {
             // Sort diameters from largest to smallest
             scalarList ds(phases.size());
+
             forAll(phases, phasei)
             {
                 ds[phasei] = dList[phasei][celli];

@@ -156,7 +156,6 @@ kineticTheory
 {
     name    Particles;
     residualAlpha   1e-4;
-    alphaMax        0.63;
 
     packingLimitModel       bidisperse;
     radialModel             Gao;

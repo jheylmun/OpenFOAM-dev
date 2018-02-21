@@ -89,19 +89,19 @@ PIMPLE
     pRefPoint       (0 0.99 0);
     pRefValue       1e5;
 
-    residualControl
-    {
-        "alpha.*"
-        {
-            tolerance   1e-8;
-            relTol      0;
-        }
-        p_rgh
-        {
-            tolerance   1e-4;
-            relTol      0;
-        }
-    }
+//     residualControl
+//     {
+//         "alpha.*"
+//         {
+//             tolerance   1e-8;
+//             relTol      0;
+//         }
+//         p_rgh
+//         {
+//             tolerance   1e-4;
+//             relTol      0;
+//         }
+//     }
 }
 
 relaxationFactors
