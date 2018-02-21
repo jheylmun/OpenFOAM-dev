@@ -86,37 +86,55 @@ bidispersePackingLimit::alphaMax
             << exit(FatalError);
     }
 
-    const phaseModel& phase1 = kt_.fluid().phases()[0];
-    const phaseModel& phase2 = kt_.fluid().phases()[1];
+     scalar alphap = kt_.alphap()[celli];
 
-    scalar alphaMax1 = phase1.alphaMax();
-    scalar alpha1 = phase1[celli];
-    scalar d1 = ds[0];
-
-    scalar alphaMax2 = phase2.alphaMax();
-    scalar alpha2 = phase2[celli];
-    scalar d2 = ds[1];
-
-    scalar Xi =
-        max
-        (
-            alpha1/max(alpha1 + alpha2, residualAlpha_),
-            alphaMax1/(alphaMax1 + (1.0 - alphaMax1)*alphaMax2)
-        );
-
-    scalar dByd = d1/d2;
-    if (d1 > d2)
+    if(alphap < kt_.fluid().phases()[0].residualAlpha().value())
     {
-        dByd = d2/d1;
+        return kt_.fluid().phases()[0].alphaMax();
     }
 
-    return
-        alphaMax1
-      + (1.0 - sqrt(dByd))
-       *(
-            alphaMax1
-          + (1.0 - alphaMax1)*alphaMax2
-        )*(1.0 - Xi);
+
+    const phaseModel& phase1 = kt_.fluid().phases()[0];
+    scalar alpha1 = phase1[celli];
+    scalar alphaMax1 = phase1.alphaMax();
+    scalar d1 = ds[0];
+    scalar cx1 = alpha1/max(alphap, residualAlpha_);
+
+    scalar alphaMax2 = kt_.fluid().phases()[1].alphaMax();
+    scalar d2 = ds[1];
+    scalar cx2 = 1.0 - cx1;
+
+    scalar cxMax = alphaMax1/(alphaMax1 + (1.0 - alphaMax1)*alphaMax2);
+
+    scalar r21;
+    if (d1 < d2)
+    {
+        r21 = d1/d2;
+    }
+    else
+    {
+        r21 = d2/d1;
+    }
+
+    if (cx1 <= cxMax)
+    {
+        return
+        (
+            (alphaMax1 - alphaMax2)
+          + (1.0 - sqrt(r21))*(1.0 - alphaMax1)*alphaMax2
+           *(alphaMax1 + (1.0 - alphaMax1)*alphaMax2)*cx1/alphaMax1
+          + alphaMax2
+        );
+    }
+    else
+    {
+        return
+        (
+            (1.0 - sqrt(r21))
+           *(alphaMax1 + (1.0 - alphaMax1)*alphaMax2)*cx2
+          + alphaMax2
+        );
+    }
 }
 
 

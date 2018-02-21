@@ -218,10 +218,10 @@ kineticTheory
 
     packingLimitModel       YuStandish;
     radialModel             Gao;
-    viscosityModel          Gidaspow;
-    conductivityModel       Gidaspow;
+    viscosityModel          Princeton;
+    conductivityModel       Princeton;
     granularPressureModel   Huilin;
-    frictionalStressModel   Schaeffer;
+    frictionalStressModel   JohnsonJackson;
 
     coeffRest
     (
@@ -253,6 +253,25 @@ kineticTheory
     }
 
     JohnsonJacksonCoeffs
+    {
+        alphaMinFriction        0.5;
+        Fr                      0.05;
+        eta                     2;
+        p                       5;
+        phi                     28.5;
+        alphaDeltaMin           0.05;
+    }
+
+    PrincetonCoeffs
+    {
+        alphaMinFrictionByAlphap 0.99;
+        alphaMinFriction        0.5;
+        Fr                      0.05;
+        eta                     2;
+        p                       5;
+        phi                     28.5;
+        alphaDeltaMin           0.05;
+    }Coeffs
     {
         alphaMinFriction        0.5;
         Fr                      0.05;

@@ -159,8 +159,8 @@ kineticTheory
 
     packingLimitModel       bidisperse;
     radialModel             Gao;
-    viscosityModel          Gidaspow;
-    conductivityModel       Gidaspow;
+    viscosityModel          Princeton;
+    conductivityModel       Princeton;
     granularPressureModel   Huilin;
     frictionalStressModel   JohnsonJackson;
 

@@ -92,7 +92,7 @@ YuStandishPackingLimit::alphaMax
         const phaseModel& phase1 = kt_.fluid().phases()[phasei];
         scalar alpha1 = phase1[celli];
 
-        if (alpha1 < phase1.residualAlpha().value())
+        if (alpha1 < SMALL)
         {
             continue;
         }

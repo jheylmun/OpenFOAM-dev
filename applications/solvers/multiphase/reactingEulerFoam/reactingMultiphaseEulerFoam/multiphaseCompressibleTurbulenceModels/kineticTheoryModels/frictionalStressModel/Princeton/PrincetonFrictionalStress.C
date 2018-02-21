@@ -70,6 +70,12 @@ Princeton
         "alphaMinFriction",
         dimless,
         coeffDict_
+    ),
+    alphaMinFrictionByAlphap_
+    (
+        "alphaMinFrictionByAlphap",
+        dimless,
+        coeffDict_
     )
 {
     phi_ *= constant::mathematical::pi/180.0;
@@ -97,11 +103,10 @@ frictionalPressure
     volScalarField alphaMinSchaefer(alphaMinFrictionByAlphap_*alphaMax);
 
     return
-        pos(alphap - alphaMinFriction_)*neg(alphap - alphaMinSchaefer)
+        neg(alphap - alphaMinSchaefer)
        *Fr_*pow(max(alphap - alphaMinFriction_, scalar(0)), eta_)
        /pow(max(alphaMax - alphap, alphaDeltaMin_), p_)
-      + pos(alphap - alphaMinFriction_)*pos(alphap - alphaMinSchaefer)
-       *dimensionedScalar("1e24", dimensionSet(1, -1, -2, 0, 0), 1e24)
+      + dimensionedScalar("1e24", dimensionSet(1, -1, -2, 0, 0), 1e24)
        *pow(Foam::max(alphap - alphaMinSchaefer, scalar(0)), 10.0);
 }
 
@@ -118,15 +123,14 @@ frictionalPressurePrime
     volScalarField alphaMinSchaefer(alphaMinFrictionByAlphap_*alphaMax);
 
     return
-        pos(alphap - alphaMinFriction_)*neg(alphap - alphaMinSchaefer)
+        neg(alphap - alphaMinSchaefer)
        *Fr_
        *(
             eta_*pow(max(alphap - alphaMinFriction_, scalar(0)), eta_ - 1.0)
            *(alphaMax - alphap)
           + p_*pow(max(alphap - alphaMinFriction_, scalar(0)), eta_)
         )/pow(max(alphaMax - alphap, alphaDeltaMin_), p_ + 1.0)
-      + pos(alphap - alphaMinFriction_)*pos(alphap - alphaMinSchaefer)
-       *dimensionedScalar("1e25", dimensionSet(1, -1, -2, 0, 0), 1e25)
+      + dimensionedScalar("1e25", dimensionSet(1, -1, -2, 0, 0), 1e25)
        *pow(Foam::max(alphap - alphaMinSchaefer, scalar(0)), 9.0);
 }
 
@@ -192,7 +196,7 @@ Foam::kineticTheoryModels::frictionalStressModels::Princeton::nu
         )
        *phase/max(alphap, phase.residualAlpha())
     );
-    tmp<volScalarField> Pc(PcByPf*pf);
+    tmp<volScalarField> Pc(PcByPf()*pf);
 
     forAll(D, celli)
     {
