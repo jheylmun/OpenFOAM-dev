@@ -150,9 +150,9 @@ Foam::kineticTheoryModels::viscosityModels::Princeton::nu
     (
         phase*g0*Theta*nu()
        /(
-            rho1*alphag0*Theta
-            + (2.0*Beta*nu())/(5.0*rho1*max(phase, phase.residualAlpha()))
-            + dimensionedScalar("small", dimensionSet(1, -1, -2, 0, 0), SMALL)
+            alphag0*Theta
+          + (2.0*Beta*nu())/(5.0*rho1*max(phase, phase.residualAlpha()))
+          + dimensionedScalar("small", dimensionSet(0, 2, -2, 0, 0), SMALL)
         )
     );
     return
