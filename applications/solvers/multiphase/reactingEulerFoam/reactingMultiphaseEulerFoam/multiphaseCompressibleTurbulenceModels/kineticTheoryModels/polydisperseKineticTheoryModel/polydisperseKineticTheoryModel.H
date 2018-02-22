@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2016 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -25,17 +25,9 @@ Class
     Foam::polydisperseKineticTheoryModel
 
 Description
-    Kinetic theory particle phase RAS model
-
-    Reference:
-    \verbatim
-        "Derivation, implementation, and validation of computer simulation
-         models for gas-solid fluidized beds",
-        van Wachem, B.G.M.,
-        Ph.D. Thesis, Delft University of Technology, Amsterdam, 2000.
-    \endverbatim
-
-    There are no default model coefficients.
+    Class to handle the interactions of all granular phases. All models
+    are stored within, and one model applies to all phases. The models are
+    read from the kineticTheory subDict in phase properties.
 
 SourceFiles
     polydisperseKineticTheoryModel.C

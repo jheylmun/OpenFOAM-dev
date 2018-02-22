@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2014-2015 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -22,27 +22,27 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::dragModels::TomiyamaAnalytic
+    Foam::dragModels::Chao
 
 Description
-    Analytical drag model of Tomiyama et al.
+    Solid-solid drag model by Chao et. al.
 
     Reference:
     \verbatim
-        "Drag Coefficients of Bubbles. 1st Report. Drag Coefficients of a
-         Single Bubble in a Stagnant Liquid."
-        Tomiyama, A., Kataoka, I., and Sakaguchi, T.,
-        Nippon Kikai Gakkai Ronbunshu
-        Volume 61, Issue 587, 1995, pp. 2357-2364
+        Chao, Z., Wang, Y., Jakobsen, J. P., Fernandino, M. & Jaksobsen, H. A.
+        (2011).
+        "Derivation and validation of a binary multi-fluid Eulerian model for
+        fluidized beds."
+        Chemical Engineering Science 66(16), 3605-3616
     \endverbatim
 
 SourceFiles
-    Chao.C
+    ChaoDrag.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef Chao_H
-#define Chao_H
+#ifndef ChaoDrag_H
+#define ChaoDrag_H
 
 #include "dragModel.H"
 

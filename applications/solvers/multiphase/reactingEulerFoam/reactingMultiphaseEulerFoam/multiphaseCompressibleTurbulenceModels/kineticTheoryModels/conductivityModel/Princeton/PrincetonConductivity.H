@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2015 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -25,6 +25,13 @@ Class
     Foam::kineticTheoryModels::conductivityModels::Princeton
 
 Description
+
+    Reference:
+    \verbatim
+        Agrawal, K., Loezos, P. N., Syamlal, M. & Sundaresan, S. (2001).
+        "The role of meso-scale structures in rapid gas–solid flows",
+        Journal of Fluid Mechanics, 445, 151-185.
+    \endverbatim
 
 SourceFiles
     PrincetonConductivity.C

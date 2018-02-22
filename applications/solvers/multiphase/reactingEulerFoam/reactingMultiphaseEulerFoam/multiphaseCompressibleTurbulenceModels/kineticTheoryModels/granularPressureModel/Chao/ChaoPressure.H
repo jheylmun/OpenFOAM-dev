@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2015 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -26,13 +26,22 @@ Class
 
 Description
 
+    Reference:
+    \verbatim
+        Chao, Z., Wang, Y., Jakobsen, J. P., Fernandino, M. & Jaksobsen, H. A.
+        (2011).
+        "Derivation and validation of a binary multi-fluid Eulerian model for
+        fluidized beds."
+        Chemical Engineering Science 66(16), 3605-3616
+    \endverbatim
+
 SourceFiles
     ChaoPressure.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef Chao_H
-#define Chao_H
+#ifndef ChaoPressure_H
+#define ChaoPressure_H
 
 #include "granularPressureModel.H"
 

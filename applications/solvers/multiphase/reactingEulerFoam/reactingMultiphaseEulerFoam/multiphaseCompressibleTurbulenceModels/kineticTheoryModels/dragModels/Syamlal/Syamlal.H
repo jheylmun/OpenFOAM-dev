@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2014-2015 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -22,27 +22,28 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::dragModels::TomiyamaAnalytic
+    Foam::dragModels::Syamlal
 
 Description
-    Analytical drag model of Tomiyama et al.
+    Solid-sold drag model by Syamlal
 
     Reference:
     \verbatim
-        "Drag Coefficients of Bubbles. 1st Report. Drag Coefficients of a
-         Single Bubble in a Stagnant Liquid."
-        Tomiyama, A., Kataoka, I., and Sakaguchi, T.,
-        Nippon Kikai Gakkai Ronbunshu
-        Volume 61, Issue 587, 1995, pp. 2357-2364
+        Syamlal, M. (1987).
+        "The particle-particle drag term in a multiparticle model of
+        fluidization."
+        Topical Report, DOE/MC/21353-2373, NTIS/DE87006500,
+        National Technical Information Service, Springfield, VA.
+
     \endverbatim
 
 SourceFiles
-    Syamlal.C
+    SyamlalDrag.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef Syamlal_H
-#define Syamlal_H
+#ifndef SyamlalDrag_H
+#define SyamlalDrag_H
 
 #include "dragModel.H"
 
