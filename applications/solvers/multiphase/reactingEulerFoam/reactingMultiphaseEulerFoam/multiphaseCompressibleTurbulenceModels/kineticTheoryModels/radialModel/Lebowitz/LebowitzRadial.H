@@ -22,9 +22,17 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::Lebowitz
+    Foam::kineticTheoryModels::radialModels::Lebowitz
 
 Description
+
+    Reference:
+    \verbatim
+        Lebowitz, J. L. (1964).
+        "Exact Solution of Generalized Percus-Yevick Equation for a Mixture of
+        Hard Spheres",
+        Physical Review 133(I4), A895-A899
+    \endverbatim
 
 SourceFiles
     LebowitzRadial.C

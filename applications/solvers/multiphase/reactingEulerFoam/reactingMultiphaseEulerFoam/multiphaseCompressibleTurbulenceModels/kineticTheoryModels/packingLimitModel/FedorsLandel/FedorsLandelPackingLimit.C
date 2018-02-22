@@ -23,7 +23,7 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "bidispersePackingLimit.H"
+#include "FedorsLandelPackingLimit.H"
 #include "addToRunTimeSelectionTable.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
@@ -34,12 +34,12 @@ namespace kineticTheoryModels
 {
 namespace packingLimitModels
 {
-    defineTypeNameAndDebug(bidispersePackingLimit, 0);
+    defineTypeNameAndDebug(FedorsLandel, 0);
 
     addToRunTimeSelectionTable
     (
         packingLimitModel,
-        bidispersePackingLimit,
+        FedorsLandel,
         dictionary
     );
 }
@@ -49,8 +49,7 @@ namespace packingLimitModels
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::kineticTheoryModels::packingLimitModels::
-bidispersePackingLimit::bidispersePackingLimit
+Foam::kineticTheoryModels::packingLimitModels::FedorsLandel::FedorsLandel
 (
     const dictionary& dict,
     const polydisperseKineticTheoryModel& kt
@@ -63,16 +62,14 @@ bidispersePackingLimit::bidispersePackingLimit
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-Foam::kineticTheoryModels::packingLimitModels::
-bidispersePackingLimit::~bidispersePackingLimit()
+Foam::kineticTheoryModels::packingLimitModels::FedorsLandel::~FedorsLandel()
 {}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 Foam::scalar
-Foam::kineticTheoryModels::packingLimitModels::
-bidispersePackingLimit::alphaMax
+Foam::kineticTheoryModels::packingLimitModels::FedorsLandel::alphaMax
 (
     const label celli,
     const scalarList& ds
@@ -81,7 +78,7 @@ bidispersePackingLimit::alphaMax
     if (ds.size() != 2)
     {
         FatalErrorInFunction
-            << typeName << " packing limit model only supports bidisperse "
+            << typeName << " packing limit model only supports bi-disperse "
             << "particle distributions, " << ds.size() << " in use."
             << exit(FatalError);
     }
@@ -138,8 +135,7 @@ bidispersePackingLimit::alphaMax
 }
 
 
-bool Foam::kineticTheoryModels::packingLimitModels::
-bidispersePackingLimit::read()
+bool Foam::kineticTheoryModels::packingLimitModels::FedorsLandel::read()
 {
     return true;
 }

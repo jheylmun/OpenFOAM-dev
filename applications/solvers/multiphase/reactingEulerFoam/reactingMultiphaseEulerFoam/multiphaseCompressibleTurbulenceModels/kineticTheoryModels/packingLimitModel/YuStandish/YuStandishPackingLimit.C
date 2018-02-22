@@ -34,12 +34,12 @@ namespace kineticTheoryModels
 {
 namespace packingLimitModels
 {
-    defineTypeNameAndDebug(YuStandishPackingLimit, 0);
+    defineTypeNameAndDebug(YuStandish, 0);
 
     addToRunTimeSelectionTable
     (
         packingLimitModel,
-        YuStandishPackingLimit,
+        YuStandish,
         dictionary
     );
 }
@@ -49,8 +49,7 @@ namespace packingLimitModels
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::kineticTheoryModels::packingLimitModels::
-YuStandishPackingLimit::YuStandishPackingLimit
+Foam::kineticTheoryModels::packingLimitModels::YuStandish::YuStandish
 (
     const dictionary& dict,
     const polydisperseKineticTheoryModel& kt
@@ -63,16 +62,14 @@ YuStandishPackingLimit::YuStandishPackingLimit
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-Foam::kineticTheoryModels::packingLimitModels::
-YuStandishPackingLimit::~YuStandishPackingLimit()
+Foam::kineticTheoryModels::packingLimitModels::YuStandish::~YuStandish()
 {}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 Foam::scalar
-Foam::kineticTheoryModels::packingLimitModels::
-YuStandishPackingLimit::alphaMax
+Foam::kineticTheoryModels::packingLimitModels::YuStandish::alphaMax
 (
     const label celli,
     const scalarList& ds
@@ -143,8 +140,7 @@ YuStandishPackingLimit::alphaMax
 }
 
 
-bool Foam::kineticTheoryModels::packingLimitModels::
-YuStandishPackingLimit::read()
+bool Foam::kineticTheoryModels::packingLimitModels::YuStandish::read()
 {
     return true;
 }

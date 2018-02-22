@@ -35,12 +35,12 @@ namespace kineticTheoryModels
 {
 namespace packingLimitModels
 {
-    defineTypeNameAndDebug(constantPackingLimit, 0);
+    defineTypeNameAndDebug(constant, 0);
 
     addToRunTimeSelectionTable
     (
         packingLimitModel,
-        constantPackingLimit,
+        constant,
         dictionary
     );
 }
@@ -50,8 +50,7 @@ namespace packingLimitModels
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::kineticTheoryModels::packingLimitModels::
-constantPackingLimit::constantPackingLimit
+Foam::kineticTheoryModels::packingLimitModels::constant::constant
 (
     const dictionary& dict,
     const polydisperseKineticTheoryModel& kt
@@ -64,16 +63,14 @@ constantPackingLimit::constantPackingLimit
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-Foam::kineticTheoryModels::packingLimitModels::
-constantPackingLimit::~constantPackingLimit()
+Foam::kineticTheoryModels::packingLimitModels::constant::~constant()
 {}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 Foam::scalar
-Foam::kineticTheoryModels::packingLimitModels::
-constantPackingLimit::alphaMax
+Foam::kineticTheoryModels::packingLimitModels::constant::alphaMax
 (
     const label celli,
     const scalarList& ds
@@ -83,8 +80,7 @@ constantPackingLimit::alphaMax
 }
 
 
-bool Foam::kineticTheoryModels::packingLimitModels::
-constantPackingLimit::read()
+bool Foam::kineticTheoryModels::packingLimitModels::constant::read()
 {
     maxAlpha_ = dict_.lookupType<scalar>("alphaMax");
 

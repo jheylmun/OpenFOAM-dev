@@ -22,9 +22,17 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::kineticTheoryModels::packingLimitModels::YuStandishPackingLimit
+    Foam::kineticTheoryModels::packingLimitModels::YuStandish
 
 Description
+
+    Reference:
+    \verbatim
+        Yu, A. B. and Standish, N. (1987).
+        "Porosity calculations of multi-component mixtures of spherical
+        particles."
+        Powder Technology 52(3), 233-241
+    \endverbatim
 
 SourceFiles
     YuStandishPackingLimit.C
@@ -46,10 +54,10 @@ namespace packingLimitModels
 {
 
 /*---------------------------------------------------------------------------*\
-               Class YuStandishPackingLimit Declaration
+                        Class YuStandish Declaration
 \*---------------------------------------------------------------------------*/
 
-class YuStandishPackingLimit
+class YuStandish
 :
     public packingLimitModel
 {
@@ -68,7 +76,7 @@ public:
     // Constructors
 
         //- Construct from components
-        YuStandishPackingLimit
+        YuStandish
         (
             const dictionary& dict,
             const polydisperseKineticTheoryModel& kt
@@ -76,7 +84,7 @@ public:
 
 
     //- Destructor
-    virtual ~YuStandishPackingLimit();
+    virtual ~YuStandish();
 
 
     // Member functions

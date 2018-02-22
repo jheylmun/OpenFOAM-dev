@@ -22,17 +22,26 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::kineticTheoryModels::packingLimitModels::bidispersePackingLimit
+    Foam::kineticTheoryModels::packingLimitModels::FedorsLandel
 
 Description
+    Packing limit for a bi-disperse particle mixture
+
+    Reference:
+    \verbatim
+        Fedors, R. F. and Landel, R. F. (1979).
+        "An Empirical method of estimating the void fraction in mixtures of
+        uniform particles of different size."
+        Powder Technology 23(2), 225-231
+    \endverbatim
 
 SourceFiles
-    bidispersePackingLimit.C
+    FedorsLandelPackingLimit.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef bidispersePackingLimit_H
-#define bidispersePackingLimit_H
+#ifndef FedorsLandelPackingLimit_H
+#define FedorsLandelPackingLimit_H
 
 #include "packingLimitModel.H"
 
@@ -46,10 +55,10 @@ namespace packingLimitModels
 {
 
 /*---------------------------------------------------------------------------*\
-               Class bidispersePackingLimit Declaration
+                        Class FedorsLandel Declaration
 \*---------------------------------------------------------------------------*/
 
-class bidispersePackingLimit
+class FedorsLandel
 :
     public packingLimitModel
 {
@@ -62,13 +71,13 @@ class bidispersePackingLimit
 public:
 
     //- Runtime type information
-    TypeName("bidisperse");
+    TypeName("FedorsLandel");
 
 
     // Constructors
 
         //- Construct from components
-        bidispersePackingLimit
+        FedorsLandel
         (
             const dictionary& dict,
             const polydisperseKineticTheoryModel& kt
@@ -76,7 +85,7 @@ public:
 
 
     //- Destructor
-    virtual ~bidispersePackingLimit();
+    virtual ~FedorsLandel();
 
 
     // Member functions

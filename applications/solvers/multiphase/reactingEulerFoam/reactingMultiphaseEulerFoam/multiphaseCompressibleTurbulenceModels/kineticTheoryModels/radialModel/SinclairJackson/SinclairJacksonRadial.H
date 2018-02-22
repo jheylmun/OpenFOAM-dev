@@ -22,7 +22,7 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::SinclairJackson
+    Foam::kineticTheoryModels::radialModels::SinclairJackson
 
 Description
 

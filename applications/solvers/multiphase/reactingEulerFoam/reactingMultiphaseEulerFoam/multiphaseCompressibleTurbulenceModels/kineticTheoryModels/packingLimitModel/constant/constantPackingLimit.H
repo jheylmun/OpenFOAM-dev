@@ -22,9 +22,10 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::kineticTheoryModels::packingLimitModels::constantPackingLimit
+    Foam::kineticTheoryModels::packingLimitModels::constant
 
 Description
+    Constant packing limit
 
 SourceFiles
     constantPackingLimit.C
@@ -49,12 +50,13 @@ namespace packingLimitModels
                Class constantPackingLimit Declaration
 \*---------------------------------------------------------------------------*/
 
-class constantPackingLimit
+class constant
 :
     public packingLimitModel
 {
     // Private data
 
+        //- Maximum particle volume fraction
         scalar maxAlpha_;
 
 
@@ -67,7 +69,7 @@ public:
     // Constructors
 
         //- Construct from components
-        constantPackingLimit
+        constant
         (
             const dictionary& dict,
             const polydisperseKineticTheoryModel& kt
@@ -75,7 +77,7 @@ public:
 
 
     //- Destructor
-    virtual ~constantPackingLimit();
+    virtual ~constant();
 
 
     // Member functions
