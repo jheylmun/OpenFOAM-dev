@@ -55,7 +55,7 @@ Foam::kineticTheoryModels::frictionalStressModels::Princeton::
 Princeton
 (
     const dictionary& dict,
-    const polydisperseKineticTheoryModel& kt
+    const multiphaseKineticTheorySystem& kt
 )
 :
     frictionalStressModel(dict, kt),

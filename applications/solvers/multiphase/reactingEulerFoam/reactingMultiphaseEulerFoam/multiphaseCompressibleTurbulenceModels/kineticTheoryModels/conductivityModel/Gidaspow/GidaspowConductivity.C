@@ -53,7 +53,7 @@ namespace conductivityModels
 Foam::kineticTheoryModels::conductivityModels::Gidaspow::Gidaspow
 (
     const dictionary& dict,
-    const polydisperseKineticTheoryModel& kt
+    const multiphaseKineticTheorySystem& kt
 )
 :
     conductivityModel(dict, kt)

@@ -46,7 +46,7 @@ namespace kineticTheoryModels
 Foam::kineticTheoryModels::packingLimitModel::packingLimitModel
 (
     const dictionary& dict,
-    const polydisperseKineticTheoryModel& kt
+    const multiphaseKineticTheorySystem& kt
 )
 :
     constantDiameters_(dict.lookupOrDefault("constantDiameters", true)),

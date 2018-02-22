@@ -31,7 +31,7 @@ Foam::autoPtr<Foam::kineticTheoryModels::frictionalStressModel>
 Foam::kineticTheoryModels::frictionalStressModel::New
 (
     const dictionary& dict,
-    const polydisperseKineticTheoryModel& kt
+    const multiphaseKineticTheorySystem& kt
 )
 {
     word frictionalStressModelType(dict.lookup("frictionalStressModel"));

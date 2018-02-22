@@ -38,7 +38,7 @@ SourceFiles
 #include "volFields.H"
 #include "dimensionedTypes.H"
 #include "runTimeSelectionTables.H"
-#include "polydisperseKineticTheoryModel.H"
+#include "multiphaseKineticTheorySystem.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -68,7 +68,7 @@ protected:
 
         const dictionary& dict_;
 
-        const polydisperseKineticTheoryModel& kt_;
+        const multiphaseKineticTheorySystem& kt_;
 
 
 public:
@@ -84,7 +84,7 @@ public:
         dictionary,
         (
             const dictionary& dict,
-            const polydisperseKineticTheoryModel& kt
+            const multiphaseKineticTheorySystem& kt
         ),
         (dict, kt)
     );
@@ -96,7 +96,7 @@ public:
         viscosityModel
         (
             const dictionary& dict,
-            const polydisperseKineticTheoryModel& kt
+            const multiphaseKineticTheorySystem& kt
         );
 
 
@@ -105,7 +105,7 @@ public:
         static autoPtr<viscosityModel> New
         (
             const dictionary& dict,
-            const polydisperseKineticTheoryModel& kt
+            const multiphaseKineticTheorySystem& kt
         );
 
 

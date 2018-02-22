@@ -25,7 +25,7 @@ License
 
 #include "multiphaseSystem.H"
 #include "alphaContactAngleFvPatchScalarField.H"
-#include "polydisperseKineticTheoryModel.H"
+#include "multiphaseKineticTheorySystem.H"
 
 #include "MULES.H"
 #include "subCycle.H"
@@ -178,10 +178,10 @@ void Foam::multiphaseSystem::solveAlphas(const bool polydisperse)
     // Limit total granular flux
     if(polydisperse)
     {
-        polydisperseKineticTheoryModel& kineticTheoryModel =
-            mesh_.lookupObjectRef<polydisperseKineticTheoryModel>
+        multiphaseKineticTheorySystem& kineticTheoryModel =
+            mesh_.lookupObjectRef<multiphaseKineticTheorySystem>
             (
-                "polydisperseKineticTheory"
+                "kineticTheorySystem"
             );
 
         kineticTheoryModel.correctAlphap();
@@ -349,10 +349,10 @@ void Foam::multiphaseSystem::solveAlphas(const bool polydisperse)
     //- Final correction of total granular volume fraction
     if(polydisperse)
     {
-        polydisperseKineticTheoryModel& kineticTheoryModel =
-            mesh_.lookupObjectRef<polydisperseKineticTheoryModel>
+        multiphaseKineticTheorySystem& kineticTheoryModel =
+            mesh_.lookupObjectRef<multiphaseKineticTheorySystem>
             (
-                "polydisperseKineticTheory"
+                "kineticTheorySystem"
             );
 
         kineticTheoryModel.correctAlphap();
@@ -683,17 +683,17 @@ void Foam::multiphaseSystem::solve()
     bool LTS = fv::localEulerDdt::enabled(mesh_);
 
     bool polydisperse =
-    mesh_.foundObject<polydisperseKineticTheoryModel>
+    mesh_.foundObject<multiphaseKineticTheorySystem>
     (
-        "polydisperseKineticTheory"
+        "kineticTheorySystem"
     );
 
     if (polydisperse)
     {
         polydisperse =
-        mesh_.lookupObject<polydisperseKineticTheoryModel>
+        mesh_.lookupObject<multiphaseKineticTheorySystem>
         (
-            "polydisperseKineticTheory"
+            "kineticTheorySystem"
         ).polydisperse();
     }
 

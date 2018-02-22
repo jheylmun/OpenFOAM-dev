@@ -68,7 +68,11 @@ public:
     // Constructors
 
         //- Construct from components
-        HrenyaSinclair(const dictionary& dict);
+        HrenyaSinclair
+        (
+            const dictionary& dict,
+            const multiphaseKineticTheorySystem& kt
+        );
 
 
     //- Destructor
@@ -79,7 +83,7 @@ public:
 
         tmp<volScalarField> kappa
         (
-            const volScalarField& alpha1,
+            const phaseModel& alpha1,
             const volScalarField& Theta,
             const volScalarField& g0,
             const volScalarField& rho1,

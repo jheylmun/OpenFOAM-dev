@@ -71,7 +71,7 @@ public:
     // Constructors
 
         //- Construct from components
-        Chao(const dictionary& dict, const polydisperseKineticTheoryModel& kt);
+        Chao(const dictionary& dict, const multiphaseKineticTheorySystem& kt);
 
 
     //- Destructor

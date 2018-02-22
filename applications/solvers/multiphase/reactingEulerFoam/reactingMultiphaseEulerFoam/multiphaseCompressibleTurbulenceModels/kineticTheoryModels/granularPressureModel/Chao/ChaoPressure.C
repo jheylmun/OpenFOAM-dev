@@ -52,7 +52,7 @@ namespace granularPressureModels
 Foam::kineticTheoryModels::granularPressureModels::Chao::Chao
 (
     const dictionary& dict,
-    const polydisperseKineticTheoryModel& kt
+    const multiphaseKineticTheorySystem& kt
 )
 :
     granularPressureModel(dict, kt)

@@ -43,7 +43,7 @@ namespace kineticTheoryModels
 Foam::kineticTheoryModels::granularPressureModel::granularPressureModel
 (
     const dictionary& dict,
-    const polydisperseKineticTheoryModel& kt
+    const multiphaseKineticTheorySystem& kt
 )
 :
     dict_(dict),

@@ -52,7 +52,7 @@ namespace radialModels
 Foam::kineticTheoryModels::radialModels::Gao::Gao
 (
     const dictionary& dict,
-    const polydisperseKineticTheoryModel& kt
+    const multiphaseKineticTheorySystem& kt
 )
 :
     radialModel(dict, kt),

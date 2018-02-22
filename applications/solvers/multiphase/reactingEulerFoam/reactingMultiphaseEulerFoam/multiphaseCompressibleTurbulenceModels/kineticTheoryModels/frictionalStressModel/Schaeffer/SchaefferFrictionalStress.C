@@ -52,7 +52,7 @@ namespace frictionalStressModels
 Foam::kineticTheoryModels::frictionalStressModels::Schaeffer::Schaeffer
 (
     const dictionary& dict,
-    const polydisperseKineticTheoryModel& kt
+    const multiphaseKineticTheorySystem& kt
 )
 :
     frictionalStressModel(dict, kt),

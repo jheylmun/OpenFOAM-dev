@@ -24,7 +24,6 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "kineticTheoryModel.H"
-#include "polydisperseKineticTheoryModel.H"
 #include "mathematicalConstants.H"
 #include "multiphaseSystem.H"
 #include "fvOptions.H"
@@ -32,7 +31,7 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::polydisperseKineticTheoryModel&
+Foam::multiphaseKineticTheorySystem&
 Foam::RASModels::kineticTheoryModel::lookupOrConstruct
 (
     const char* name
@@ -41,9 +40,9 @@ Foam::RASModels::kineticTheoryModel::lookupOrConstruct
 
     if (!mesh_.objectRegistry::foundObject<volScalarField>(name))
     {
-        polydisperseKineticTheoryModel* ktPtr
+        multiphaseKineticTheorySystem* ktPtr
         (
-            new polydisperseKineticTheoryModel(phase_.fluid())
+            new multiphaseKineticTheorySystem(phase_.fluid())
         );
 
         // Transfer ownership of this object to the objectRegistry
@@ -51,7 +50,7 @@ Foam::RASModels::kineticTheoryModel::lookupOrConstruct
     }
 
     return
-        mesh_.objectRegistry::lookupObjectRef<polydisperseKineticTheoryModel>
+        mesh_.objectRegistry::lookupObjectRef<multiphaseKineticTheorySystem>
         (name);
 }
 
@@ -84,7 +83,7 @@ Foam::RASModels::kineticTheoryModel::kineticTheoryModel
 
     phase_(phase),
 
-    KTs_(lookupOrConstruct("polydisperseKineticTheory")),
+    KTs_(lookupOrConstruct("kineticTheorySystem")),
     equilibrium_(coeffDict_.lookup("equilibrium")),
     residualAlpha_(KTs_.residualAlpha()),
 

@@ -31,7 +31,7 @@ Foam::autoPtr<Foam::kineticTheoryModels::packingLimitModel>
 Foam::kineticTheoryModels::packingLimitModel::New
 (
     const dictionary& dict,
-    const polydisperseKineticTheoryModel& kt
+    const multiphaseKineticTheorySystem& kt
 )
 {
     word packingLimitModelType(dict.lookup("packingLimitModel"));

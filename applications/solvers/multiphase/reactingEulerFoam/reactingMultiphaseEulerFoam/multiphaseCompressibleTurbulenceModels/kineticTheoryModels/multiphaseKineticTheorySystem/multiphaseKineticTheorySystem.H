@@ -22,7 +22,7 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::polydisperseKineticTheoryModel
+    Foam::multiphaseKineticTheorySystem
 
 Description
     Class to handle the interactions of all granular phases. All models
@@ -30,12 +30,12 @@ Description
     read from the kineticTheory subDict in phase properties.
 
 SourceFiles
-    polydisperseKineticTheoryModel.C
+    multiphaseKineticTheorySystem.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef polydisperseKineticTheoryModel_H
-#define polydisperseKineticTheoryModel_H
+#ifndef multiphaseKineticTheorySystem_H
+#define multiphaseKineticTheorySystem_H
 
 #include "phaseSystem.H"
 #include "phaseModel.H"
@@ -64,10 +64,10 @@ namespace kineticTheoryModels
 }
 
 /*---------------------------------------------------------------------------*\
-                 Class polydisperseKineticTheoryModel Declaration
+                 Class multiphaseKineticTheorySystem Declaration
 \*---------------------------------------------------------------------------*/
 
-class polydisperseKineticTheoryModel
+class multiphaseKineticTheorySystem
 :
     public regIOobject
 {
@@ -167,13 +167,13 @@ class polydisperseKineticTheoryModel
     // Private Member Functions
 
         //- Disallow default bitwise copy construct
-        polydisperseKineticTheoryModel
+        multiphaseKineticTheorySystem
         (
-            const polydisperseKineticTheoryModel& fluid
+            const multiphaseKineticTheorySystem& fluid
         );
 
         //- Disallow default bitwise assignment
-        void operator=(const polydisperseKineticTheoryModel&);
+        void operator=(const multiphaseKineticTheorySystem&);
 
         //- Compute the packing limit for phase1 and phase2
         scalar calcAlphaMax(const label, const label, const scalarList&) const;
@@ -188,11 +188,11 @@ public:
     // Constructors
 
         //- Construct from components
-        polydisperseKineticTheoryModel(const phaseSystem&);
+        multiphaseKineticTheorySystem(const phaseSystem&);
 
 
     //- Destructor
-    ~polydisperseKineticTheoryModel();
+    ~multiphaseKineticTheorySystem();
 
 
     // Member Functions

@@ -52,7 +52,7 @@ SourceFiles
 #include "phaseModel.H"
 #include "phasePairKey.H"
 #include "dragModel.H"
-#include "polydisperseKineticTheoryModel.H"
+#include "multiphaseKineticTheorySystem.H"
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -98,7 +98,7 @@ class kineticTheoryModel
             const phaseModel& phase_;
 
             //- Pointer to central kineticTheory model
-            polydisperseKineticTheoryModel& KTs_;
+            multiphaseKineticTheorySystem& KTs_;
 
 
         // Kinetic Theory Model coefficients
@@ -139,8 +139,8 @@ class kineticTheoryModel
         //- Disallow default bitwise assignment
         void operator=(const kineticTheoryModel&);
 
-        //- Lookup or construct polydisperse kinetic phase model
-        polydisperseKineticTheoryModel& lookupOrConstruct(const char*) const;
+        //- Lookup or construct multiphaseKineticTheorySystem
+        multiphaseKineticTheorySystem& lookupOrConstruct(const char*) const;
 
 
 public:
@@ -212,7 +212,7 @@ public:
         //- Solve the kinetic theory equations and correct the viscosity
         virtual void correct();
 
-    // Functions used in polydisperseKineticTheoryModel class
+    // Functions used in multiphaseKineticTheorySystem class
 
         //- Return phase model
         const phaseModel& phase() const

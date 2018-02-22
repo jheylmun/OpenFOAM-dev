@@ -54,7 +54,7 @@ Foam::kineticTheoryModels::frictionalStressModels::JohnsonJackson::
 JohnsonJackson
 (
     const dictionary& dict,
-    const polydisperseKineticTheoryModel& kt
+    const multiphaseKineticTheorySystem& kt
 )
 :
     frictionalStressModel(dict, kt),

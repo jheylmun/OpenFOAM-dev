@@ -26,7 +26,7 @@ License
 #include "Chao.H"
 #include "phasePair.H"
 #include "addToRunTimeSelectionTable.H"
-#include "polydisperseKineticTheoryModel.H"
+#include "multiphaseKineticTheorySystem.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
@@ -78,11 +78,11 @@ Foam::tmp<Foam::volScalarField> Foam::dragModels::Chao::K() const
     const phaseModel& phase1 = pair_.phase1();
     const phaseModel& phase2 = pair_.phase2();
 
-    const polydisperseKineticTheoryModel& kt
+    const multiphaseKineticTheorySystem& kt
     (
-        mesh.lookupObject<polydisperseKineticTheoryModel>
+        mesh.lookupObject<multiphaseKineticTheorySystem>
         (
-            "polydisperseKineticTheory"
+            "kineticTheorySystem"
         )
     );
 

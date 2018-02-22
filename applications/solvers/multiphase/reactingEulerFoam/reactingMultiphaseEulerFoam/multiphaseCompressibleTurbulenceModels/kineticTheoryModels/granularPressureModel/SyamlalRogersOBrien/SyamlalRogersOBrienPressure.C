@@ -53,7 +53,7 @@ Foam::kineticTheoryModels::granularPressureModels::SyamlalRogersOBrien::
 SyamlalRogersOBrien
 (
     const dictionary& dict,
-    const polydisperseKineticTheoryModel& kt
+    const multiphaseKineticTheorySystem& kt
 )
 :
     granularPressureModel(dict, kt)

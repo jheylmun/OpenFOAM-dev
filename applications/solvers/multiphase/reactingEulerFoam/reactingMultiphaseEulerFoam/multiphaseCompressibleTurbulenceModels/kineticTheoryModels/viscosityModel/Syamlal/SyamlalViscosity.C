@@ -47,7 +47,7 @@ namespace viscosityModels
 Foam::kineticTheoryModels::viscosityModels::Syamlal::Syamlal
 (
     const dictionary& dict,
-    const polydisperseKineticTheoryModel& kt
+    const multiphaseKineticTheorySystem& kt
 )
 :
     viscosityModel(dict, kt)

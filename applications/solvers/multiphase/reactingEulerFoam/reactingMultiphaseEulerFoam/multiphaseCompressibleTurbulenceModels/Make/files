@@ -1,7 +1,7 @@
 multiphaseCompressibleTurbulenceModels.C
 
 kineticTheoryModels/kineticTheoryModel/kineticTheoryModel.C
-kineticTheoryModels/polydisperseKineticTheoryModel/polydisperseKineticTheoryModel.C
+kineticTheoryModels/multiphaseKineticTheorySystem/multiphaseKineticTheorySystem.C
 
 kineticTheoryModels/packingLimitModel/packingLimitModel/packingLimitModel.C
 kineticTheoryModels/packingLimitModel/packingLimitModel/newPackingLimitModel.C

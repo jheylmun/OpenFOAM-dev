@@ -92,7 +92,7 @@ public:
         JohnsonJacksonSchaeffer
         (
             const dictionary& dict,
-            const polydisperseKineticTheoryModel& kt
+            const multiphaseKineticTheorySystem& kt
         );
 
 

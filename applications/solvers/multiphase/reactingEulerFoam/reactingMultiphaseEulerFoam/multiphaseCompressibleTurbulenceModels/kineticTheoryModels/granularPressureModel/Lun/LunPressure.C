@@ -52,7 +52,7 @@ namespace granularPressureModels
 Foam::kineticTheoryModels::granularPressureModels::Lun::Lun
 (
     const dictionary& dict,
-    const polydisperseKineticTheoryModel& kt
+    const multiphaseKineticTheorySystem& kt
 )
 :
     granularPressureModel(dict, kt)

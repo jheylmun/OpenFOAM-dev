@@ -52,10 +52,11 @@ namespace conductivityModels
 
 Foam::kineticTheoryModels::conductivityModels::HrenyaSinclair::HrenyaSinclair
 (
-    const dictionary& dict
+    const dictionary& dict,
+    const multiphaseKineticTheorySystem& kt
 )
 :
-    conductivityModel(dict),
+    conductivityModel(dict, kt),
     coeffDict_(dict.optionalSubDict(typeName + "Coeffs")),
     L_("L", dimensionSet(0, 1, 0, 0, 0), coeffDict_)
 {}
@@ -73,7 +74,7 @@ Foam::kineticTheoryModels::conductivityModels::HrenyaSinclair::
 Foam::tmp<Foam::volScalarField>
 Foam::kineticTheoryModels::conductivityModels::HrenyaSinclair::kappa
 (
-    const volScalarField& alpha1,
+    const phaseModel& alpha1,
     const volScalarField& Theta,
     const volScalarField& g0,
     const volScalarField& rho1,

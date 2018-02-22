@@ -31,7 +31,7 @@ Foam::autoPtr<Foam::kineticTheoryModels::radialModel>
 Foam::kineticTheoryModels::radialModel::New
 (
     const dictionary& dict,
-    const polydisperseKineticTheoryModel& kt
+    const multiphaseKineticTheorySystem& kt
 )
 {
     word radialModelType(dict.lookup("radialModel"));

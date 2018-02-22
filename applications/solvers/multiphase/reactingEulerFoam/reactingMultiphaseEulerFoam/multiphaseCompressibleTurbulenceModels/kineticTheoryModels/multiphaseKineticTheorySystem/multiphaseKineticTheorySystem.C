@@ -23,7 +23,7 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "polydisperseKineticTheoryModel.H"
+#include "multiphaseKineticTheorySystem.H"
 #include "kineticTheoryModel.H"
 #include "multiphaseSystem.H"
 #include "packingLimitModel.H"
@@ -40,7 +40,7 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::polydisperseKineticTheoryModel::polydisperseKineticTheoryModel
+Foam::multiphaseKineticTheorySystem::multiphaseKineticTheorySystem
 (
     const phaseSystem& fluid
 )
@@ -49,7 +49,7 @@ Foam::polydisperseKineticTheoryModel::polydisperseKineticTheoryModel
     (
         IOobject
         (
-            "polydisperseKineticTheory",
+            "kineticTheorySystem",
             fluid.mesh().time().timeName(),
             fluid.mesh(),
             IOobject::NO_READ,
@@ -185,13 +185,13 @@ Foam::polydisperseKineticTheoryModel::polydisperseKineticTheoryModel
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-Foam::polydisperseKineticTheoryModel::~polydisperseKineticTheoryModel()
+Foam::multiphaseKineticTheorySystem::~multiphaseKineticTheorySystem()
 {}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-bool Foam::polydisperseKineticTheoryModel::read()
+bool Foam::multiphaseKineticTheorySystem::read()
 {
     if (fluid_.modified())
     {
@@ -212,13 +212,13 @@ bool Foam::polydisperseKineticTheoryModel::read()
 }
 
 
-bool Foam::polydisperseKineticTheoryModel::polydisperse() const
+bool Foam::multiphaseKineticTheorySystem::polydisperse() const
 {
     return (phases_.size() > 1);
 }
 
 
-Foam::tmp<Foam::volScalarField> Foam::polydisperseKineticTheoryModel::gs0
+Foam::tmp<Foam::volScalarField> Foam::multiphaseKineticTheorySystem::gs0
 (
     const phaseModel& phase1,
     const phaseModel& phase2
@@ -228,7 +228,7 @@ Foam::tmp<Foam::volScalarField> Foam::polydisperseKineticTheoryModel::gs0
 }
 
 
-Foam::tmp<Foam::volScalarField> Foam::polydisperseKineticTheoryModel::gs0Prime
+Foam::tmp<Foam::volScalarField> Foam::multiphaseKineticTheorySystem::gs0Prime
 (
     const phaseModel& phase1,
     const phaseModel& phase2
@@ -239,7 +239,7 @@ Foam::tmp<Foam::volScalarField> Foam::polydisperseKineticTheoryModel::gs0Prime
 
 
 Foam::tmp<Foam::volScalarField>
-Foam::polydisperseKineticTheoryModel::nu
+Foam::multiphaseKineticTheorySystem::nu
 (
     const phaseModel& phase,
     const volScalarField& Theta
@@ -259,7 +259,7 @@ Foam::polydisperseKineticTheoryModel::nu
 
 
 Foam::tmp<Foam::volScalarField>
-Foam::polydisperseKineticTheoryModel::PsCoeff(const phaseModel& phase) const
+Foam::multiphaseKineticTheorySystem::PsCoeff(const phaseModel& phase) const
 {
     if (phases_.size() == 1)
     {
@@ -317,7 +317,7 @@ Foam::polydisperseKineticTheoryModel::PsCoeff(const phaseModel& phase) const
 
 
 Foam::tmp<Foam::volScalarField>
-Foam::polydisperseKineticTheoryModel::PsCoeffPrime(const phaseModel& phase) const
+Foam::multiphaseKineticTheorySystem::PsCoeffPrime(const phaseModel& phase) const
 {
     if (phases_.size() == 1)
     {
@@ -374,7 +374,7 @@ Foam::polydisperseKineticTheoryModel::PsCoeffPrime(const phaseModel& phase) cons
 }
 
 Foam::tmp<Foam::volScalarField>
-Foam::polydisperseKineticTheoryModel::kappa
+Foam::multiphaseKineticTheorySystem::kappa
 (
     const phaseModel& phase,
     const volScalarField& Theta
@@ -393,7 +393,7 @@ Foam::polydisperseKineticTheoryModel::kappa
 }
 
 Foam::tmp<Foam::volScalarField>
-Foam::polydisperseKineticTheoryModel::
+Foam::multiphaseKineticTheorySystem::
 frictionalPressure(const phaseModel& phase) const
 {
     return frictionalStressModel_->frictionalPressure
@@ -405,7 +405,7 @@ frictionalPressure(const phaseModel& phase) const
 
 
 Foam::tmp<Foam::volScalarField>
-Foam::polydisperseKineticTheoryModel::
+Foam::multiphaseKineticTheorySystem::
 frictionalPressurePrime(const phaseModel& phase) const
 {
     return frictionalStressModel_->frictionalPressurePrime
@@ -417,7 +417,7 @@ frictionalPressurePrime(const phaseModel& phase) const
 
 
 Foam::tmp<Foam::volScalarField>
-Foam::polydisperseKineticTheoryModel::nuFrictional(const phaseModel& phase) const
+Foam::multiphaseKineticTheorySystem::nuFrictional(const phaseModel& phase) const
 {
     tmp<volTensorField> tgradU(fvc::grad(Up_));
     const volTensorField& gradU(tgradU());
@@ -434,13 +434,13 @@ Foam::polydisperseKineticTheoryModel::nuFrictional(const phaseModel& phase) cons
 
 
 
-const Foam::wordList& Foam::polydisperseKineticTheoryModel::phases() const
+const Foam::wordList& Foam::multiphaseKineticTheorySystem::phases() const
 {
     return phases_;
 }
 
 
-void Foam::polydisperseKineticTheoryModel::addPhase
+void Foam::multiphaseKineticTheorySystem::addPhase
 (
     const RASModels::kineticTheoryModel& ktModel
 )
@@ -535,7 +535,7 @@ void Foam::polydisperseKineticTheoryModel::addPhase
 }
 
 
-bool Foam::polydisperseKineticTheoryModel::found(const word& phaseName) const
+bool Foam::multiphaseKineticTheorySystem::found(const word& phaseName) const
 {
     forAll(phases_, phasei)
     {
@@ -548,7 +548,7 @@ bool Foam::polydisperseKineticTheoryModel::found(const word& phaseName) const
 }
 
 
-void Foam::polydisperseKineticTheoryModel::correct()
+void Foam::multiphaseKineticTheorySystem::correct()
 {
     alphap_ = 0.0;
     Up_ = dimensionedVector("0", dimVelocity, Zero);
@@ -620,7 +620,7 @@ void Foam::polydisperseKineticTheoryModel::correct()
 }
 
 
-void Foam::polydisperseKineticTheoryModel::correctAlphap()
+void Foam::multiphaseKineticTheorySystem::correctAlphap()
 {
     alphap_ = 0.0;
     forAll(phases_, phasei)
