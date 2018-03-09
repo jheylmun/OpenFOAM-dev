@@ -26,7 +26,6 @@ License
 #include "PrincetonViscosity.H"
 #include "mathematicalConstants.H"
 #include "addToRunTimeSelectionTable.H"
-#include "multiphaseSystem.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
@@ -111,12 +110,6 @@ Foam::kineticTheoryModels::viscosityModels::Princeton::nu
      dimensionedScalar("0", dimensionSet(1, -3, -1, 0, 0), 0.0)
     );
 
-    const KdTable& kdtable =
-    refCast<const multiphaseSystem>
-    (
-        phase.fluid()
-    ).Kds();
-
     forAllConstIter
     (
         phasePairTable,
@@ -126,17 +119,33 @@ Foam::kineticTheoryModels::viscosityModels::Princeton::nu
     {
         const phasePair& pair(phasePairIter());
         if
+        (
+            pair.phase1().name() == phase.name()
+            || pair.phase2().name() == phase.name()
+        )
+        {
+            if
             (
-                pair.phase1().name() == phase.name()
-                || pair.phase2().name() == phase.name()
+                Theta.mesh().foundObject<volScalarField>
+                (
+                    IOobject::groupName
+                    (
+                        "Kd",
+                        pair.name()
+                    )
+                )
             )
             {
-                if (!kdtable.found(pair))
-                {
-                    continue;
-                }
-                Beta += *kdtable[pair];
+                Beta += Theta.mesh().template lookupObject<volScalarField>
+                (
+                    IOobject::groupName
+                    (
+                        "Kd",
+                        pair.name()
+                    )
+                );
             }
+        }
     }
     tmp<volScalarField> nu
     (

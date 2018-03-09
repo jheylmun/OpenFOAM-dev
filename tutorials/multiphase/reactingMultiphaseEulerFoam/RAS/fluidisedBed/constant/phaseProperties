@@ -26,7 +26,7 @@ particles
     diameterModel constant;
     constantCoeffs
     {
-        d               1e-4;
+        d               3e-4;
     }
 
     alphaMax        0.63;
@@ -40,7 +40,7 @@ particles1
     diameterModel constant;
     constantCoeffs
     {
-        d               3e-4;
+        d               6e-4;
     }
 
     alphaMax        0.63;
@@ -54,7 +54,7 @@ particles2
     diameterModel constant;
     constantCoeffs
     {
-        d               5e-4;
+        d               9e-4;
     }
 
     alphaMax        0.63;
@@ -213,15 +213,15 @@ turbulentDispersion
 kineticTheory
 {
     name                    Particles;
-    alphaMax                0.7;
+    alphaMax                0.63;
     residualAlpha           1e-4;
 
-    packingLimitModel       YuStandish;
+    packingLimitModel       constant;
     radialModel             Gao;
     viscosityModel          Princeton;
     conductivityModel       Princeton;
-    granularPressureModel   Huilin;
-    frictionalStressModel   JohnsonJackson;
+    granularPressureModel   Princeton;
+    frictionalStressModel   Schaeffer;
 
     coeffRest
     (
@@ -254,7 +254,7 @@ kineticTheory
 
     JohnsonJacksonCoeffs
     {
-        alphaMinFriction        0.5;
+        alphaMinFriction        0.55;
         Fr                      0.05;
         eta                     2;
         p                       5;
@@ -265,13 +265,14 @@ kineticTheory
     PrincetonCoeffs
     {
         alphaMinFrictionByAlphap 0.99;
-        alphaMinFriction        0.5;
+        alphaMinFriction        0.55;
         Fr                      0.05;
         eta                     2;
         p                       5;
         phi                     28.5;
         alphaDeltaMin           0.05;
-    }Coeffs
+    }
+    Coeffs
     {
         alphaMinFriction        0.5;
         Fr                      0.05;

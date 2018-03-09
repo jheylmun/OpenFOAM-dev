@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2017 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -97,7 +97,7 @@ Foam::ParticleErosion<CloudType>::ParticleErosion
 
     patchIDs_ = uniquePatchIDs.toc();
 
-    // trigger ther creation of the Q field
+    // Trigger creation of the Q field
     preEvolve();
 }
 
@@ -177,7 +177,7 @@ void Foam::ParticleErosion<CloudType>::postPatch
         // patch-normal direction
         this->owner().patchData(p, pp, nw, Up);
 
-        // particle velocity reletive to patch
+        // particle velocity relative to patch
         const vector& U = p.U() - Up;
 
         // quick reject if particle travelling away from the patch

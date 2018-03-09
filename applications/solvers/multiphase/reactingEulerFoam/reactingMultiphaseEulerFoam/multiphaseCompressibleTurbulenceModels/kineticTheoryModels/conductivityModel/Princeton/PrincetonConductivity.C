@@ -27,7 +27,6 @@ License
 #include "mathematicalConstants.H"
 #include "addToRunTimeSelectionTable.H"
 #include "phasePairKey.H"
-#include "multiphaseSystem.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
@@ -122,11 +121,6 @@ Foam::kineticTheoryModels::conductivityModels::Princeton::kappa
         Theta.mesh(),
         dimensionedScalar("0", dimensionSet(1, -3, -1, 0, 0), 0.0)
     );
-    const KdTable& kdtable =
-            refCast<const multiphaseSystem>
-            (
-                phase.fluid()
-            ).Kds();
 
     forAllConstIter
     (
@@ -142,11 +136,27 @@ Foam::kineticTheoryModels::conductivityModels::Princeton::kappa
          || pair.phase2().name() == phase.name()
         )
         {
-            if (!kdtable.found(pair))
+            if
+            (
+                Theta.mesh().foundObject<volScalarField>
+                (
+                    IOobject::groupName
+                    (
+                        "Kd",
+                        pair.name()
+                    )
+                )
+            )
             {
-                continue;
+                Beta += Theta.mesh().template lookupObject<volScalarField>
+                (
+                    IOobject::groupName
+                    (
+                        "Kd",
+                        pair.name()
+                    )
+                );
             }
-            Beta += *kdtable[pair];
         }
     }
 

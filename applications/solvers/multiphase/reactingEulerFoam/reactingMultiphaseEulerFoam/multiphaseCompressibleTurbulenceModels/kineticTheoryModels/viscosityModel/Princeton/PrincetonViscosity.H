@@ -70,15 +70,6 @@ class Princeton
         >
         phasePairTable;
 
-    typedef
-        HashPtrTable
-        <
-            volScalarField,
-            phasePairKey,
-            phasePairKey::hash
-        >
-        KdTable;
-
 
 public:
 

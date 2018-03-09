@@ -33,7 +33,7 @@ Description
     Ramkrishna (1996). The source terms are written in a way that particle
     number and mass are preserved. Coalescence (aggregation), breakup, drift
     (growth and surface loss) as well as nucleation are supported.
-    For the discrete breakup term two recipies are available, depending on the
+    For the discrete breakup term two recipes are available, depending on the
     model choice. For models which state a total breakup rate and a separate
     daughter size distribution function, the formulation of Kumar and Ramkrishna
     (1996) is applied which is applicable for binary and multiple breakup
@@ -257,10 +257,10 @@ class populationBalanceModel
         //- Drift rate
         autoPtr<volScalarField> driftRate_;
 
-        //- Ratio between sucessive representative volumes
+        //- Ratio between successive representative volumes
         autoPtr<volScalarField> rx_;
 
-        //- Ratio between sucessive class widths
+        //- Ratio between successive class widths
         autoPtr<volScalarField> rdx_;
 
         //- Zeroeth order models

@@ -20,7 +20,7 @@ solvers
     "alpha.*"
     {
         nAlphaSubCycles 2;
-        implicitPhasePressure no;
+        implicitPhasePressure yes;
         solver          GAMG;
         smoother        DIC;
         tolerance       1e-10;
@@ -84,24 +84,24 @@ PIMPLE
 {
     nOuterCorrectors 3;
     nCorrectors      2;
-    nNonOrthogonalCorrectors 0;
+    nNonOrthogonalCorrectors 2;
     faceMomentum     no;
-    pRefPoint       (0 0.99 0);
+    pRefCell        0;
     pRefValue       1e5;
 
-//     residualControl
-//     {
-//         "alpha.*"
-//         {
-//             tolerance   1e-8;
-//             relTol      0;
-//         }
-//         p_rgh
-//         {
-//             tolerance   1e-4;
-//             relTol      0;
-//         }
-//     }
+    outerCorrectorResidualControl
+    {
+        "alpha.*"
+        {
+            tolerance   1e-8;
+            relTol      0;
+        }
+        p_rgh
+        {
+            tolerance   1e-4;
+            relTol      0;
+        }
+    }
 }
 
 relaxationFactors

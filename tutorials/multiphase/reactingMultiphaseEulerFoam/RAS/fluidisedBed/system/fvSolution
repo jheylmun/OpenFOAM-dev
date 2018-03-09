@@ -19,13 +19,13 @@ solvers
 {
     "alpha.*"
     {
-        nAlphaSubCycles 3;
+        nAlphaCorr      1;
+        nAlphaSubCycles 2;
         implicitPhasePressure yes;
 
-        solver          GAMG;
-        preconditioner  DIC;
-        smoother        DIC;
-        tolerance       1e-12;
+        solver          smoothSolver;
+        smoother        symGaussSeidel;
+        tolerance       1e-9;
         relTol          0;
         minIter         1;
     }
@@ -86,25 +86,15 @@ PIMPLE
     nOuterCorrectors 3;
     nCorrectors      1;
     nNonOrthogonalCorrectors 0;
-    faceMomentum     yes;
-    pRefCell    0;
-    pRefValue   1e5;
-
-//     outerCorrectorResidualControl
-//     {
-//         p_rgh
-//         {
-//             tolerance   1e-4;
-//             relTol      0;
-//         }
-//     }
+    faceMomentum     no;
+    partialElimination yes;
 }
 
 relaxationFactors
 {
     equations
     {
-        p_rgh           1;
+        ".*"           1;
     }
 }
 

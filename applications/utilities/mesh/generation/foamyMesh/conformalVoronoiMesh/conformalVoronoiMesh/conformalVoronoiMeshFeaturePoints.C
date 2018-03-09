@@ -277,12 +277,12 @@ void Foam::conformalVoronoiMesh::createEdgePointGroupByCirculating
                 masterPtVec
             );
 
-        // Specialise for size = 1 && baffle
+        // Specialize for size = 1 && baffle
         if (mag((normalDir & nextNormalDir) - 1) < small)
         {
             if (inside)
             {
-//                Info<< "Specialise for size 1 and baffle" << endl;
+//                Info<< "Specialize for size 1 and baffle" << endl;
 
                 vector s = ppDist*(edDir ^ normal);
 
@@ -532,7 +532,7 @@ void Foam::conformalVoronoiMesh::createExternalEdgePointGroup
     );
 
     // Insert the slave points by reflecting refPt in both faces.
-    // with each slave refering to the master
+    // with each slave referring to the master
 
     Foam::point reflectedA = refPt + 2*ppDist*nA;
     pts.append

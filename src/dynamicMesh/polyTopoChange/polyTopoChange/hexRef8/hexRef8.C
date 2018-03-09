@@ -2263,7 +2263,7 @@ Foam::labelList Foam::hexRef8::consistentRefinement
 {
     // Loop, modifying cellsToRefine, until no more changes to due to 2:1
     // conflicts.
-    // maxSet = false : unselect cells to refine
+    // maxSet = false : deselect cells to refine
     // maxSet = true  : select cells to refine
 
     // Go to straight boolList.
@@ -2465,7 +2465,7 @@ Foam::labelList Foam::hexRef8::consistentSlowRefinement
     }
 
 
-    // Just seed with all faces inbetween different refinement levels for now
+    // Just seed with all faces in between different refinement levels for now
     // (alternatively only seed faces on cellsToRefine but that gives problems
     //  if no cells to refine)
     forAll(faceNeighbour, facei)
@@ -2993,7 +2993,7 @@ Foam::labelList Foam::hexRef8::consistentSlowRefinement2
 
     // Create some initial seeds to start walking from. This is only if there
     // are no facesToCheck.
-    // Just seed with all faces inbetween different refinement levels for now
+    // Just seed with all faces in between different refinement levels for now
     forAll(faceNeighbour, facei)
     {
         // Check if face already handled in loop above
@@ -5344,7 +5344,7 @@ Foam::labelList Foam::hexRef8::consistentUnrefinement
 
     // Loop, modifying pointsToUnrefine, until no more changes to due to 2:1
     // conflicts.
-    // maxSet = false : unselect points to refine
+    // maxSet = false : deselect points to refine
     // maxSet = true: select points to refine
 
     // Maintain boolList for pointsToUnrefine and cellsToUnrefine

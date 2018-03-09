@@ -157,7 +157,7 @@ kineticTheory
     name    Particles;
     residualAlpha   1e-4;
 
-    packingLimitModel       bidisperse;
+    packingLimitModel       FedorsLandel;
     radialModel             Gao;
     viscosityModel          Princeton;
     conductivityModel       Princeton;

@@ -25,7 +25,6 @@ License
 
 #include "kineticTheoryModel.H"
 #include "mathematicalConstants.H"
-#include "multiphaseSystem.H"
 #include "fvOptions.H"
 
 
@@ -390,14 +389,6 @@ void Foam::RASModels::kineticTheoryModel::correct()
             dimensionedScalar("0", dimensionSet(1, -1, -3, 0, 0), 0.0)
         );
 
-        const KdTable& kdtable
-        (
-            refCast<const multiphaseSystem>
-            (
-                phase_.fluid()
-            ).Kds()
-        );
-
         forAllConstIter
         (
             phasePairTable,
@@ -412,18 +403,37 @@ void Foam::RASModels::kineticTheoryModel::correct()
              || pair.phase2().name() == phase_.name()
             )
             {
-                if (!kdtable.found(pair))
+                if
+                (
+                    mesh_.foundObject<volScalarField>
+                    (
+                        IOobject::groupName
+                        (
+                            "Kd",
+                            pair.name()
+                        )
+                    )
+                )
                 {
-                    continue;
-                }
-                tmp<volScalarField> beta(*kdtable[pair]);
-                J1 += 3.0*beta();
-                J2 +=
-                    0.25*sqr(beta)*da*sqr(pair.magUr())
-                   /(
-                        max(alpha, residualAlpha_)*rho
-                       *sqrtPi*(ThetaSqrt + ThetaSmallSqrt)
+                    const volScalarField& beta
+                    (
+                        mesh_.lookupObject<volScalarField>
+                        (
+                            IOobject::groupName
+                            (
+                                "Kd",
+                                pair.name()
+                            )
+                        )
                     );
+                    J1 += 3.0*beta;
+                    J2 +=
+                        0.25*sqr(beta)*da*sqr(pair.magUr())
+                       /(
+                            max(alpha, residualAlpha_)*rho
+                           *sqrtPi*(ThetaSqrt + ThetaSmallSqrt)
+                        );
+                }
             }
         }
 

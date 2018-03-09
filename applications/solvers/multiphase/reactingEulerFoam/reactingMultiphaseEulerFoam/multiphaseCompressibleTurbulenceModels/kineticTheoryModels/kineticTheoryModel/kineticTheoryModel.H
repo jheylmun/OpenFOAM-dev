@@ -85,15 +85,6 @@ class kineticTheoryModel
                 >
                 phasePairTable;
 
-            typedef
-            HashPtrTable
-            <
-                volScalarField,
-                phasePairKey,
-                phasePairKey::hash
-            >
-            KdTable;
-
             //- Const refrence to phase
             const phaseModel& phase_;
 

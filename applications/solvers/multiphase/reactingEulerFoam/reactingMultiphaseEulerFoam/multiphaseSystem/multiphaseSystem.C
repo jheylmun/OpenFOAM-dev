@@ -701,10 +701,10 @@ void Foam::multiphaseSystem::solve()
     {
         const phaseModel& phase = phases()[phasei];
 
-        if (notNull(phase.DbyA()))
+        if (DByAfs().found(phase.name()))
         {
             const volScalarField& alpha = phase;
-            surfaceScalarField DbyA(phase.DbyA());
+            surfaceScalarField DbyA(*DByAfs()[phase.name()]);
 
             surfaceScalarField alphaDbyA
             (

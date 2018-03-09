@@ -8,49 +8,39 @@
 FoamFile
 {
     version     2.0;
-    format      binary;
+    format      ascii;
     class       polyBoundaryMesh;
-    location    "constant/polyMesh";
+    location    "2/polyMesh";
     object      boundary;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-5
+4
 (
-    frontBack
-    {
-        type            empty;
-        physicalType    empty;
-        nFaces          74688;
-        startFace       182724;
-    }
     primaryInlet
     {
         type            patch;
-        physicalType    patch;
-        nFaces          64;
-        startFace       257412;
-    }
-    walls
-    {
-        type            wall;
-        physicalType    wall;
-        nFaces          7896;
-        startFace       257476;
+        nFaces          416;
+        startFace       1114887;
     }
     secondaryInlet
     {
         type            patch;
-        physicalType    patch;
-        nFaces          8;
-        startFace       265372;
+        nFaces          40;
+        startFace       1115303;
     }
     gasOutlet
     {
         type            patch;
-        physicalType    patch;
-        nFaces          24;
-        startFace       265380;
+        nFaces          495;
+        startFace       1115343;
+    }
+    walls
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          180140;
+        startFace       1115838;
     }
 )
 
