@@ -63,6 +63,34 @@ protected:
 
     // Protected typedefs
 
+        typedef HashPtrTable
+        <
+            volScalarField,
+            phasePairKey,
+            phasePairKey::hash
+        > KdTable;
+
+        typedef HashPtrTable
+        <
+            surfaceScalarField,
+            phasePairKey,
+            phasePairKey::hash
+        > KdfTable;
+
+        typedef HashPtrTable
+        <
+            volScalarField,
+            phasePairKey,
+            phasePairKey::hash
+        > VmTable;
+
+        typedef HashPtrTable
+        <
+            surfaceScalarField,
+            phasePairKey,
+            phasePairKey::hash
+        > VmfTable;
+
         typedef HashTable
         <
             autoPtr<BlendedInterfacialModel<dragModel>>,
@@ -104,16 +132,16 @@ private:
     // Private data
 
         //- Drag coefficients
-        phaseSystem::KdTable Kds_;
+        KdTable Kds_;
 
         //- Face drag coefficients
-        phaseSystem::KdfTable Kdfs_;
+        KdfTable Kdfs_;
 
         //- Virtual mass coefficients
-        phaseSystem::VmTable Vms_;
+        VmTable Vms_;
 
         //- Face virtual mass coefficients
-        phaseSystem::VmfTable Vmfs_;
+        VmfTable Vmfs_;
 
         //- The phase diffusivities divided by the momentum coefficients
         HashPtrTable<surfaceScalarField> DByAfs_;
@@ -147,6 +175,11 @@ private:
         //- Return the virtual mass coefficient for the phase pair
         virtual tmp<volScalarField> Vm(const phasePairKey& key) const;
 
+        //- Add the mass-transfer-based momentum transfer to the equations
+        void addMassTransferMomentumTransfer
+        (
+            phaseSystem::momentumTransferTable& eqns
+        ) const;
 
 public:
 
@@ -165,12 +198,10 @@ public:
         //- Return the momentum transfer matrices for the cell-based algorithm.
         //  This includes implicit and explicit forces that add into the cell
         //  UEqn in the normal way.
-        virtual autoPtr<phaseSystem::momentumTransferTable>
-            momentumTransfer() const;
+        virtual autoPtr<phaseSystem::momentumTransferTable> momentumTransfer();
 
         //- As momentumTransfer, but for the face-based algorithm
-        virtual autoPtr<phaseSystem::momentumTransferTable>
-            momentumTransferf() const;
+        virtual autoPtr<phaseSystem::momentumTransferTable> momentumTransferf();
 
         //- Return implicit force coefficients on the faces, for the face-based
         //  algorithm.

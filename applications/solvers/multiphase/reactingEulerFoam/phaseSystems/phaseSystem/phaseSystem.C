@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2015-2017 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2015-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -29,6 +29,9 @@ License
 #include "surfaceInterpolate.H"
 #include "fvcDdt.H"
 #include "localEulerDdtScheme.H"
+
+#include "dragModel.H"
+#include "BlendedInterfacialModel.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
@@ -166,6 +169,50 @@ Foam::phaseSystem::phaseSystem
         )
     )
 {
+    // Groupings
+    label movingPhasei = 0;
+    label stationaryPhasei = 0;
+    label anisothermalPhasei = 0;
+    label multiComponentPhasei = 0;
+    forAll(phaseModels_, phasei)
+    {
+        phaseModel& phase = phaseModels_[phasei];
+        movingPhasei += !phase.stationary();
+        stationaryPhasei += phase.stationary();
+        anisothermalPhasei += !phase.isothermal();
+        multiComponentPhasei += !phase.pure();
+    }
+    movingPhaseModels_.resize(movingPhasei);
+    stationaryPhaseModels_.resize(stationaryPhasei);
+    anisothermalPhaseModels_.resize(anisothermalPhasei);
+    multiComponentPhaseModels_.resize(multiComponentPhasei);
+
+    movingPhasei = 0;
+    stationaryPhasei = 0;
+    anisothermalPhasei = 0;
+    multiComponentPhasei = 0;
+    forAll(phaseModels_, phasei)
+    {
+        phaseModel& phase = phaseModels_[phasei];
+        if (!phase.stationary())
+        {
+            movingPhaseModels_.set(movingPhasei ++, &phase);
+        }
+        if (phase.stationary())
+        {
+            stationaryPhaseModels_.set(stationaryPhasei ++, &phase);
+        }
+        if (!phase.isothermal())
+        {
+            anisothermalPhaseModels_.set(anisothermalPhasei ++, &phase);
+        }
+        if (!phase.pure())
+        {
+            multiComponentPhaseModels_.set(multiComponentPhasei ++, &phase);
+        }
+    }
+
+    // Write phi
     phi_.writeOpt() = IOobject::AUTO_WRITE;
 
     // Blending methods
@@ -186,6 +233,7 @@ Foam::phaseSystem::phaseSystem
     generatePairsAndSubModels("surfaceTension", surfaceTensionModels_);
     generatePairsAndSubModels("aspectRatio", aspectRatioModels_);
 
+    // Update motion fields
     correctKinematics();
 }
 
@@ -290,22 +338,18 @@ Foam::phaseSystem::sigma(const phasePairKey& key) const
 }
 
 
-void Foam::phaseSystem::solve()
-{}
-
-
 Foam::tmp<Foam::volScalarField> Foam::phaseSystem::dmdt
 (
-const Foam::phaseModel& phase
+    const phasePairKey& key
 ) const
 {
-    tmp<volScalarField> tDmdt
+    return tmp<volScalarField>
     (
         new volScalarField
         (
             IOobject
             (
-                IOobject::groupName("dmdt", phase.name()),
+                IOobject::groupName("dmdt", phasePairs_[key]->name()),
                 this->mesh_.time().timeName(),
                 this->mesh_
             ),
@@ -313,9 +357,19 @@ const Foam::phaseModel& phase
             dimensionedScalar("zero", dimDensity/dimTime, 0)
         )
     );
-
-    return tDmdt;
 }
+
+
+Foam::Xfer<Foam::PtrList<Foam::volScalarField>> Foam::phaseSystem::dmdts() const
+{
+    PtrList<volScalarField> dmdts(this->phaseModels_.size());
+
+    return dmdts.xfer();
+}
+
+
+void Foam::phaseSystem::solve()
+{}
 
 
 void Foam::phaseSystem::correct()

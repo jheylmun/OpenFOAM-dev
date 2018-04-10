@@ -47,9 +47,9 @@ runTimeModifiable on;
 
 adjustTimeStep  yes;
 
-maxCo           0.5;
+maxCo           0.2;
 
-maxDeltaT       1;
+maxDeltaT       5e-4;
 
 functions
 {
@@ -58,7 +58,7 @@ functions
         type            fieldAverage;
         libs            ("libfieldFunctionObjects.so");
         writeControl    writeTime;
-        timeStart       5;
+        timeStart       1;
         fields
         (
             U.Particles

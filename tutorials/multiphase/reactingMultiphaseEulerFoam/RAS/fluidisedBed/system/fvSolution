@@ -87,7 +87,6 @@ PIMPLE
     nCorrectors      1;
     nNonOrthogonalCorrectors 0;
     faceMomentum     no;
-    partialElimination yes;
 }
 
 relaxationFactors

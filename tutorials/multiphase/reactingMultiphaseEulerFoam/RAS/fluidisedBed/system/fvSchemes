@@ -42,10 +42,8 @@ divSchemes
     "div\(alphaPhi.*,p\)"           Gauss limitedLinear 0.2;
 
     "div\(phiCorr,alpha.*\)"        Gauss limitedLinear 0.2;
-
     "div\(alphaRhoPhi.particles.*,Theta.particles.*\)" Gauss limitedLinear 0.2;
-
-"div\(alphaRhoPhi.*,(k|epsilon).*\)"  Gauss limitedLinear 0.2;
+    "div\(alphaRhoPhi.*,(k|epsilon).*\)"  Gauss limitedLinear 0.2;
 
     div((((alpha.air*thermo:rho.air)*nuEff.air)*dev2(T(grad(U.air))))) Gauss linear;
 
@@ -54,6 +52,10 @@ divSchemes
     div((((thermo:rho.particles1*nut.particles1)*dev2(T(grad(U.particles1))))+(((thermo:rho.particles1*lambda.particles1)*div(phi.particles1))*I)))  Gauss linear;
 
     div((((thermo:rho.particles2*nut.particles2)*dev2(T(grad(U.particles2))))+(((thermo:rho.particles2*lambda.particles2)*div(phi.particles2))*I)))  Gauss linear;
+
+    div((((alpha.particles*thermo:rho.particles)*nuEff.particles)*dev2(T(grad(U.particles))))) Gauss linear;
+    div((((alpha.particles1*thermo:rho.particles1)*nuEff.particles1)*dev2(T(grad(U.particles1))))) Gauss linear;
+    div((((alpha.particles2*thermo:rho.particles2)*nuEff.particles2)*dev2(T(grad(U.particles2))))) Gauss linear;
 }
 
 laplacianSchemes

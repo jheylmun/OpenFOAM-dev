@@ -41,6 +41,7 @@ options:
   -builtin          use VTK builtin OpenFOAM reader  (uses .foam extension)
   -case <dir>       specify alternative case directory, default is the cwd
   -region <name>    specify alternative mesh region
+  -oldStyle         use old style paraview reader
   -touch            only create the file  (eg, .blockMesh, .OpenFOAM, etc)
   -touchAll         create .blockMesh, .OpenFOAM files (and for all regions)
   -help             print the usage

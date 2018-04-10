@@ -34,7 +34,7 @@ boundaryField
 
     walls
     {
-        type            JohnsonJacksonParticleSlip;
+        type            noSlip;//JohnsonJacksonParticleSlip;
         restitutionCoefficient 0.8;
         specularityCoefficient   0.1;
         muF             0.25;

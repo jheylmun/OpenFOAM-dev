@@ -17,7 +17,7 @@ FoamFile
 
 type heatAndMomentumTransferMultiphaseSystem;
 
-phases (particles particles1 particles2 air);
+phases (air particles particles1 particles2);
 
 particles
 {
@@ -76,17 +76,19 @@ air
 
 blending
 {
+
     default
     {
         type                linear;
+        continuousPhase     air;
         minFullyContinuousAlpha.air 0;
         minPartlyContinuousAlpha.air 0;
-        minFullyContinuousAlpha.particles 1;
-        minPartlyContinuousAlpha.particles 1;
-        minFullyContinuousAlpha.particles1 1;
-        minPartlyContinuousAlpha.particles1 1;
-        minFullyContinuousAlpha.particles2 1;
-        minPartlyContinuousAlpha.particles2 1;
+        minFullyContinuousAlpha.particles 1.0;
+        minPartlyContinuousAlpha.particles 1.0;
+        minFullyContinuousAlpha.particles1 1.0;
+        minPartlyContinuousAlpha.particles1 1.0;
+        minFullyContinuousAlpha.particles2 1.0;
+        minPartlyContinuousAlpha.particles2 1.0;
     }
 }
 
@@ -136,7 +138,7 @@ drag
 (
     (particles in air)
     {
-        type            GidaspowErgunWenYu;
+        type            SchillerNaumann;
         residualRe      1e-3;
         swarmCorrection
         {
@@ -145,7 +147,7 @@ drag
     }
     (particles1 in air)
     {
-        type            GidaspowErgunWenYu;
+        type            SchillerNaumann;
         residualRe      1e-3;
         swarmCorrection
         {
@@ -154,7 +156,7 @@ drag
     }
     (particles2 in air)
     {
-        type            GidaspowErgunWenYu;
+        type            SchillerNaumann;
         residualRe      1e-3;
         swarmCorrection
         {
@@ -216,12 +218,12 @@ kineticTheory
     alphaMax                0.63;
     residualAlpha           1e-4;
 
-    packingLimitModel       constant;
-    radialModel             Gao;
+    packingLimitModel       YuStandish;
+    radialModel             Lebowitz;
     viscosityModel          Princeton;
     conductivityModel       Princeton;
     granularPressureModel   Princeton;
-    frictionalStressModel   Schaeffer;
+    frictionalStressModel   JohnsonJackson;
 
     coeffRest
     (
@@ -252,6 +254,7 @@ kineticTheory
         alphaDeltaMin           0.05;
     }
 
+    alphaMinFriction        0.55;
     JohnsonJacksonCoeffs
     {
         alphaMinFriction        0.55;
@@ -266,15 +269,6 @@ kineticTheory
     {
         alphaMinFrictionByAlphap 0.99;
         alphaMinFriction        0.55;
-        Fr                      0.05;
-        eta                     2;
-        p                       5;
-        phi                     28.5;
-        alphaDeltaMin           0.05;
-    }
-    Coeffs
-    {
-        alphaMinFriction        0.5;
         Fr                      0.05;
         eta                     2;
         p                       5;

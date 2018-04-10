@@ -122,7 +122,9 @@ void Foam::particle::hitFace
     }
     else if (onBoundaryFace())
     {
-        if(!p.hitPatch(cloud, ttd))
+        changeToMasterPatch();
+
+        if (!p.hitPatch(cloud, ttd))
         {
             const polyPatch& patch = mesh_.boundaryMesh()[p.patch()];
 
@@ -178,11 +180,6 @@ void Foam::particle::trackToAndHitFace
 {
     trackToFace(direction, fraction);
 
-    if (onBoundaryFace())
-    {
-        changeToMasterPatch();
-    }
-
     hitFace(direction, cloud, td);
 }
 
@@ -219,9 +216,7 @@ void Foam::particle::hitSymmetryPlanePatch
 template<class TrackCloudType>
 void Foam::particle::hitSymmetryPatch(TrackCloudType&, trackingData&)
 {
-    vector nf = normal();
-    nf /= mag(nf);
-
+    const vector nf = normal();
     transformProperties(I - 2.0*nf*nf);
 }
 
