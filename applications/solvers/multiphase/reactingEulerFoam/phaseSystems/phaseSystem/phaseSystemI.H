@@ -144,4 +144,10 @@ inline Foam::Switch Foam::phaseSystem::implicitPhasePressure() const
 }
 
 
+inline Foam::fv::options& Foam::phaseSystem::fvOptions() const
+{
+    return fv::options::New(mesh_);
+}
+
+
 // ************************************************************************* //

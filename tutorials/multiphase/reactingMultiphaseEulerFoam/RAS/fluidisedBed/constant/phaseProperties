@@ -15,7 +15,7 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-type heatAndMomentumTransferMultiphaseSystem;
+type basicMultiphaseSystem;
 
 phases (air particles particles1 particles2);
 
@@ -138,7 +138,7 @@ drag
 (
     (particles in air)
     {
-        type            SchillerNaumann;
+        type            GidaspowErgunWenYu;
         residualRe      1e-3;
         swarmCorrection
         {
@@ -147,7 +147,7 @@ drag
     }
     (particles1 in air)
     {
-        type            SchillerNaumann;
+        type            GidaspowErgunWenYu;
         residualRe      1e-3;
         swarmCorrection
         {
@@ -156,7 +156,7 @@ drag
     }
     (particles2 in air)
     {
-        type            SchillerNaumann;
+        type            GidaspowErgunWenYu;
         residualRe      1e-3;
         swarmCorrection
         {
@@ -212,6 +212,10 @@ turbulentDispersion
 (
 );
 
+phaseTransfer
+(
+);
+
 kineticTheory
 {
     name                    Particles;
@@ -223,7 +227,7 @@ kineticTheory
     viscosityModel          Princeton;
     conductivityModel       Princeton;
     granularPressureModel   Princeton;
-    frictionalStressModel   JohnsonJackson;
+    frictionalStressModel   Schaeffer;
 
     coeffRest
     (

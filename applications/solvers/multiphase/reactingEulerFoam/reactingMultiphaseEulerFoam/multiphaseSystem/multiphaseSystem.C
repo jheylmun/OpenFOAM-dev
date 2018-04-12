@@ -225,18 +225,8 @@ void Foam::multiphaseSystem::solveAlphas(const bool polydisperse)
             alphap,
             phi_,
             alphaPhips,
-            alphaMax,
-            volScalarField
-            (
-                IOobject
-                (
-                    "0",
-                    mesh_.time().timeName(),
-                    mesh_
-                ),
-                mesh_,
-                dimensionedScalar("0", dimless, 0)
-            )
+            alphaMax.internalField(),
+            scalarField(alphaMax.size(), 0.0)
         );
 
         forAll(granularPhases, phasei)
