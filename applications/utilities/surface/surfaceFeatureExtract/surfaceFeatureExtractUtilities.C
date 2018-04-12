@@ -32,172 +32,28 @@ Description
 
 #include "surfaceFeatureExtract.H"
 #include "Time.H"
-#include "meshTools.H"
 #include "tensor2D.H"
 #include "symmTensor2D.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-const Foam::scalar Foam::internalAngleTolerance(80);
-const Foam::scalar Foam::internalToleranceCosAngle
-(
-    cos(degToRad(180 - internalAngleTolerance))
-);
-
-const Foam::scalar Foam::externalAngleTolerance(10);
-const Foam::scalar Foam::externalToleranceCosAngle
-(
-    cos(degToRad(180 - externalAngleTolerance))
-);
-
-
-bool Foam::edgesConnected(const edge& e1, const edge& e2)
-{
-    if
-    (
-        e1.start() == e2.start()
-     || e1.start() == e2.end()
-     || e1.end() == e2.start()
-     || e1.end() == e2.end()
-    )
-    {
-        return true;
-    }
-
-    return false;
-}
-
-
-Foam::scalar Foam::calcProximityOfFeaturePoints
-(
-    const List<pointIndexHit>& hitList,
-    const scalar defaultCellSize
-)
-{
-    scalar minDist = defaultCellSize;
-
-    for
-    (
-        label hI1 = 0;
-        hI1 < hitList.size() - 1;
-        ++hI1
-    )
-    {
-        const pointIndexHit& pHit1 = hitList[hI1];
-
-        if (pHit1.hit())
-        {
-            for
-            (
-                label hI2 = hI1 + 1;
-                hI2 < hitList.size();
-                ++hI2
-            )
-            {
-                const pointIndexHit& pHit2 = hitList[hI2];
-
-                if (pHit2.hit())
-                {
-                    scalar curDist = mag(pHit1.hitPoint() - pHit2.hitPoint());
-
-                    minDist = min(curDist, minDist);
-                }
-            }
-        }
-    }
-
-    return minDist;
-}
-
-
-Foam::scalar Foam::calcProximityOfFeatureEdges
-(
-    const extendedFeatureEdgeMesh& efem,
-    const List<pointIndexHit>& hitList,
-    const scalar defaultCellSize
-)
-{
-    scalar minDist = defaultCellSize;
-
-    for
-    (
-        label hI1 = 0;
-        hI1 < hitList.size() - 1;
-        ++hI1
-    )
-    {
-        const pointIndexHit& pHit1 = hitList[hI1];
-
-        if (pHit1.hit())
-        {
-            const edge& e1 = efem.edges()[pHit1.index()];
-
-            for
-            (
-                label hI2 = hI1 + 1;
-                hI2 < hitList.size();
-                ++hI2
-            )
-            {
-                const pointIndexHit& pHit2 = hitList[hI2];
-
-                if (pHit2.hit())
-                {
-                    const edge& e2 = efem.edges()[pHit2.index()];
-
-                    // Don't refine if the edges are connected to each other
-                    if (!edgesConnected(e1, e2))
-                    {
-                        scalar curDist =
-                            mag(pHit1.hitPoint() - pHit2.hitPoint());
-
-                        minDist = min(curDist, minDist);
-                    }
-                }
-            }
-        }
-    }
-
-    return minDist;
-}
-
-
 void Foam::deleteBox
 (
     const triSurface& surf,
-    const treeBoundBox& bb,
+    const boundBox& bb,
     const bool removeInside,
     List<surfaceFeatures::edgeStatus>& edgeStat
 )
 {
-    forAll(edgeStat, edgeI)
+    forAll(edgeStat, edgei)
     {
-        const point eMid = surf.edges()[edgeI].centre(surf.localPoints());
+        const point eMid = surf.edges()[edgei].centre(surf.localPoints());
 
         if (removeInside ? bb.contains(eMid) : !bb.contains(eMid))
         {
-            edgeStat[edgeI] = surfaceFeatures::NONE;
+            edgeStat[edgei] = surfaceFeatures::NONE;
         }
     }
-}
-
-
-bool Foam::onLine(const point& p, const linePointRef& line)
-{
-    const point& a = line.start();
-    const point& b = line.end();
-
-    if
-    (
-        ( p.x() < min(a.x(), b.x()) || p.x() > max(a.x(), b.x()) )
-     || ( p.y() < min(a.y(), b.y()) || p.y() > max(a.y(), b.y()) )
-     || ( p.z() < min(a.z(), b.z()) || p.z() > max(a.z(), b.z()) )
-    )
-    {
-        return false;
-    }
-
-    return true;
 }
 
 
@@ -211,9 +67,9 @@ void Foam::deleteEdges
     const pointField& points = surf.points();
     const labelList& meshPoints = surf.meshPoints();
 
-    forAll(edgeStat, edgeI)
+    forAll(edgeStat, edgei)
     {
-        const edge& e = surf.edges()[edgeI];
+        const edge& e = surf.edges()[edgei];
         const point& p0 = points[meshPoints[e.start()]];
         const point& p1 = points[meshPoints[e.end()]];
         const linePointRef line(p0, p1);
@@ -223,119 +79,24 @@ void Foam::deleteEdges
 
         point featPoint = intersect * (p1 - p0) + p0;
 
-        if (!onLine(featPoint, line))
+        if (!line.insideBoundBox(featPoint))
         {
-            edgeStat[edgeI] = surfaceFeatures::NONE;
+            edgeStat[edgei] = surfaceFeatures::NONE;
         }
     }
 }
 
 
-void Foam::drawHitProblem
-(
-    const label fi,
-    const triSurface& surf,
-    const point& start,
-    const point& p,
-    const point& end,
-    const List<pointIndexHit>& hitInfo
-)
-{
-    Info<< nl << "# findLineAll did not hit its own face."
-        << nl << "# fi " << fi
-        << nl << "# start " << start
-        << nl << "# point " << p
-        << nl << "# end " << end
-        << nl << "# hitInfo " << hitInfo
-        << endl;
-
-    meshTools::writeOBJ(Info, start);
-    meshTools::writeOBJ(Info, p);
-    meshTools::writeOBJ(Info, end);
-
-    Info<< "l 1 2 3" << endl;
-
-    meshTools::writeOBJ(Info, surf.points()[surf[fi][0]]);
-    meshTools::writeOBJ(Info, surf.points()[surf[fi][1]]);
-    meshTools::writeOBJ(Info, surf.points()[surf[fi][2]]);
-
-    Info<< "f 4 5 6" << endl;
-
-    forAll(hitInfo, hI)
-    {
-        label hFI = hitInfo[hI].index();
-
-        meshTools::writeOBJ(Info, surf.points()[surf[hFI][0]]);
-        meshTools::writeOBJ(Info, surf.points()[surf[hFI][1]]);
-        meshTools::writeOBJ(Info, surf.points()[surf[hFI][2]]);
-
-        Info<< "f "
-            << 3*hI + 7 << " "
-            << 3*hI + 8 << " "
-            << 3*hI + 9
-            << endl;
-    }
-}
-
-
-void Foam::unmarkBaffles
-(
-    const triSurface& surf,
-    const scalar includedAngle,
-    List<surfaceFeatures::edgeStatus>& edgeStat
-)
-{
-    scalar minCos = Foam::cos(degToRad(180.0 - includedAngle));
-
-    const labelListList& edgeFaces = surf.edgeFaces();
-
-    forAll(edgeFaces, edgeI)
-    {
-        const labelList& eFaces = edgeFaces[edgeI];
-
-        if (eFaces.size() > 2)
-        {
-            label i0 = eFaces[0];
-            //const labelledTri& f0 = surf[i0];
-            const Foam::vector& n0 = surf.faceNormals()[i0];
-
-            //Pout<< "edge:" << edgeI << " n0:" << n0 << endl;
-
-            bool same = true;
-
-            for (label i = 1; i < eFaces.size(); i++)
-            {
-                //const labelledTri& f = surf[i];
-                const Foam::vector& n = surf.faceNormals()[eFaces[i]];
-
-                //Pout<< "    mag(n&n0): " << mag(n&n0) << endl;
-
-                if (mag(n&n0) < minCos)
-                {
-                    same = false;
-                    break;
-                }
-            }
-
-            if (same)
-            {
-                edgeStat[edgeI] = surfaceFeatures::NONE;
-            }
-        }
-    }
-}
-
-
-Foam::surfaceFeatures::edgeStatus Foam::checkFlatRegionEdge
+Foam::surfaceFeatures::edgeStatus Foam::checkNonManifoldEdge
 (
     const triSurface& surf,
     const scalar tol,
     const scalar includedAngle,
-    const label edgeI
+    const label edgei
 )
 {
-    const edge& e = surf.edges()[edgeI];
-    const labelList& eFaces = surf.edgeFaces()[edgeI];
+    const edge& e = surf.edges()[edgei];
+    const labelList& eFaces = surf.edgeFaces()[edgei];
 
     // Bin according to normal
 
@@ -483,11 +244,38 @@ Foam::surfaceFeatures::edgeStatus Foam::checkFlatRegionEdge
             }
         }
 
-        // Passed all checks, two normal bins with the same contents.
-        //Pout<< "regionAndNormal:" << regionAndNormal << endl;
-        //Pout<< "myRegionAndNormal:" << regionAndNormal1 << endl;
-
         return surfaceFeatures::NONE;
+    }
+}
+
+
+void Foam::deleteNonManifoldEdges
+(
+    const triSurface& surf,
+    const scalar tol,
+    const scalar includedAngle,
+    List<surfaceFeatures::edgeStatus>& edgeStat
+)
+{
+    forAll(edgeStat, edgei)
+    {
+        const labelList& eFaces = surf.edgeFaces()[edgei];
+
+        if
+        (
+            eFaces.size() > 2
+            && edgeStat[edgei] == surfaceFeatures::REGION
+            && (eFaces.size() % 2) == 0
+        )
+        {
+            edgeStat[edgei] = checkNonManifoldEdge
+            (
+                surf,
+                tol,
+                includedAngle,
+                edgei
+            );
+        }
     }
 }
 
@@ -499,23 +287,23 @@ void Foam::writeStats(const extendedFeatureEdgeMesh& fem, Ostream& os)
         << "        convex             : "
         << fem.concaveStart() << nl
         << "        concave            : "
-        << (fem.mixedStart()-fem.concaveStart()) << nl
+        << (fem.mixedStart() - fem.concaveStart()) << nl
         << "        mixed              : "
-        << (fem.nonFeatureStart()-fem.mixedStart()) << nl
+        << (fem.nonFeatureStart() - fem.mixedStart()) << nl
         << "        non-feature        : "
-        << (fem.points().size()-fem.nonFeatureStart()) << nl
+        << (fem.points().size() - fem.nonFeatureStart()) << nl
         << "    edges  : " << fem.edges().size() << nl
         << "    of which" << nl
         << "        external edges     : "
         << fem.internalStart() << nl
         << "        internal edges     : "
-        << (fem.flatStart()- fem.internalStart()) << nl
+        << (fem.flatStart() - fem.internalStart()) << nl
         << "        flat edges         : "
-        << (fem.openStart()- fem.flatStart()) << nl
+        << (fem.openStart() - fem.flatStart()) << nl
         << "        open edges         : "
-        << (fem.multipleStart()- fem.openStart()) << nl
+        << (fem.multipleStart() - fem.openStart()) << nl
         << "        multiply connected : "
-        << (fem.edges().size()- fem.multipleStart()) << endl;
+        << (fem.edges().size() - fem.multipleStart()) << endl;
 }
 
 

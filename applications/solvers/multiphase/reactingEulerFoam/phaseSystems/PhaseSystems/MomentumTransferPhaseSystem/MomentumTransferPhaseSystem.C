@@ -392,7 +392,7 @@ Foam::MomentumTransferPhaseSystem<BasePhaseSystem>::momentumTransfer()
         }
     }
 
-    // Add the source term due to mass trasfer
+    // Add the source term due to mass transfer
     addMassTransferMomentumTransfer(eqns);
 
     return eqnsPtr;
@@ -427,18 +427,22 @@ Foam::MomentumTransferPhaseSystem<BasePhaseSystem>::momentumTransferf()
     forAll(this->phaseModels_, phasei)
     {
         const phaseModel& phase = this->phaseModels_[phasei];
-        const volVectorField& U = phase.U();
 
-        UgradUs.set
-        (
-            phasei,
-            new fvVectorMatrix
+        if (!phase.stationary())
+        {
+            const volVectorField& U = phase.U();
+
+            UgradUs.set
             (
-                fvm::div(phase.phi(), U)
-              - fvm::Sp(fvc::div(phase.phi()), U)
-              + this->MRF().DDt(U)
-            )
-        );
+                phasei,
+                new fvVectorMatrix
+                (
+                    fvm::div(phase.phi(), U)
+                  - fvm::Sp(fvc::div(phase.phi()), U)
+                  + this->MRF().DDt(U)
+                )
+            );
+        }
     }
 
     // Add the virtual mass force
@@ -464,7 +468,7 @@ Foam::MomentumTransferPhaseSystem<BasePhaseSystem>::momentumTransferf()
         }
     }
 
-    // Add the source term due to mass trasfer
+    // Add the source term due to mass transfer
     addMassTransferMomentumTransfer(eqns);
 
     return eqnsPtr;

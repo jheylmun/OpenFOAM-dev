@@ -31,7 +31,9 @@ Description
 
 #include "surfaceFeatures.H"
 #include "extendedFeatureEdgeMesh.H"
+#include "triSurfaceMesh.H"
 #include "triSurfaceFields.H"
+#include "pointIndexHitList.H"
 #include "plane.H"
 #include "triadField.H"
 
@@ -43,33 +45,14 @@ namespace Foam
     extern const scalar externalAngleTolerance;
     extern const scalar externalToleranceCosAngle;
 
-    point randomPointInPlane(const plane& p);
-
-    bool edgesConnected(const edge& e1, const edge& e2);
-
-    scalar calcProximityOfFeaturePoints
-    (
-        const List<pointIndexHit>& hitList,
-        const scalar defaultCellSize
-    );
-
-    scalar calcProximityOfFeatureEdges
-    (
-        const extendedFeatureEdgeMesh& efem,
-        const List<pointIndexHit>& hitList,
-        const scalar defaultCellSize
-    );
-
     //- Deletes all edges inside/outside bounding box from set.
     void deleteBox
     (
         const triSurface& surf,
-        const treeBoundBox& bb,
+        const boundBox& bb,
         const bool removeInside,
         List<surfaceFeatures::edgeStatus>& edgeStat
     );
-
-    bool onLine(const point& p, const linePointRef& line);
 
     //- Deletes all edges inside/outside bounding box from set.
     void deleteEdges
@@ -77,6 +60,39 @@ namespace Foam
         const triSurface& surf,
         const plane& cutPlane,
         List<surfaceFeatures::edgeStatus>& edgeStat
+    );
+
+    //- Divide into multiple normal bins
+    //  - return REGION if != 2 normals
+    //  - return REGION if 2 normals that make feature angle
+    //  - otherwise return NONE and set normals,bins
+    surfaceFeatures::edgeStatus checkNonManifoldEdge
+    (
+        const triSurface& surf,
+        const scalar tol,
+        const scalar includedAngle,
+        const label edgei
+    );
+
+    void deleteNonManifoldEdges
+    (
+        const triSurface& surf,
+        const scalar tol,
+        const scalar includedAngle,
+        List<surfaceFeatures::edgeStatus>& edgeStat
+    );
+
+    void writeStats(const extendedFeatureEdgeMesh& fem, Ostream& os);
+
+
+    void drawHitProblem
+    (
+        const label fi,
+        const triSurface& surf,
+        const point& start,
+        const point& p,
+        const point& end,
+        const pointIndexHitList& hitInfo
     );
 
     void processHit
@@ -90,56 +106,18 @@ namespace Foam
         const point& end,
         const vector& normal,
         const vectorField& normals,
-        const List<pointIndexHit>& hitInfo
+        const pointIndexHitList& hitInfo
     );
 
-    void drawHitProblem
+    Pair<tmp<triSurfaceScalarField>> extractCloseness
     (
-        const label fi,
-        const triSurface& surf,
-        const point& start,
-        const point& p,
-        const point& end,
-        const List<pointIndexHit>& hitInfo
+        const triSurfaceMesh& surf
     );
 
-    //- Unmark non-manifold edges if individual triangles are not features
-    void unmarkBaffles
+    Pair<tmp<triSurfacePointScalarField>> extractPointCloseness
     (
-        const triSurface& surf,
-        const scalar includedAngle,
-        List<surfaceFeatures::edgeStatus>& edgeStat
+        const triSurfaceMesh& surf
     );
-
-    //- Divide into multiple normal bins
-    //  - return REGION if != 2 normals
-    //  - return REGION if 2 normals that make feature angle
-    //  - otherwise return NONE and set normals,bins
-    surfaceFeatures::edgeStatus checkFlatRegionEdge
-    (
-        const triSurface& surf,
-        const scalar tol,
-        const scalar includedAngle,
-        const label edgeI
-    );
-
-    void extractCloseness
-    (
-        const fileName &sFeatFileName,
-        const Time& runTime,
-        const triSurface &surf,
-        const bool writeVTK
-    );
-
-    void extractPointCloseness
-    (
-        const fileName &sFeatFileName,
-        const Time& runTime,
-        const triSurface &surf,
-        const bool writeVTK
-    );
-
-    void writeStats(const extendedFeatureEdgeMesh& fem, Ostream& os);
 }
 
 

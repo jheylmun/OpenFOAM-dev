@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2014-2018 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -21,73 +21,31 @@ License
     You should have received a copy of the GNU General Public License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
-Class
-    Foam::orderedPhasePair
+Typedef
+    Foam::pointIndexHitList
 
 Description
-
-SourceFiles
-    orderedPhasePair.C
+    List of pointIndexHits and associated functions
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef orderedPhasePair_H
-#define orderedPhasePair_H
+#ifndef pointIndexHitList_H
+#define pointIndexHitList_H
 
-#include "phasePair.H"
+#include "pointIndexHit.H"
+#include "List.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
+    typedef List<pointIndexHit> pointIndexHitList;
 
-/*---------------------------------------------------------------------------*\
-                         Class orderedPhasePair Declaration
-\*---------------------------------------------------------------------------*/
-
-class orderedPhasePair
-:
-    public phasePair
-{
-
-public:
-
-    // Constructors
-
-        //- Construct from two phases and gravity
-        orderedPhasePair
-        (
-            const phaseModel& dispersed,
-            const phaseModel& continuous
-        );
-
-
-    //- Destructor
-    virtual ~orderedPhasePair();
-
-
-    // Member Functions
-
-        //- Dispersed phase
-        virtual const phaseModel& dispersed() const;
-
-        //- Continuous phase
-        virtual const phaseModel& continuous() const;
-
-        //- Pair name
-        virtual word name() const;
-
-        //- Other pair name
-        virtual word otherName() const;
-
-        //- Aspect ratio
-        virtual tmp<volScalarField> E() const;
-};
-
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-} // End namespace Foam
+    scalar minDist
+    (
+        const List<pointIndexHit>& hitList
+    );
+}
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
