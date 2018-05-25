@@ -219,13 +219,13 @@ public:
         const wordList& phases() const;
 
         //- Add phase to list of kinetic theory phases.
-        void addPhase(const RASModels::kineticTheoryModel&);
+        void addPhase(const phaseModel&);
 
         //- Return true if phase is granular
         bool found(const word&) const;
 
         //- Return residual alpha
-        const dimensionedScalar residualAlpha() const
+        const dimensionedScalar& residualAlpha() const
         {
             return residualAlpha_;
         }
@@ -249,13 +249,13 @@ public:
         }
 
         //- Coefficients of restitutions between granular phases
-        const phasePair::scalarTable es() const
+        const phasePair::scalarTable& es() const
         {
             return eTable_;
         }
 
         //- coefficients of friction between granular phases
-        const phasePair::scalarTable Cfs() const
+        const phasePair::scalarTable& Cfs() const
         {
             return CfTable_;
         }

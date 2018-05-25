@@ -224,7 +224,10 @@ Foam::tmp<Foam::volScalarField> Foam::multiphaseKineticTheorySystem::gs0
     const phaseModel& phase2
 ) const
 {
-    return *gs0Table_[phasePairKey(phase1.name(), phase2.name(), false)];
+    return tmp<volScalarField>
+    (
+        *gs0Table_[phasePairKey(phase1.name(), phase2.name(), false)]
+    );
 }
 
 
@@ -270,13 +273,15 @@ Foam::multiphaseKineticTheorySystem::PsCoeff(const phaseModel& phase) const
                 IOobject::groupName("Theta", phase.name())
             );
 
-        return
-            (*PsCoeffs_[key])
+        return tmp<volScalarField>
+        (
+            *PsCoeffs_[key]
            /max
             (
                 Theta,
                 dimensionedScalar("SMALL", sqr(dimVelocity), 1e-6)
-            );
+            )
+        );
     }
 
     tmp<volScalarField> tmpPsCoeff
@@ -309,7 +314,7 @@ Foam::multiphaseKineticTheorySystem::PsCoeff(const phaseModel& phase) const
             );
 
         psCoeff +=
-            (*PsCoeffs_[key])
+            *PsCoeffs_[key]
            /max(Theta, dimensionedScalar("SMALL", sqr(dimVelocity), 1e-6));
     }
     return tmpPsCoeff;
@@ -328,12 +333,14 @@ Foam::multiphaseKineticTheorySystem::PsCoeffPrime(const phaseModel& phase) const
             IOobject::groupName("Theta", phase.name())
         );
 
-        return
-        (*PsCoeffsPrime_[key])
-       /max
+        return tmp<volScalarField>
         (
-            Theta,
-            dimensionedScalar("SMALL", sqr(dimVelocity), 1e-6)
+            *PsCoeffsPrime_[key]
+           /max
+            (
+                Theta,
+                dimensionedScalar("SMALL", sqr(dimVelocity), 1e-6)
+            )
         );
     }
 
@@ -367,7 +374,7 @@ Foam::multiphaseKineticTheorySystem::PsCoeffPrime(const phaseModel& phase) const
             );
 
         psCoeffPrime +=
-            (*PsCoeffsPrime_[key])
+            *PsCoeffsPrime_[key]
            /max(Theta, dimensionedScalar("SMALL", sqr(dimVelocity), 1e-6));
     }
     return tmpPsCoeffPrime;
@@ -442,10 +449,10 @@ const Foam::wordList& Foam::multiphaseKineticTheorySystem::phases() const
 
 void Foam::multiphaseKineticTheorySystem::addPhase
 (
-    const RASModels::kineticTheoryModel& ktModel
+    const phaseModel& phase
 )
 {
-    const word& phaseName(ktModel.phase().name());
+    const word& phaseName(phase.name());
     phases_.append(phaseName);
 
     // Print granular quantities only if more than 1 phase is present
@@ -528,7 +535,12 @@ void Foam::multiphaseKineticTheorySystem::addPhase
                     fluid_.mesh()
                 ),
                 fluid_.mesh(),
-                dimensionedScalar("PsCoeffPrime", dimDensity*sqr(dimVelocity), 0.0)
+                dimensionedScalar
+                (
+                    "PsCoeffPrime",
+                    dimDensity*sqr(dimVelocity),
+                    0.0
+                )
             )
         );
     }
@@ -590,8 +602,8 @@ void Foam::multiphaseKineticTheorySystem::correct()
                 IOobject::groupName("Theta", phase2.name())
             );
 
-        gs0Table_[key] = radialModel_->g0(phase1, phase2).ptr();
-        PsCoeffs_[key] =
+        *gs0Table_[key] = radialModel_->g0(phase1, phase2);
+        *PsCoeffs_[key] =
             granularPressureModel_->granularPressureCoeff
             (
                 phase1,
@@ -600,9 +612,9 @@ void Foam::multiphaseKineticTheorySystem::correct()
                 Theta2,
                 gs0(phase1, phase2),
                 eTable_[key]
-            ).ptr();
+            );
 
-        PsCoeffsPrime_[key] =
+        *PsCoeffsPrime_[key] =
             granularPressureModel_->granularPressureCoeffPrime
             (
                 phase1,
@@ -612,7 +624,7 @@ void Foam::multiphaseKineticTheorySystem::correct()
                 gs0(phase1, phase2),
                 gs0Prime(phase1, phase2),
                 eTable_[key]
-            ).ptr();
+            );
     }
 
     alphaMax_ = packingLimitModel_->alphaMax();

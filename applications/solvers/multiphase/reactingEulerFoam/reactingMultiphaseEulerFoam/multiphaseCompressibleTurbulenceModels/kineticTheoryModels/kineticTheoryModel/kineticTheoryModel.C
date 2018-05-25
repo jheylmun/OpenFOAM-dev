@@ -37,7 +37,7 @@ Foam::RASModels::kineticTheoryModel::lookupOrConstruct
 ) const
 {
 
-    if (!mesh_.objectRegistry::foundObject<volScalarField>(name))
+    if (!mesh_.foundObject<volScalarField>(name))
     {
         multiphaseKineticTheorySystem* ktPtr
         (
@@ -49,7 +49,7 @@ Foam::RASModels::kineticTheoryModel::lookupOrConstruct
     }
 
     return
-        mesh_.objectRegistry::lookupObjectRef<multiphaseKineticTheorySystem>
+        mesh_.lookupObjectRef<multiphaseKineticTheorySystem>
         (name);
 }
 
@@ -148,7 +148,7 @@ Foam::RASModels::kineticTheoryModel::kineticTheoryModel
         dimensionedScalar("zero", dimensionSet(0, 2, -1, 0, 0), 0.0)
     )
 {
-    KTs_.addPhase(*this);
+    KTs_.addPhase(phase);
 
     if (type == typeName)
     {
@@ -229,8 +229,7 @@ Foam::RASModels::kineticTheoryModel::pPrime() const
 {
     tmp<volScalarField> tpPrime
     (
-        Theta_
-       *KTs_.PsCoeffPrime(phase_)
+        Theta_*KTs_.PsCoeffPrime(phase_)
      +  KTs_.frictionalPressurePrime(phase_)
     );
 

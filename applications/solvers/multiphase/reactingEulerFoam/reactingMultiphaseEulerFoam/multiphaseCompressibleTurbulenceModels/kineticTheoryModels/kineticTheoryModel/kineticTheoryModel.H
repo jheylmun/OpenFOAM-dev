@@ -202,14 +202,6 @@ public:
 
         //- Solve the kinetic theory equations and correct the viscosity
         virtual void correct();
-
-    // Functions used in multiphaseKineticTheorySystem class
-
-        //- Return phase model
-        const phaseModel& phase() const
-        {
-            return phase_;
-        }
 };
 
 

@@ -92,7 +92,8 @@ Foam::kineticTheoryModels::viscosityModels::Princeton::nu
     {
         const word& name2(kt_.phases()[phasei]);
         const phaseModel& phase2 = kt_.fluid().phases()[name2];
-        const scalar& eij(kt_.es()[phasePairKey(phase.name(), name2)]);
+        phasePairKey key(phase.name(), name2, false);
+        scalar eij(kt_.es()[key]);
         tmp<volScalarField> gs0ij(kt_.gs0(phase, phase2));
 
         alphag0 += gs0ij*phase2*(1.0 + eij);
