@@ -337,6 +337,18 @@ makeThermos
     specie
 );
 
+makeThermo
+(
+    rhoThermo,
+    heRhoThermo,
+    pureMixture,
+    polynomialTransport,
+    sensibleInternalEnergy,
+    hPolynomialThermo,
+    icoPolynomial,
+    specie
+);
+
 makeThermos
 (
     rhoThermo,
@@ -349,15 +361,27 @@ makeThermos
     specie
 );
 
-makeThermo
+makeThermos
 (
     rhoThermo,
     heRhoThermo,
     pureMixture,
-    polynomialTransport,
+    sutherlandTransport,
     sensibleInternalEnergy,
-    hPolynomialThermo,
-    icoPolynomial,
+    hConstThermo,
+    stiffenedEoS,
+    specie
+);
+
+makeThermos
+(
+    rhoThermo,
+    heRhoThermo,
+    pureMixture,
+    sutherlandTransport,
+    sensibleInternalEnergy,
+    janafThermo,
+    stiffenedEoS,
     specie
 );
 

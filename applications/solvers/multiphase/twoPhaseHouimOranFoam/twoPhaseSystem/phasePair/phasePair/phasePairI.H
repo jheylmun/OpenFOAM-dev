@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2017 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2014 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -23,45 +23,29 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "thermo.H"
-
-/* * * * * * * * * * * * * * * private static data * * * * * * * * * * * * * */
-
-template<class Thermo, template<class> class Type>
-const Foam::scalar Foam::species::thermo<Thermo, Type>::tol_ = 1.0e-10;
-
-template<class Thermo, template<class> class Type>
-const int Foam::species::thermo<Thermo, Type>::maxIter_ = 10000;
-
-
-// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
-
-template<class Thermo, template<class> class Type>
-Foam::species::thermo<Thermo, Type>::thermo(const dictionary& dict)
-:
-    Thermo(dict)
-{}
-
-
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-template<class Thermo, template<class> class Type>
-void Foam::species::thermo<Thermo, Type>::write(Ostream& os) const
+inline const Foam::phaseModel& Foam::phasePair::phase1() const
 {
-    Thermo::write(os);
+    return phase1_;
 }
 
 
-// * * * * * * * * * * * * * * * Ostream Operator  * * * * * * * * * * * * * //
-
-template<class Thermo, template<class> class Type>
-Foam::Ostream& Foam::species::operator<<
-(
-    Ostream& os, const thermo<Thermo, Type>& st
-)
+inline const Foam::phaseModel& Foam::phasePair::phase2() const
 {
-    st.write(os);
-    return os;
+    return phase2_;
+}
+
+
+inline const Foam::dimensionedVector& Foam::phasePair::g() const
+{
+    return g_;
+}
+
+
+inline const Foam::dimensionedScalar& Foam::phasePair::sigma() const
+{
+    return sigma_;
 }
 
 

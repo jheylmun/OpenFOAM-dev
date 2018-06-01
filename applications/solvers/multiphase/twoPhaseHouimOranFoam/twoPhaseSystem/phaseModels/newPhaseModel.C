@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2017 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2015-2017 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -23,46 +23,37 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "thermo.H"
+#include "phaseModel.H"
+#include "twoPhaseSystem.H"
 
-/* * * * * * * * * * * * * * * private static data * * * * * * * * * * * * * */
+// * * * * * * * * * * * * * * * * Selector  * * * * * * * * * * * * * * * * //
 
-template<class Thermo, template<class> class Type>
-const Foam::scalar Foam::species::thermo<Thermo, Type>::tol_ = 1.0e-10;
-
-template<class Thermo, template<class> class Type>
-const int Foam::species::thermo<Thermo, Type>::maxIter_ = 10000;
-
-
-// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
-
-template<class Thermo, template<class> class Type>
-Foam::species::thermo<Thermo, Type>::thermo(const dictionary& dict)
-:
-    Thermo(dict)
-{}
-
-
-// * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
-
-template<class Thermo, template<class> class Type>
-void Foam::species::thermo<Thermo, Type>::write(Ostream& os) const
-{
-    Thermo::write(os);
-}
-
-
-// * * * * * * * * * * * * * * * Ostream Operator  * * * * * * * * * * * * * //
-
-template<class Thermo, template<class> class Type>
-Foam::Ostream& Foam::species::operator<<
+Foam::autoPtr<Foam::phaseModel> Foam::phaseModel::New
 (
-    Ostream& os, const thermo<Thermo, Type>& st
+    const twoPhaseSystem& fluid,
+    const dictionary& dict,
+    const word& phaseName
 )
 {
-    st.write(os);
-    return os;
-}
+    word phaseModelType(fluid.subDict(phaseName).lookup("type"));
 
+    Info<< "Selecting phaseModel for "
+        << phaseName << ": " << phaseModelType << endl;
+
+    dictionaryConstructorTable::iterator cstrIter =
+        dictionaryConstructorTablePtr_->find(phaseModelType);
+
+    if (cstrIter == dictionaryConstructorTablePtr_->end())
+    {
+        FatalErrorInFunction
+            << "Unknown phaseModelType type "
+            << phaseModelType << endl << endl
+            << "Valid phaseModel types are : " << endl
+            << dictionaryConstructorTablePtr_->sortedToc()
+            << exit(FatalError);
+    }
+
+    return cstrIter()(fluid, dict, phaseName);
+}
 
 // ************************************************************************* //

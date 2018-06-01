@@ -23,45 +23,57 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "thermo.H"
+#include "Ergun.H"
+#include "phasePair.H"
+#include "addToRunTimeSelectionTable.H"
 
-/* * * * * * * * * * * * * * * private static data * * * * * * * * * * * * * */
+// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
-template<class Thermo, template<class> class Type>
-const Foam::scalar Foam::species::thermo<Thermo, Type>::tol_ = 1.0e-10;
-
-template<class Thermo, template<class> class Type>
-const int Foam::species::thermo<Thermo, Type>::maxIter_ = 10000;
+namespace Foam
+{
+namespace dragModels
+{
+    defineTypeNameAndDebug(Ergun, 0);
+    addToRunTimeSelectionTable(dragModel, Ergun, dictionary);
+}
+}
 
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-template<class Thermo, template<class> class Type>
-Foam::species::thermo<Thermo, Type>::thermo(const dictionary& dict)
+Foam::dragModels::Ergun::Ergun
+(
+    const dictionary& dict,
+    const phasePair& pair,
+    const bool registerObject
+)
 :
-    Thermo(dict)
+    dragModel(dict, pair, registerObject)
+{}
+
+
+// * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
+
+Foam::dragModels::Ergun::~Ergun()
 {}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-template<class Thermo, template<class> class Type>
-void Foam::species::thermo<Thermo, Type>::write(Ostream& os) const
+Foam::tmp<Foam::volScalarField> Foam::dragModels::Ergun::CdRe() const
 {
-    Thermo::write(os);
-}
-
-
-// * * * * * * * * * * * * * * * Ostream Operator  * * * * * * * * * * * * * //
-
-template<class Thermo, template<class> class Type>
-Foam::Ostream& Foam::species::operator<<
-(
-    Ostream& os, const thermo<Thermo, Type>& st
-)
-{
-    st.write(os);
-    return os;
+    return
+        (4.0/3.0)
+       *(
+            150
+           *max
+            (
+                scalar(1) - pair_.continuous(),
+                pair_.continuous().residualAlpha()
+            )/max(pair_.continuous(), pair_.continuous().residualAlpha())
+          + 1.75
+           *pair_.Re()
+        );
 }
 
 

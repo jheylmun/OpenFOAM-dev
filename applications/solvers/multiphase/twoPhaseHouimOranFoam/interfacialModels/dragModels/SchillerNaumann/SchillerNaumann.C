@@ -23,45 +23,51 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "thermo.H"
+#include "SchillerNaumann.H"
+#include "phasePair.H"
+#include "addToRunTimeSelectionTable.H"
 
-/* * * * * * * * * * * * * * * private static data * * * * * * * * * * * * * */
+// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
-template<class Thermo, template<class> class Type>
-const Foam::scalar Foam::species::thermo<Thermo, Type>::tol_ = 1.0e-10;
-
-template<class Thermo, template<class> class Type>
-const int Foam::species::thermo<Thermo, Type>::maxIter_ = 10000;
+namespace Foam
+{
+namespace dragModels
+{
+    defineTypeNameAndDebug(SchillerNaumann, 0);
+    addToRunTimeSelectionTable(dragModel, SchillerNaumann, dictionary);
+}
+}
 
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-template<class Thermo, template<class> class Type>
-Foam::species::thermo<Thermo, Type>::thermo(const dictionary& dict)
+Foam::dragModels::SchillerNaumann::SchillerNaumann
+(
+    const dictionary& dict,
+    const phasePair& pair,
+    const bool registerObject
+)
 :
-    Thermo(dict)
+    dragModel(dict, pair, registerObject),
+    residualRe_("residualRe", dimless, dict)
+{}
+
+
+// * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
+
+Foam::dragModels::SchillerNaumann::~SchillerNaumann()
 {}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-template<class Thermo, template<class> class Type>
-void Foam::species::thermo<Thermo, Type>::write(Ostream& os) const
+Foam::tmp<Foam::volScalarField> Foam::dragModels::SchillerNaumann::CdRe() const
 {
-    Thermo::write(os);
-}
+    volScalarField Re(pair_.Re());
 
-
-// * * * * * * * * * * * * * * * Ostream Operator  * * * * * * * * * * * * * //
-
-template<class Thermo, template<class> class Type>
-Foam::Ostream& Foam::species::operator<<
-(
-    Ostream& os, const thermo<Thermo, Type>& st
-)
-{
-    st.write(os);
-    return os;
+    return
+        neg(Re - 1000)*24.0*(1.0 + 0.15*pow(Re, 0.687))
+      + pos0(Re - 1000)*0.44*max(Re, residualRe_);
 }
 
 

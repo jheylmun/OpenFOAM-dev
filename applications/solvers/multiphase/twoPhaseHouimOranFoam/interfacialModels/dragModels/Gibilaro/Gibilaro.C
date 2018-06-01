@@ -23,45 +23,55 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "thermo.H"
+#include "Gibilaro.H"
+#include "phasePair.H"
+#include "addToRunTimeSelectionTable.H"
 
-/* * * * * * * * * * * * * * * private static data * * * * * * * * * * * * * */
+// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
-template<class Thermo, template<class> class Type>
-const Foam::scalar Foam::species::thermo<Thermo, Type>::tol_ = 1.0e-10;
-
-template<class Thermo, template<class> class Type>
-const int Foam::species::thermo<Thermo, Type>::maxIter_ = 10000;
+namespace Foam
+{
+namespace dragModels
+{
+    defineTypeNameAndDebug(Gibilaro, 0);
+    addToRunTimeSelectionTable(dragModel, Gibilaro, dictionary);
+}
+}
 
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-template<class Thermo, template<class> class Type>
-Foam::species::thermo<Thermo, Type>::thermo(const dictionary& dict)
+Foam::dragModels::Gibilaro::Gibilaro
+(
+    const dictionary& dict,
+    const phasePair& pair,
+    const bool registerObject
+)
 :
-    Thermo(dict)
+    dragModel(dict, pair, registerObject)
+{}
+
+
+// * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
+
+Foam::dragModels::Gibilaro::~Gibilaro()
 {}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-template<class Thermo, template<class> class Type>
-void Foam::species::thermo<Thermo, Type>::write(Ostream& os) const
+Foam::tmp<Foam::volScalarField> Foam::dragModels::Gibilaro::CdRe() const
 {
-    Thermo::write(os);
-}
+    volScalarField alpha2
+    (
+        max(scalar(1) - pair_.dispersed(), pair_.continuous().residualAlpha())
+    );
 
-
-// * * * * * * * * * * * * * * * Ostream Operator  * * * * * * * * * * * * * //
-
-template<class Thermo, template<class> class Type>
-Foam::Ostream& Foam::species::operator<<
-(
-    Ostream& os, const thermo<Thermo, Type>& st
-)
-{
-    st.write(os);
-    return os;
+    return
+        (4.0/3.0)
+       *(17.3/alpha2 + 0.336*pair_.Re())
+       *max(pair_.continuous(), pair_.continuous().residualAlpha())
+       *pow(alpha2, -2.8);
 }
 
 

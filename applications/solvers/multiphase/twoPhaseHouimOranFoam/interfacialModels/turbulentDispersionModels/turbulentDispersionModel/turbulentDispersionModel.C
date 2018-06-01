@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2017 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2014-2015 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -23,45 +23,46 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "thermo.H"
+#include "turbulentDispersionModel.H"
+#include "phasePair.H"
+#include "fvcGrad.H"
 
-/* * * * * * * * * * * * * * * private static data * * * * * * * * * * * * * */
+// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
-template<class Thermo, template<class> class Type>
-const Foam::scalar Foam::species::thermo<Thermo, Type>::tol_ = 1.0e-10;
+namespace Foam
+{
+    defineTypeNameAndDebug(turbulentDispersionModel, 0);
+    defineRunTimeSelectionTable(turbulentDispersionModel, dictionary);
+}
 
-template<class Thermo, template<class> class Type>
-const int Foam::species::thermo<Thermo, Type>::maxIter_ = 10000;
+const Foam::dimensionSet Foam::turbulentDispersionModel::dimD(1, -1, -2, 0, 0);
+const Foam::dimensionSet Foam::turbulentDispersionModel::dimF(1, -2, -2, 0, 0);
 
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-template<class Thermo, template<class> class Type>
-Foam::species::thermo<Thermo, Type>::thermo(const dictionary& dict)
+Foam::turbulentDispersionModel::turbulentDispersionModel
+(
+    const dictionary& dict,
+    const phasePair& pair
+)
 :
-    Thermo(dict)
+    pair_(pair)
+{}
+
+
+// * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
+
+Foam::turbulentDispersionModel::~turbulentDispersionModel()
 {}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-template<class Thermo, template<class> class Type>
-void Foam::species::thermo<Thermo, Type>::write(Ostream& os) const
+Foam::tmp<Foam::volVectorField>
+Foam::turbulentDispersionModel::F() const
 {
-    Thermo::write(os);
-}
-
-
-// * * * * * * * * * * * * * * * Ostream Operator  * * * * * * * * * * * * * //
-
-template<class Thermo, template<class> class Type>
-Foam::Ostream& Foam::species::operator<<
-(
-    Ostream& os, const thermo<Thermo, Type>& st
-)
-{
-    st.write(os);
-    return os;
+    return D()*fvc::grad(pair_.dispersed());
 }
 
 

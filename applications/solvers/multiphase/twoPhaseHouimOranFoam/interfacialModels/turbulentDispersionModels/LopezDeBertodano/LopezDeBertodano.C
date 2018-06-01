@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2017 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2014-2015 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -23,45 +23,56 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "thermo.H"
+#include "LopezDeBertodano.H"
+#include "phasePair.H"
+#include "PhaseCompressibleTurbulenceModel.H"
+#include "addToRunTimeSelectionTable.H"
 
-/* * * * * * * * * * * * * * * private static data * * * * * * * * * * * * * */
+// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
-template<class Thermo, template<class> class Type>
-const Foam::scalar Foam::species::thermo<Thermo, Type>::tol_ = 1.0e-10;
-
-template<class Thermo, template<class> class Type>
-const int Foam::species::thermo<Thermo, Type>::maxIter_ = 10000;
+namespace Foam
+{
+namespace turbulentDispersionModels
+{
+    defineTypeNameAndDebug(LopezDeBertodano, 0);
+    addToRunTimeSelectionTable
+    (
+        turbulentDispersionModel,
+        LopezDeBertodano,
+        dictionary
+    );
+}
+}
 
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-template<class Thermo, template<class> class Type>
-Foam::species::thermo<Thermo, Type>::thermo(const dictionary& dict)
+Foam::turbulentDispersionModels::LopezDeBertodano::LopezDeBertodano
+(
+    const dictionary& dict,
+    const phasePair& pair
+)
 :
-    Thermo(dict)
+    turbulentDispersionModel(dict, pair),
+    Ctd_("Ctd", dimless, dict)
+{}
+
+
+// * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
+
+Foam::turbulentDispersionModels::LopezDeBertodano::~LopezDeBertodano()
 {}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-template<class Thermo, template<class> class Type>
-void Foam::species::thermo<Thermo, Type>::write(Ostream& os) const
+Foam::tmp<Foam::volScalarField>
+Foam::turbulentDispersionModels::LopezDeBertodano::D() const
 {
-    Thermo::write(os);
-}
-
-
-// * * * * * * * * * * * * * * * Ostream Operator  * * * * * * * * * * * * * //
-
-template<class Thermo, template<class> class Type>
-Foam::Ostream& Foam::species::operator<<
-(
-    Ostream& os, const thermo<Thermo, Type>& st
-)
-{
-    st.write(os);
-    return os;
+    return
+        Ctd_
+       *pair_.continuous().rho()
+       *pair_.continuous().turbulence().k();
 }
 
 

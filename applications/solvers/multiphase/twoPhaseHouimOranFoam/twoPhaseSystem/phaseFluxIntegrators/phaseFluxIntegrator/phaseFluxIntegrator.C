@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2017 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2017 Jeff Heylmun
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -23,46 +23,36 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "thermo.H"
+#include "phaseFluxIntegrator.H"
 
-/* * * * * * * * * * * * * * * private static data * * * * * * * * * * * * * */
 
-template<class Thermo, template<class> class Type>
-const Foam::scalar Foam::species::thermo<Thermo, Type>::tol_ = 1.0e-10;
+// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
-template<class Thermo, template<class> class Type>
-const int Foam::species::thermo<Thermo, Type>::maxIter_ = 10000;
+namespace Foam
+{
+    defineTypeNameAndDebug(phaseFluxIntegrator, 0);
+    defineRunTimeSelectionTable(phaseFluxIntegrator, dictionary);
+}
 
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-template<class Thermo, template<class> class Type>
-Foam::species::thermo<Thermo, Type>::thermo(const dictionary& dict)
+Foam::phaseFluxIntegrator::phaseFluxIntegrator
+(
+    phaseModel& phase1,
+    phaseModel& phase2
+)
 :
-    Thermo(dict)
+    phase1_(phase1),
+    phase2_(phase2),
+    gradAlpha_(phase2.granular() ? phase2.gradAlpha() : phase1.gradAlpha())
 {}
 
 
-// * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
+// * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-template<class Thermo, template<class> class Type>
-void Foam::species::thermo<Thermo, Type>::write(Ostream& os) const
-{
-    Thermo::write(os);
-}
-
-
-// * * * * * * * * * * * * * * * Ostream Operator  * * * * * * * * * * * * * //
-
-template<class Thermo, template<class> class Type>
-Foam::Ostream& Foam::species::operator<<
-(
-    Ostream& os, const thermo<Thermo, Type>& st
-)
-{
-    st.write(os);
-    return os;
-}
+Foam::phaseFluxIntegrator::~phaseFluxIntegrator()
+{}
 
 
 // ************************************************************************* //

@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2017 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2013-2015 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -23,45 +23,49 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "thermo.H"
+#include "wakeEntrainmentCoalescence.H"
+#include "addToRunTimeSelectionTable.H"
 
-/* * * * * * * * * * * * * * * private static data * * * * * * * * * * * * * */
+// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
-template<class Thermo, template<class> class Type>
-const Foam::scalar Foam::species::thermo<Thermo, Type>::tol_ = 1.0e-10;
-
-template<class Thermo, template<class> class Type>
-const int Foam::species::thermo<Thermo, Type>::maxIter_ = 10000;
+namespace Foam
+{
+namespace diameterModels
+{
+namespace IATEsources
+{
+    defineTypeNameAndDebug(wakeEntrainmentCoalescence, 0);
+    addToRunTimeSelectionTable
+    (
+        IATEsource,
+        wakeEntrainmentCoalescence,
+        dictionary
+    );
+}
+}
+}
 
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-template<class Thermo, template<class> class Type>
-Foam::species::thermo<Thermo, Type>::thermo(const dictionary& dict)
+Foam::diameterModels::IATEsources::wakeEntrainmentCoalescence::
+wakeEntrainmentCoalescence
+(
+    const IATE& iate,
+    const dictionary& dict
+)
 :
-    Thermo(dict)
+    IATEsource(iate),
+    Cwe_("Cwe", dimless, dict)
 {}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-template<class Thermo, template<class> class Type>
-void Foam::species::thermo<Thermo, Type>::write(Ostream& os) const
+Foam::tmp<Foam::volScalarField>
+Foam::diameterModels::IATEsources::wakeEntrainmentCoalescence::R() const
 {
-    Thermo::write(os);
-}
-
-
-// * * * * * * * * * * * * * * * Ostream Operator  * * * * * * * * * * * * * //
-
-template<class Thermo, template<class> class Type>
-Foam::Ostream& Foam::species::operator<<
-(
-    Ostream& os, const thermo<Thermo, Type>& st
-)
-{
-    st.write(os);
-    return os;
+    return (-12)*phi()*Cwe_*cbrt(CD())*iate_.a()*Ur();
 }
 
 

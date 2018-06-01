@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2017 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2015 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -23,45 +23,71 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "thermo.H"
+#include "LunSavageRadial.H"
+#include "addToRunTimeSelectionTable.H"
 
-/* * * * * * * * * * * * * * * private static data * * * * * * * * * * * * * */
+// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
-template<class Thermo, template<class> class Type>
-const Foam::scalar Foam::species::thermo<Thermo, Type>::tol_ = 1.0e-10;
+namespace Foam
+{
+namespace kineticTheoryModels
+{
+namespace radialModels
+{
+    defineTypeNameAndDebug(LunSavage, 0);
 
-template<class Thermo, template<class> class Type>
-const int Foam::species::thermo<Thermo, Type>::maxIter_ = 10000;
+    addToRunTimeSelectionTable
+    (
+        radialModel,
+        LunSavage,
+        dictionary
+    );
+}
+}
+}
 
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-template<class Thermo, template<class> class Type>
-Foam::species::thermo<Thermo, Type>::thermo(const dictionary& dict)
+Foam::kineticTheoryModels::radialModels::LunSavage::LunSavage
+(
+    const dictionary& dict
+)
 :
-    Thermo(dict)
+    radialModel(dict)
+{}
+
+
+// * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
+
+Foam::kineticTheoryModels::radialModels::LunSavage::~LunSavage()
 {}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-template<class Thermo, template<class> class Type>
-void Foam::species::thermo<Thermo, Type>::write(Ostream& os) const
+Foam::tmp<Foam::volScalarField>
+Foam::kineticTheoryModels::radialModels::LunSavage::g0
+(
+    const volScalarField& alpha,
+    const dimensionedScalar& alphaMinFriction,
+    const dimensionedScalar& alphaMax
+) const
 {
-    Thermo::write(os);
+
+    return pow(1.0 - alpha/alphaMax, -2.5*alphaMax);
 }
 
 
-// * * * * * * * * * * * * * * * Ostream Operator  * * * * * * * * * * * * * //
-
-template<class Thermo, template<class> class Type>
-Foam::Ostream& Foam::species::operator<<
+Foam::tmp<Foam::volScalarField>
+Foam::kineticTheoryModels::radialModels::LunSavage::g0prime
 (
-    Ostream& os, const thermo<Thermo, Type>& st
-)
+    const volScalarField& alpha,
+    const dimensionedScalar& alphaMinFriction,
+    const dimensionedScalar& alphaMax
+) const
 {
-    st.write(os);
-    return os;
+    return 2.5*pow(1.0 - alpha/alphaMax, -2.5*alphaMax - 1);
 }
 
 

@@ -89,7 +89,7 @@ Foam::kineticTheoryModels::packingLimitModels::YuStandish::alphaMax
         const phaseModel& phase1 = kt_.fluid().phases()[phasei];
         scalar alpha1 = phase1[celli];
 
-        if (alpha1 < SMALL)
+        if (alpha1 < phase1.residualAlpha().value())
         {
             continue;
         }
@@ -133,7 +133,7 @@ Foam::kineticTheoryModels::packingLimitModels::YuStandish::alphaMax
             }
             sum += (1.0 - alphaMax1/pij)*cxi/Xij;
         }
-        maxAlpha = min(maxAlpha, alphaMax1/(1.0 - sum));
+        maxAlpha = max(min(maxAlpha, alphaMax1/(1.0 - sum)), 0.0);
     }
 
     return maxAlpha;

@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2017 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2015 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -23,45 +23,36 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "thermo.H"
+#include "conductivityModel.H"
 
-/* * * * * * * * * * * * * * * private static data * * * * * * * * * * * * * */
+// * * * * * * * * * * * * * * * * Selectors * * * * * * * * * * * * * * * * //
 
-template<class Thermo, template<class> class Type>
-const Foam::scalar Foam::species::thermo<Thermo, Type>::tol_ = 1.0e-10;
-
-template<class Thermo, template<class> class Type>
-const int Foam::species::thermo<Thermo, Type>::maxIter_ = 10000;
-
-
-// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
-
-template<class Thermo, template<class> class Type>
-Foam::species::thermo<Thermo, Type>::thermo(const dictionary& dict)
-:
-    Thermo(dict)
-{}
-
-
-// * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
-
-template<class Thermo, template<class> class Type>
-void Foam::species::thermo<Thermo, Type>::write(Ostream& os) const
-{
-    Thermo::write(os);
-}
-
-
-// * * * * * * * * * * * * * * * Ostream Operator  * * * * * * * * * * * * * //
-
-template<class Thermo, template<class> class Type>
-Foam::Ostream& Foam::species::operator<<
+Foam::autoPtr<Foam::kineticTheoryModels::conductivityModel>
+Foam::kineticTheoryModels::conductivityModel::New
 (
-    Ostream& os, const thermo<Thermo, Type>& st
+    const dictionary& dict
 )
 {
-    st.write(os);
-    return os;
+    word conductivityModelType(dict.lookup("conductivityModel"));
+
+    Info<< "Selecting conductivityModel "
+        << conductivityModelType << endl;
+
+    dictionaryConstructorTable::iterator cstrIter =
+        dictionaryConstructorTablePtr_->find(conductivityModelType);
+
+    if (cstrIter == dictionaryConstructorTablePtr_->end())
+    {
+        FatalError
+            << "conductivityModel::New(const dictionary&) : " << endl
+            << "    unknown conductivityModelType type "
+            << conductivityModelType
+            << ", constructor not in hash table" << endl << endl
+            << "    Valid conductivityModelType types are :" << endl;
+        Info<< dictionaryConstructorTablePtr_->sortedToc() << abort(FatalError);
+    }
+
+    return autoPtr<conductivityModel>(cstrIter()(dict));
 }
 
 

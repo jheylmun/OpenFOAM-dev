@@ -23,45 +23,69 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "thermo.H"
+#include "GidaspowErgunWenYu.H"
+#include "phasePair.H"
+#include "Ergun.H"
+#include "WenYu.H"
+#include "addToRunTimeSelectionTable.H"
 
-/* * * * * * * * * * * * * * * private static data * * * * * * * * * * * * * */
+// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
-template<class Thermo, template<class> class Type>
-const Foam::scalar Foam::species::thermo<Thermo, Type>::tol_ = 1.0e-10;
-
-template<class Thermo, template<class> class Type>
-const int Foam::species::thermo<Thermo, Type>::maxIter_ = 10000;
+namespace Foam
+{
+namespace dragModels
+{
+    defineTypeNameAndDebug(GidaspowErgunWenYu, 0);
+    addToRunTimeSelectionTable(dragModel, GidaspowErgunWenYu, dictionary); 
+}
+}
 
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-template<class Thermo, template<class> class Type>
-Foam::species::thermo<Thermo, Type>::thermo(const dictionary& dict)
+Foam::dragModels::GidaspowErgunWenYu::GidaspowErgunWenYu
+(
+    const dictionary& dict,
+    const phasePair& pair,
+    const bool registerObject
+)
 :
-    Thermo(dict)
+    dragModel(dict, pair, registerObject),
+    Ergun_
+    (
+        new Ergun
+        (
+            dict,
+            pair,
+            false
+        )
+    ),
+    WenYu_
+    (
+        new WenYu
+        (
+            dict,
+            pair,
+            false
+        )
+    )
+{}
+
+
+// * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
+
+Foam::dragModels::GidaspowErgunWenYu::~GidaspowErgunWenYu()
 {}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-template<class Thermo, template<class> class Type>
-void Foam::species::thermo<Thermo, Type>::write(Ostream& os) const
+Foam::tmp<Foam::volScalarField>
+Foam::dragModels::GidaspowErgunWenYu::CdRe() const
 {
-    Thermo::write(os);
-}
-
-
-// * * * * * * * * * * * * * * * Ostream Operator  * * * * * * * * * * * * * //
-
-template<class Thermo, template<class> class Type>
-Foam::Ostream& Foam::species::operator<<
-(
-    Ostream& os, const thermo<Thermo, Type>& st
-)
-{
-    st.write(os);
-    return os;
+    return
+        pos0(pair_.continuous() - 0.8)*WenYu_->CdRe()
+      + neg(pair_.continuous() - 0.8)*Ergun_->CdRe();
 }
 
 

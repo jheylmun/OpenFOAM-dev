@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2017 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2015 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -23,45 +23,52 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "thermo.H"
+#include "noneViscosity.H"
+#include "addToRunTimeSelectionTable.H"
 
-/* * * * * * * * * * * * * * * private static data * * * * * * * * * * * * * */
+// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
-template<class Thermo, template<class> class Type>
-const Foam::scalar Foam::species::thermo<Thermo, Type>::tol_ = 1.0e-10;
-
-template<class Thermo, template<class> class Type>
-const int Foam::species::thermo<Thermo, Type>::maxIter_ = 10000;
-
+namespace Foam
+{
+namespace kineticTheoryModels
+{
+    defineTypeNameAndDebug(noneViscosity, 0);
+    addToRunTimeSelectionTable(viscosityModel, noneViscosity, dictionary);
+}
+}
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-template<class Thermo, template<class> class Type>
-Foam::species::thermo<Thermo, Type>::thermo(const dictionary& dict)
+Foam::kineticTheoryModels::noneViscosity::noneViscosity(const dictionary& dict)
 :
-    Thermo(dict)
+    viscosityModel(dict)
+{}
+
+
+// * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
+
+Foam::kineticTheoryModels::noneViscosity::~noneViscosity()
 {}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-template<class Thermo, template<class> class Type>
-void Foam::species::thermo<Thermo, Type>::write(Ostream& os) const
-{
-    Thermo::write(os);
-}
-
-
-// * * * * * * * * * * * * * * * Ostream Operator  * * * * * * * * * * * * * //
-
-template<class Thermo, template<class> class Type>
-Foam::Ostream& Foam::species::operator<<
+Foam::tmp<Foam::volScalarField> Foam::kineticTheoryModels::noneViscosity::nu
 (
-    Ostream& os, const thermo<Thermo, Type>& st
-)
+    const volScalarField& alpha1,
+    const volScalarField& Theta,
+    const volScalarField& g0,
+    const volScalarField& rho1,
+    const volScalarField& da,
+    const dimensionedScalar& e
+) const
 {
-    st.write(os);
-    return os;
+    return dimensionedScalar
+    (
+        "0",
+        dimensionSet(0, 2, -1, 0, 0, 0, 0),
+        0.0
+    )*alpha1;
 }
 
 

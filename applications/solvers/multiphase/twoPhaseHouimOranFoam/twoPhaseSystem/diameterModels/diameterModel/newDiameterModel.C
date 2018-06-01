@@ -23,45 +23,44 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "thermo.H"
+#include "diameterModel.H"
 
-/* * * * * * * * * * * * * * * private static data * * * * * * * * * * * * * */
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-template<class Thermo, template<class> class Type>
-const Foam::scalar Foam::species::thermo<Thermo, Type>::tol_ = 1.0e-10;
-
-template<class Thermo, template<class> class Type>
-const int Foam::species::thermo<Thermo, Type>::maxIter_ = 10000;
-
-
-// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
-
-template<class Thermo, template<class> class Type>
-Foam::species::thermo<Thermo, Type>::thermo(const dictionary& dict)
-:
-    Thermo(dict)
-{}
-
-
-// * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
-
-template<class Thermo, template<class> class Type>
-void Foam::species::thermo<Thermo, Type>::write(Ostream& os) const
-{
-    Thermo::write(os);
-}
-
-
-// * * * * * * * * * * * * * * * Ostream Operator  * * * * * * * * * * * * * //
-
-template<class Thermo, template<class> class Type>
-Foam::Ostream& Foam::species::operator<<
+Foam::autoPtr<Foam::diameterModel> Foam::diameterModel::New
 (
-    Ostream& os, const thermo<Thermo, Type>& st
+    const dictionary& dict,
+    const phaseModel& phase
 )
 {
-    st.write(os);
-    return os;
+    word diameterModelType
+    (
+        dict.lookup("diameterModel")
+    );
+
+    Info << "Selecting diameterModel for phase "
+        << phase.name()
+        << ": "
+        << diameterModelType << endl;
+
+    dictionaryConstructorTable::iterator cstrIter =
+        dictionaryConstructorTablePtr_->find(diameterModelType);
+
+    if (cstrIter == dictionaryConstructorTablePtr_->end())
+    {
+        FatalErrorInFunction
+           << "Unknown diameterModelType type "
+           << diameterModelType << endl << endl
+           << "Valid diameterModel types are : " << endl
+           << dictionaryConstructorTablePtr_->sortedToc()
+           << exit(FatalError);
+    }
+
+    return cstrIter()
+    (
+        dict.optionalSubDict(diameterModelType + "Coeffs"),
+        phase
+    );
 }
 
 

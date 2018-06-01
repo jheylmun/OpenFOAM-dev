@@ -23,45 +23,47 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "thermo.H"
+#include "diameterModel.H"
 
-/* * * * * * * * * * * * * * * private static data * * * * * * * * * * * * * */
+// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
-template<class Thermo, template<class> class Type>
-const Foam::scalar Foam::species::thermo<Thermo, Type>::tol_ = 1.0e-10;
-
-template<class Thermo, template<class> class Type>
-const int Foam::species::thermo<Thermo, Type>::maxIter_ = 10000;
+namespace Foam
+{
+    defineTypeNameAndDebug(diameterModel, 0);
+    defineRunTimeSelectionTable(diameterModel, dictionary);
+}
 
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-template<class Thermo, template<class> class Type>
-Foam::species::thermo<Thermo, Type>::thermo(const dictionary& dict)
+Foam::diameterModel::diameterModel
+(
+    const dictionary& diameterProperties,
+    const phaseModel& phase
+)
 :
-    Thermo(dict)
+    diameterProperties_(diameterProperties),
+    phase_(phase)
+{}
+
+
+// * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
+
+Foam::diameterModel::~diameterModel()
 {}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-template<class Thermo, template<class> class Type>
-void Foam::species::thermo<Thermo, Type>::write(Ostream& os) const
+void Foam::diameterModel::correct()
+{}
+
+
+bool Foam::diameterModel::read(const dictionary& phaseProperties)
 {
-    Thermo::write(os);
-}
+    diameterProperties_ = phaseProperties.optionalSubDict(type() + "Coeffs");
 
-
-// * * * * * * * * * * * * * * * Ostream Operator  * * * * * * * * * * * * * //
-
-template<class Thermo, template<class> class Type>
-Foam::Ostream& Foam::species::operator<<
-(
-    Ostream& os, const thermo<Thermo, Type>& st
-)
-{
-    st.write(os);
-    return os;
+    return true;
 }
 
 
