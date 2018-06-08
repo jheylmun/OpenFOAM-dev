@@ -43,8 +43,16 @@ Foam::phaseFluxIntegrator::phaseFluxIntegrator
     phaseModel& phase2
 )
 :
-    phase1_(phase1),
-    phase2_(phase2),
+    phase1_
+    (
+        (phase2.granular() || phase1.slavePressure())
+      ? phase2 : phase1
+    ),
+    phase2_
+    (
+        (phase2.granular() || phase1.slavePressure())
+      ? phase1 : phase2
+    ),
     gradAlpha_(phase2.granular() ? phase2.gradAlpha() : phase1.gradAlpha())
 {}
 

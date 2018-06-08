@@ -87,6 +87,9 @@ protected:
 
         // Primative variables
 
+            //- Face volume fraction
+            surfaceScalarField alphaf_;
+
             //- Phase density
             volScalarField& rho_;
 
@@ -230,6 +233,12 @@ public:
 
         //- Return non-const access to the thermodynamic model
         inline rhoThermo& thermo();
+
+        //- Const access to the interpolated voluem fraction
+        inline const surfaceScalarField& alphaf() const;
+
+        //- Non-const access to the interpolated voluem fraction
+        inline surfaceScalarField& alphaf();
 
         //- Const access to the phase density
         inline const volScalarField& rho() const;

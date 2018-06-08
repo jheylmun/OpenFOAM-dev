@@ -16,35 +16,32 @@ FoamFile
 
 dimensions          [0 0 0 1 0 0 0];
 
-internalField       uniform 300;
+internalField       uniform 600;
 
 boundaryField
 {
-    primaryInlet
+    inlet
     {
-        type            fixedValue;
-        value           uniform 300;
+        type               fixedValue;
+        value              uniform 300;
     }
-    secondaryInlet
+
+    outlet
     {
-        type            fixedValue;
-        value           uniform 300;
+        type               inletOutlet;
+        phi                phi.air;
+        inletValue         uniform 300;
+        value              uniform 300;
     }
-    gasOutlet
-    {
-        type            inletOutlet;
-        phi             phi.air;
-        inletValue      $internalField;
-        value           $internalField;
-    }
+
     walls
     {
-        type            zeroGradient;
+        type               zeroGradient;
     }
 
     defaultFaces
     {
-        type            empty;
+        type               empty;
     }
 }
 

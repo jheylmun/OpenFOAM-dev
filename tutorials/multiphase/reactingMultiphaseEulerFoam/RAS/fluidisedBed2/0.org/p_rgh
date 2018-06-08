@@ -20,27 +20,25 @@ internalField       uniform 1e5;
 
 boundaryField
 {
-    primaryInlet
+    inlet
     {
         type               fixedFluxPressure;
         value              $internalField;
     }
-    secondaryInlet
+
+    outlet
     {
-        type               fixedFluxPressure;
-        value              $internalField;
-    }
-    gasOutlet
-    {
-        type               fixedFluxPressure;//prghPressure;
+        type               prghPressure;
         p                  $internalField;
         value              $internalField;
     }
+
     walls
     {
         type               fixedFluxPressure;
         value              $internalField;
     }
+
     defaultFaces
     {
         type               empty;

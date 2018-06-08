@@ -240,7 +240,10 @@ Foam::granularPhaseModel::granularPhaseModel
         ),
         1.5*massFlux_*fvc::interpolate(Theta_)
     )
-{}
+{
+    // Kinetic energy is not included in E
+    E_ = he_;
+}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
@@ -281,7 +284,14 @@ Foam::tmp<Foam::volScalarField> Foam::granularPhaseModel::c() const
     );
     cFric.ref() *= pos(dAlphaCrit);
 
-    return sqrt(Theta_*(A + 2.0/3.0*sqr(A) + (*this)*B) + cFric);
+    return tmp<volScalarField>
+    (
+        new volScalarField
+        (
+            IOobject::groupName("a", name()),
+            sqrt(Theta_*(A + 2.0/3.0*sqr(A) + (*this)*B) + cFric)
+        )
+    );
 }
 
 Foam::tmp<Foam::volScalarField> Foam::granularPhaseModel::k() const
@@ -376,8 +386,7 @@ Foam::granularPhaseModel::devRhoReff() const
                 IOobject::NO_READ,
                 IOobject::NO_WRITE
             ),
-          - (this->rho_*nut_)
-           *dev(twoSymm(fvc::grad(this->U_)))
+          - (this->rho_*nut_)*dev(twoSymm(fvc::grad(this->U_)))
           - ((this->rho_*lambda_)*fvc::div(this->phiPtr_()))*symmTensor::I
         )
     );
@@ -426,8 +435,7 @@ Foam::granularPhaseModel::productionCoeff() const
             "dissipationCoeff",
             81.0*(*this)*sqr(otherPhase().mu())*magSqr(U_ - otherPhase().U())
            /(
-                gs0_*pow3(d())*rho_
-               *sqrt(Foam::constant::mathematical::pi)
+                gs0_*pow3(d())*rho_*sqrt(Foam::constant::mathematical::pi)
               + dimensionedScalar("small", dimMass, small)
             )
         )
@@ -447,13 +455,11 @@ void Foam::granularPhaseModel::advect
     volScalarField& alpha = *this;
     if (oldTime)
     {
-        alphaRho_ =
-            alphaRho_.oldTime()
-          - deltaT*fvc::div(massFlux_);
+        alphaRho_ = alphaRho_.oldTime() - deltaT*fvc::div(massFlux_);
         alphaRho_.correctBoundaryConditions();
 
         alphaRhoU_ =
-            alphaRhoU_.oldTime();
+            alphaRhoU_.oldTime()
           - deltaT
            *(
                 fvc::div(momentumFlux_)
@@ -462,10 +468,14 @@ void Foam::granularPhaseModel::advect
             );
         alphaRhoU_.correctBoundaryConditions();
 
-        alphaRhoE_ -= deltaT*(fvc::div(energyFlux_));
+        alphaRhoE_ =
+            alphaRhoE_.oldTime()
+          - deltaT*fvc::div(energyFlux_);
         alphaRhoE_.correctBoundaryConditions();
 
-        alphaRhoPTE_ -= deltaT*(fvc::div(PTEFlux_));
+        alphaRhoPTE_ =
+            alphaRhoPTE_.oldTime()
+          - deltaT*(fvc::div(PTEFlux_)  + Ps_*fvc::div(phiPtr_()));
         alphaRhoPTE_.correctBoundaryConditions();
     }
     else
@@ -485,7 +495,7 @@ void Foam::granularPhaseModel::advect
         alphaRhoE_ -= deltaT*(fvc::div(energyFlux_));
         alphaRhoE_.correctBoundaryConditions();
 
-        alphaRhoPTE_ -= deltaT*(fvc::div(PTEFlux_));
+        alphaRhoPTE_ -= deltaT*(fvc::div(PTEFlux_) + Ps_*fvc::div(phiPtr_()));
         alphaRhoPTE_.correctBoundaryConditions();
     }
 }
@@ -517,9 +527,10 @@ void Foam::granularPhaseModel::solveSources
 
 void Foam::granularPhaseModel::updateFluxes()
 {
-//     // calculate fluxes with
+    // calculate fluxes with
     this->fluxFunction_->updateFluxes
     (
+        alphaf_,
         massFlux_,
         momentumFlux_,
         energyFlux_,
@@ -533,6 +544,7 @@ void Foam::granularPhaseModel::updateFluxes()
         c(),
         fluid_.p()
     );
+    gradAlpha_ = fvc::surfaceIntegrate(fluid_.mesh().Sf()*alphaf_);
 }
 
 
@@ -547,7 +559,7 @@ void Foam::granularPhaseModel::decode()
     phiPtr_() = fvc::flux(U_);
 
     E_ = alphaRhoE_/this->alphaRho_;
-    he_ = E_ - 0.5*magSqr(U_);
+    he_ = E_;
     thermoPtr_->correct();
 
     // Update kinetic theory quantities
@@ -613,6 +625,7 @@ void Foam::granularPhaseModel::encode()
     alphaRhoU_ = alphaRho_*U_;
     alphaRhoU_.correctBoundaryConditions();
 
+    E_ = he_;
     alphaRhoE_ = alphaRho_*E_;
     alphaRhoE_.correctBoundaryConditions();
 

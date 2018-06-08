@@ -20,29 +20,27 @@ internalField   uniform 0;
 
 boundaryField
 {
-    primaryInlet
+    inlet
     {
         type            calculated;
         value           $internalField;
     }
-    secondaryInlet
+
+    outlet
     {
         type            calculated;
         value           $internalField;
     }
-    gasOutlet
-    {
-        type            calculated;
-        value           $internalField;
-    }
+
     walls
     {
         type            calculated;
         value           $internalField;
     }
+
     defaultFaces
     {
-        type            empty;
+        type               empty;
     }
 }
 

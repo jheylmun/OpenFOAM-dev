@@ -17,8 +17,8 @@ FoamFile
 
 thermoType
 {
-    type            heRhoThermo;
-    mixture         pureMixture;
+    type            heSolidThermo;
+    mixture         reactingMixture;
     transport       const;
     thermo          hConst;
     equationOfState rhoConst;
@@ -46,6 +46,20 @@ mixture
         mu          0;
         Pr          1;
     }
+}
+
+solids
+{
+    C
+    {
+        rho             2010;
+        Cp              710;
+        kappa           0.04;
+        Hf              0;
+        emissivity      1.0;
+    }
+
+    ash;
 }
 
 

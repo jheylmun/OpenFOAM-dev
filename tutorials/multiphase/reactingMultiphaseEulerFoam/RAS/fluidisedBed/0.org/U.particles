@@ -34,12 +34,12 @@ boundaryField
 
     walls
     {
-        type            noSlip;//JohnsonJacksonParticleSlip;
-        restitutionCoefficient 0.8;
+        type                     slip;//JohnsonJacksonParticleSlip;
+        restitutionCoefficient   0.2;
         specularityCoefficient   0.1;
-        muF             0.25;
-        sigma           2;
-        value uniform (0 0 0);
+        muF                      0.25;
+        sigma                    2;
+        value                    uniform (0 0 0);
     }
 
     defaultFaces

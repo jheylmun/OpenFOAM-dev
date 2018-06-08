@@ -20,28 +20,26 @@ internalField       uniform 1;
 
 boundaryField
 {
-    primaryInlet
+    inlet
     {
         type               fixedValue;
         value              $internalField;
     }
-    secondaryInlet
-    {
-        type               fixedValue;
-        value              $internalField;
-    }
-    gasOutlet
+
+    outlet
     {
         type               inletOutlet;
         phi                phi.air;
         inletValue         $internalField;
         value              $internalField;
     }
+
     walls
     {
         type               kqRWallFunction;
         value              $internalField;
     }
+
     defaultFaces
     {
         type               empty;

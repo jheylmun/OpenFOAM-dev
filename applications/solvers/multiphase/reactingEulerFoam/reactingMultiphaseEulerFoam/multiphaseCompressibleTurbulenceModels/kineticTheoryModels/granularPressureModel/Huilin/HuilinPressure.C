@@ -79,6 +79,10 @@ Foam::kineticTheoryModels::granularPressureModels::Huilin::granularPressureCoeff
 ) const
 {
     const scalar pi = Foam::constant::mathematical::pi;
+    const volScalarField& alpha1 = phase1;
+    const volScalarField& alpha2 = phase2;
+    const volScalarField& rho1 = phase1.rho();
+    const volScalarField& rho2 = phase2.rho();
     volScalarField d1(phase1.d());
     volScalarField d2(phase2.d());
     volScalarField d12(0.5*(d1 + d2));
@@ -101,7 +105,7 @@ Foam::kineticTheoryModels::granularPressureModels::Huilin::granularPressureCoeff
 
     return
     (
-        pi*(1 + e)*pow3(d12)*g0*n1*n2*m1*m2*m0*Theta1*Theta2
+        pi*(1 + e)*pow3(d12)*g0*alpha1*rho1*alpha2*rho2*m0*Theta1*Theta2
        /(
             3.0*(sqr(m1)*Theta1 + sqr(m2)*Theta2)
           + dimensionedScalar("0", sqr(dimMass*dimVelocity), 1e-10)

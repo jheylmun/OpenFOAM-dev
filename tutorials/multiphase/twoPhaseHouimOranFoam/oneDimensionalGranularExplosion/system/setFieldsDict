@@ -15,8 +15,8 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-alpha1  .99999;    alpha2  0.6;
-p1      1e6;    p2      1e5;
+alpha1  .999;    alpha2  0.6;
+p1      1e7;    p2      1e5;
 T1      300; T2      300;
 
 defaultFieldValues

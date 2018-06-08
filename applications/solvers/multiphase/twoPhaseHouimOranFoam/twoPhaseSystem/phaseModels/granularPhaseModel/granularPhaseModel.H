@@ -93,9 +93,6 @@ protected:
             //- Min value for which the frictional stresses are zero
             dimensionedScalar alphaMinFriction_;
 
-            //- Residual phase fraction
-            dimensionedScalar residualAlpha_;
-
             //- Maximum turbulent viscosity
             dimensionedScalar maxNut_;
 

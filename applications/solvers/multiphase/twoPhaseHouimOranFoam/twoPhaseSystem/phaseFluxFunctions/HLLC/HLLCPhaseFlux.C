@@ -63,7 +63,7 @@ Foam::phaseFluxFunctions::HLLCPhase::~HLLCPhase()
 
 void Foam::phaseFluxFunctions::HLLCPhase::updateFluxes
 (
-    volVectorField& gradAlpha,
+    surfaceScalarField& alphaf,
     surfaceScalarField& massFlux,
     surfaceVectorField& momentumFlux,
     surfaceScalarField& energyFlux,
@@ -127,8 +127,7 @@ void Foam::phaseFluxFunctions::HLLCPhase::updateFluxes
         "aTilde",
         sqrt
         (
-            (alphaOwn*rhoOwn*sqr(aOwn) + alphaNei*rhoNei*sqr(aNei))
-           /(alphaOwn*rhoOwn + alphaNei*rhoNei)
+            (rhoOwn*sqr(aOwn) + rhoNei*sqr(aNei))/(rhoOwn + rhoNei)
         ) + cutoffMa_
     );
     surfaceVectorField uTilde
@@ -171,12 +170,7 @@ void Foam::phaseFluxFunctions::HLLCPhase::updateFluxes
     surfaceScalarField pStar
     (
         "pOwnNei",
-        0.5
-       *(
-            pOwn + pNei
-          + rhoOwn*(SOwn - UvOwn)*(SStar - UvOwn)
-          + rhoNei*(SNei - UvNei)*(SStar - UvNei)
-        )
+        pOwn + rhoOwn*(SOwn - UvOwn)*(SStar - UvOwn)
     );
     surfaceScalarField rhoOwnStar
     (
@@ -200,12 +194,7 @@ void Foam::phaseFluxFunctions::HLLCPhase::updateFluxes
     );
 
     // Reimann primitive quantities
-    surfaceScalarField alphaR
-    (
-        "alphaR",
-        pos0(SStar)*alphaOwn
-      + neg(SStar)*alphaNei
-    );
+    alphaf = pos0(SStar)*alphaOwn + neg(SStar)*alphaNei;
     surfaceScalarField rhoR
     (
         "rhoR",
@@ -238,8 +227,167 @@ void Foam::phaseFluxFunctions::HLLCPhase::updateFluxes
     );
 
     // Set total fluxes
-    gradAlpha = fvc::surfaceIntegrate(mesh_.Sf()*alphaR);
-    massFlux = alphaR*rhoR*(UR & mesh_.Sf());
-    momentumFlux = massFlux*UR + alphaR*pR*mesh_.Sf();
-    energyFlux = alphaR*(UR & mesh_.Sf())*(rhoR*ER + pR);
+    massFlux = alphaf*rhoR*(UR & mesh_.Sf());
+    momentumFlux = massFlux*UR + alphaf*pR*mesh_.Sf();
+    energyFlux = alphaf*(UR & mesh_.Sf())*(rhoR*ER + pR);
+}
+
+
+void Foam::phaseFluxFunctions::HLLCPhase::updateFluxes
+(
+    surfaceScalarField& massFlux,
+    surfaceVectorField& momentumFlux,
+    surfaceScalarField& energyFlux,
+    const surfaceScalarField& alphaf,
+    const volScalarField& rho,
+    const volVectorField& U,
+    const volScalarField& H,
+    const volScalarField& p,
+    const volScalarField& a,
+    const volVectorField& Ui,
+    const volScalarField& pi
+)
+{
+    surfaceVectorField normal(mesh_.Sf()/mesh_.magSf());
+
+    surfaceScalarField rhoOwn
+    (
+        fvc::interpolate(rho, own_, interpScheme(rho.name()))
+    );
+    surfaceScalarField rhoNei
+    (
+        fvc::interpolate(rho, nei_, interpScheme(rho.name()))
+    );
+
+    surfaceVectorField UOwn(fvc::interpolate(U, own_, interpScheme(U.name())));
+    surfaceVectorField UNei(fvc::interpolate(U, nei_, interpScheme(U.name())));
+
+    surfaceScalarField HOwn(fvc::interpolate(H, own_, interpScheme(H.name())));
+    surfaceScalarField HNei(fvc::interpolate(H, nei_, interpScheme(H.name())));
+
+    surfaceScalarField pOwn(fvc::interpolate(p, own_, interpScheme(p.name())));
+    surfaceScalarField pNei(fvc::interpolate(p, nei_, interpScheme(p.name())));
+
+    surfaceScalarField EOwn(HOwn - pOwn/rhoOwn);
+    surfaceScalarField ENei(HNei - pNei/rhoNei);
+
+    surfaceScalarField UvOwn(UOwn & normal);
+    surfaceScalarField UvNei(UNei & normal);
+
+    surfaceScalarField aOwn
+    (
+        fvc::interpolate(a, own_, interpScheme(a.name()))
+    );
+    surfaceScalarField aNei
+    (
+        fvc::interpolate(a, nei_, interpScheme(a.name()))
+    );
+
+    // Averages
+    surfaceScalarField aTilde
+    (
+        "aTilde",
+        sqrt
+        (
+            (rhoOwn*sqr(aOwn) + rhoNei*sqr(aNei))/(rhoOwn + rhoNei)
+        ) + cutoffMa_
+    );
+    surfaceVectorField uTilde
+    (
+        "uTilde",
+        (sqrt(rhoOwn)*UOwn + sqrt(rhoNei)*UNei)/(sqrt(rhoOwn) + sqrt(rhoNei))
+    );
+
+    // Compute wave speeds
+    surfaceScalarField SOwn
+    (
+        "SOwn",
+        min
+        (
+            UvOwn - aOwn,
+            (uTilde & normal) - aTilde
+        )
+    );
+    surfaceScalarField SNei
+    (
+        "SNei",
+        max
+        (
+            UvOwn + aOwn,
+            (uTilde & normal) + aTilde
+        )
+    );
+
+    //- Star quantities
+    surfaceScalarField SStar
+    (
+        "SStar",
+        (
+            pNei - pOwn
+          + rhoOwn*UvOwn*(SOwn - UvOwn)
+          - rhoNei*UvNei*(SNei - UvNei)
+        )/(rhoOwn*(SOwn - UvOwn) - rhoNei*(SNei - UvNei))
+    );
+    surfaceScalarField pStar
+    (
+        "pOwnNei",
+        pOwn + rhoOwn*(SOwn - UvOwn)*(SStar - UvOwn)
+    );
+    surfaceScalarField rhoOwnStar
+    (
+        "rhoOwnStar",
+        rhoOwn*(SOwn - UvOwn)/(SOwn - SStar)
+    );
+    surfaceScalarField rhoNeiStar
+    (
+        "rhoNeiStar",
+        rhoNei*(SNei - UvNei)/(SNei - SStar)
+    );
+    surfaceScalarField EOwnStar
+    (
+        "EOwnStar",
+        EOwn + (pStar*SStar - pOwn*UvOwn)/(rhoOwn*(SOwn - UvOwn))
+    );
+    surfaceScalarField ENeiStar
+    (
+        "ENeiStar",
+        ENei + (pStar*SStar - pNei*UvNei)/(rhoNei*(SNei - UvNei))
+    );
+
+    // Reimann primitive quantities
+    surfaceScalarField rhoR
+    (
+        "rhoR",
+        pos0(SOwn)*rhoOwn
+      + neg(SOwn)*pos0(SStar)*rhoOwnStar
+      + neg(SStar)*pos0(SNei)*rhoNeiStar
+      + neg(SNei)*rhoNei
+    );
+    surfaceVectorField UR
+    (
+        "UR",
+        pos0(SOwn)*UOwn
+      + neg(SOwn)*pos0(SNei)*SStar*normal
+      + neg(SNei)*UNei
+    );
+    surfaceScalarField ER
+    (
+        "ER",
+        pos0(SOwn)*EOwn
+      + neg(SOwn)*pos0(SStar)*EOwnStar
+      + neg(SStar)*pos0(SNei)*ENeiStar
+      + neg(SNei)*ENei
+    );
+    surfaceScalarField pR
+    (
+        "pR",
+        pos0(SOwn)*pOwn
+      + neg(SOwn)*pos0(SNei)*pStar
+      + neg(SNei)*pNei
+    );
+
+    // Set total fluxes
+    massFlux = alphaf*rhoR*(UR & mesh_.Sf());
+    momentumFlux = massFlux*UR + alphaf*pR*mesh_.Sf();
+    energyFlux = alphaf*(UR & mesh_.Sf())*(rhoR*ER + pR);
 }

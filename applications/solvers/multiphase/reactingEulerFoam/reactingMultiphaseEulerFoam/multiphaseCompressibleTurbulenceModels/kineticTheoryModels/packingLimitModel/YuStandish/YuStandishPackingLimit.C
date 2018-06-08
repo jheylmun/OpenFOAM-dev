@@ -77,9 +77,9 @@ Foam::kineticTheoryModels::packingLimitModels::YuStandish::alphaMax
 {
     scalar alphap = kt_.alphap()[celli];
 
-    if(alphap < kt_.fluid().phases()[0].residualAlpha().value())
+    if(alphap < kt_.residualAlpha().value())
     {
-        return kt_.fluid().phases()[0].alphaMax();
+        return kt_.minAlphaMax();
     }
 
     scalar maxAlpha = 1.0;
@@ -109,13 +109,13 @@ Foam::kineticTheoryModels::packingLimitModels::YuStandish::alphaMax
             }
             scalar d2 = ds[phasej];
 
-            scalar rij = d1;
+            scalar rij = d1/d2;
             scalar Xij = 1.0;
             scalar pij = alphaMax1;
 
-            if (d1 < d2)
+            if (rij >= 1)
             {
-                rij = d1/d2;
+                rij = 1.0/rij;
                 Xij = (1.0 - sqr(rij))/(2.0 - alphaMax1);
             }
             else
@@ -133,7 +133,7 @@ Foam::kineticTheoryModels::packingLimitModels::YuStandish::alphaMax
             }
             sum += (1.0 - alphaMax1/pij)*cxi/Xij;
         }
-        maxAlpha = max(min(maxAlpha, alphaMax1/(1.0 - sum)), 0.0);
+        maxAlpha = min(maxAlpha, alphaMax1/(1.0 - sum));
     }
 
     return maxAlpha;

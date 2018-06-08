@@ -67,11 +67,12 @@ void Foam::phaseFluxIntegrators::RK2Phase::integrateFluxes
     volScalarField& alpha1 = phase1_;
     volScalarField& alpha2 = phase2_;
 
-    //- Predictor step
     phase1_.encode();
     phase2_.encode();
 
+    //- Predictor step
     phase1_.updateFluxes();
+    phase2_.alphaf() = 1.0 - phase1_.alphaf();
     phase2_.updateFluxes();
 
     phase1_.advect
@@ -82,6 +83,8 @@ void Foam::phaseFluxIntegrators::RK2Phase::integrateFluxes
         pi,
         false
     );
+    phase1_.decode();
+
     phase2_.advect
     (
         deltaT*0.5,
@@ -90,64 +93,40 @@ void Foam::phaseFluxIntegrators::RK2Phase::integrateFluxes
         pi,
         false
     );
-
-    phase1_.decode();
+    alpha2 = 1.0 - alpha1;
+    alpha2.correctBoundaryConditions();
     phase2_.decode();
-    if (phase2_.granular() || phase1_.slavePressure())
-    {
-        alpha1 = 1.0 - alpha2;
-        alpha1.correctBoundaryConditions();
-        phase1_.gradAlpha() = -gradAlpha_;
-        phase1_.encode();
-    }
-    else
-    {
-        alpha2 = 1.0 - alpha1;
-        alpha2.correctBoundaryConditions();
-        phase2_.gradAlpha() = -gradAlpha_;
-        phase2_.encode();
-    }
+
 
     Ui = phase1_.fluid().mixtureU();
     pi = phase1_.fluid().mixturep();
 
     //- Corrector
     phase1_.updateFluxes();
+    phase2_.alphaf() = 1.0 - phase1_.alphaf();
     phase2_.updateFluxes();
 
     phase1_.advect
     (
-        deltaT*0.5,
+        deltaT,
         g,
         Ui,
         pi,
-        false
+        true
     );
+    phase1_.decode();
+
     phase2_.advect
     (
-        deltaT*0.5,
+        deltaT,
         g,
         Ui,
         pi,
-        false
+        true
     );
-
-    phase1_.decode();
+    alpha2 = 1.0 - alpha1;
+    alpha2.correctBoundaryConditions();
     phase2_.decode();
-    if (phase2_.granular() || phase1_.slavePressure())
-    {
-        alpha1 = 1.0 - alpha2;
-        alpha1.correctBoundaryConditions();
-        phase1_.gradAlpha() = -gradAlpha_;
-        phase1_.encode();
-    }
-    else
-    {
-        alpha2 = 1.0 - alpha1;
-        alpha2.correctBoundaryConditions();
-        phase2_.gradAlpha() = -gradAlpha_;
-        phase2_.encode();
-    }
 
     Ui = phase1_.fluid().mixtureU();
     pi = phase1_.fluid().mixturep();

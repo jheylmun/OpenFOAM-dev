@@ -62,7 +62,7 @@ Foam::phaseFluxFunctions::HLLPhase::~HLLPhase()
 
 void Foam::phaseFluxFunctions::HLLPhase::updateFluxes
 (
-    volVectorField& gradAlpha,
+    surfaceScalarField& alphaf,
     surfaceScalarField& massFlux,
     surfaceVectorField& momentumFlux,
     surfaceScalarField& energyFlux,
@@ -124,7 +124,7 @@ void Foam::phaseFluxFunctions::HLLPhase::updateFluxes
     surfaceVectorField momentumFluxOwn
     (
         UOwn*massFluxOwn
-      + pOwn*normal
+      + alphaOwn*pOwn*normal
     );
     surfaceVectorField momentumFluxNei
     (
@@ -140,16 +140,10 @@ void Foam::phaseFluxFunctions::HLLPhase::updateFluxes
     surfaceScalarField rDeltaS("rDeltaS", 1.0/(SNei - SOwn));
 
     // Compute fluxes
-    gradAlpha =
-        fvc::surfaceIntegrate
-        (
-            mesh_.Sf()
-           *(
-                pos0(SOwn)*alphaOwn
-              + pos0(SNei)*neg(SOwn)*(SNei*alphaNei - SOwn*alphaOwn)*rDeltaS
-              + neg(SNei)*alphaNei
-            )
-        );
+    alphaf =
+        pos0(SOwn)*alphaOwn
+      + pos0(SNei)*neg(SOwn)*(SNei*alphaNei - SOwn*alphaOwn)*rDeltaS
+      + neg(SNei)*alphaNei;
 
     massFlux =
         mesh_.magSf()
@@ -183,6 +177,114 @@ void Foam::phaseFluxFunctions::HLLPhase::updateFluxes
            *(
                 SNei*energyFluxOwn - SOwn*energyFluxNei
               + SOwn*SNei*(alphaNei*rhoNei*ENei - alphaOwn*rhoOwn*EOwn)
+            )*rDeltaS
+          + neg(SNei)*energyFluxNei
+        );
+}
+
+
+void Foam::phaseFluxFunctions::HLLPhase::updateFluxes
+(
+    surfaceScalarField& massFlux,
+    surfaceVectorField& momentumFlux,
+    surfaceScalarField& energyFlux,
+    const surfaceScalarField& alpha,
+    const volScalarField& rho,
+    const volVectorField& U,
+    const volScalarField& H,
+    const volScalarField& p,
+    const volScalarField& a,
+    const volVectorField& Ui,
+    const volScalarField& pi
+)
+{
+    surfaceVectorField normal(mesh_.Sf()/mesh_.magSf());
+
+    surfaceScalarField rhoOwn
+    (
+        fvc::interpolate(rho, own_, interpScheme(rho.name()))
+    );
+    surfaceScalarField rhoNei
+    (
+        fvc::interpolate(rho, nei_, interpScheme(rho.name()))
+    );
+
+    surfaceVectorField UOwn(fvc::interpolate(U, own_, interpScheme(U.name())));
+    surfaceVectorField UNei(fvc::interpolate(U, nei_, interpScheme(U.name())));
+
+    surfaceScalarField HOwn(fvc::interpolate(H, own_, interpScheme(H.name())));
+    surfaceScalarField HNei(fvc::interpolate(H, nei_, interpScheme(H.name())));
+
+    surfaceScalarField pOwn(fvc::interpolate(p, own_, interpScheme(p.name())));
+    surfaceScalarField pNei(fvc::interpolate(p, nei_, interpScheme(p.name())));
+
+    surfaceScalarField aOwn(fvc::interpolate(a, own_, interpScheme(a.name())));
+    surfaceScalarField aNei(fvc::interpolate(a, nei_, interpScheme(a.name())));
+    surfaceScalarField UvOwn(UOwn & normal);
+    surfaceScalarField UvNei(UNei & normal);
+
+    surfaceScalarField EOwn("EOwn", HOwn - pOwn/rhoOwn);
+    surfaceScalarField ENei("ENei", HNei - pNei/rhoNei);
+
+    // Averages
+    surfaceScalarField aBar("aBar", 0.5*(aOwn + aNei));
+    surfaceScalarField rhoBar("rhoBar", 0.5*(rhoOwn + rhoNei));
+
+    // Fluxes
+    surfaceScalarField massFluxOwn(alpha*rhoOwn*UvOwn);
+    surfaceScalarField massFluxNei(alpha*rhoNei*UvNei);
+
+    surfaceVectorField momentumFluxOwn
+    (
+        UOwn*massFluxOwn
+      + alpha*pOwn*normal
+    );
+    surfaceVectorField momentumFluxNei
+    (
+        UNei*massFluxNei
+      + alpha*pNei*normal
+    );
+
+    surfaceScalarField energyFluxOwn(HOwn*massFluxOwn);
+    surfaceScalarField energyFluxNei(HNei*massFluxNei);
+
+    surfaceScalarField SOwn("SOwn", min(UvOwn - aOwn, UvNei - aNei));
+    surfaceScalarField SNei("SNei", max(UvNei + aNei, UvOwn + aNei));
+    surfaceScalarField rDeltaS("rDeltaS", 1.0/(SNei - SOwn));
+
+    // Compute fluxes
+    massFlux =
+        mesh_.magSf()
+       *(
+            pos0(SOwn)*massFluxOwn
+          + pos0(SNei)*neg(SOwn)
+           *(
+                SNei*massFluxOwn - SOwn*massFluxNei
+              + SOwn*SNei*alpha*(rhoNei - rhoOwn)
+            )*rDeltaS
+          + neg(SNei)*massFluxNei
+        );
+
+    momentumFlux =
+        mesh_.magSf()
+       *(
+            pos0(SOwn)*momentumFluxOwn
+          + pos0(SNei)*neg(SOwn)
+           *(
+                SNei*momentumFluxOwn - SOwn*momentumFluxNei
+              + SOwn*SNei*alpha*(rhoNei*UNei - rhoOwn*UOwn)
+            )*rDeltaS
+          + neg(SNei)*momentumFluxNei
+        );
+
+    energyFlux =
+        mesh_.magSf()
+       *(
+            pos0(SOwn)*energyFluxOwn
+          + pos0(SNei)*neg(SOwn)
+           *(
+                SNei*energyFluxOwn - SOwn*energyFluxNei
+              + SOwn*SNei*alpha*(rhoNei*ENei - rhoOwn*EOwn)
             )*rDeltaS
           + neg(SNei)*energyFluxNei
         );

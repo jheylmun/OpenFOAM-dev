@@ -165,12 +165,6 @@ public:
         //- Re-read model coefficients if they have changed
         virtual bool read();
 
-        //- Return the effective viscosity
-        virtual tmp<volScalarField> nuEff() const
-        {
-            return this->nut();
-        }
-
         //- Return the effective viscosity on patch
         virtual tmp<scalarField> nuEff(const label patchi) const
         {

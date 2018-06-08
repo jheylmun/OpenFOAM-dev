@@ -116,7 +116,7 @@ Foam::tmp<Foam::volScalarField> Foam::dragModels::Chao::K() const
     volScalarField magUr(pair_.magUr());
 
     return
-        max(phase1*phase2, phase1.residualAlpha())
+        phase1*phase2
        *rho1*rho2/m0*sqr(dij)*(1.0 + e)*gij
        *(
             sqrt(2.0*pi)*(sqrt(Theta1) + sqrt(Theta2))

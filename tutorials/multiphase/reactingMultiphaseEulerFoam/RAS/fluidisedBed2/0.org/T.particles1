@@ -10,7 +10,7 @@ FoamFile
     version     2.0;
     format      ascii;
     class       volScalarField;
-    object      T.particles;
+    object      T.particles1;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -20,31 +20,24 @@ internalField       uniform 600;
 
 boundaryField
 {
-    primaryInlet
+    inlet
     {
-        type            fixedValue;
-        value           $internalField;
+        type               zeroGradient;
     }
-    secondaryInlet
+
+    outlet
     {
-        type            fixedValue;
-        value           $internalField;
+        type               zeroGradient;
     }
-    gasOutlet
-    {
-        type            inletOutlet;
-        phi             phi.particles1;
-        inletValue      $internalField;
-        value           $internalField;
-    }
+
     walls
     {
-        type            zeroGradient;
+        type               zeroGradient;
     }
 
     defaultFaces
     {
-        type            empty;
+        type               empty;
     }
 }
 

@@ -10,7 +10,7 @@ FoamFile
     version     2.0;
     format      ascii;
     class       volScalarField;
-    object      nut.particles;
+    object      nut.particles1;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -20,29 +20,27 @@ internalField       uniform 0;
 
 boundaryField
 {
-    primaryInlet
+    inlet
     {
-        type            calculated;
-        value           $internalField;
+        type               calculated;
+        value              $internalField;
     }
-    secondaryInlet
+
+    outlet
     {
-        type            calculated;
-        value           $internalField;
+        type               calculated;
+        value              $internalField;
     }
-    gasOutlet
-    {
-        type            calculated;
-        value           $internalField;
-    }
+
     walls
     {
-        type            calculated;
-        value           $internalField;
+        type               calculated;
+        value              $internalField;
     }
+
     defaultFaces
     {
-        type            empty;
+        type               empty;
     }
 }
 

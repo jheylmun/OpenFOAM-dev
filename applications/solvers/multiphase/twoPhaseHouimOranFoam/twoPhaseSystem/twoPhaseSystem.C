@@ -960,7 +960,7 @@ void Foam::twoPhaseSystem::relax()
         gas->alphaRhoE() -=
             particles->alphaRho()*0.5
            *(
-                magSqrUp - magSqr(particles->U().oldTime())
+                magSqrUp - magSqr(particles->U())
             );
         volScalarField ThetaStar
         (
@@ -988,7 +988,7 @@ void Foam::twoPhaseSystem::relax()
 
         particles->alphaRhoPTE() = 1.5*alphaRhop*Theta;
         particles->alphaRhoE() -= 1.5*alphaRhop*(Theta - ThetaStarStar);
-        gas->alphaRhoE() -= 1.5*alphaRhop*(ThetaStarStar - Theta);
+        gas->alphaRhoE() -= 1.5*alphaRhop*(ThetaStarStar - Theta.oldTime());
 
         particles->alphaRhoPTE().correctBoundaryConditions();
     }

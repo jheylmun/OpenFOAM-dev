@@ -63,6 +63,7 @@ void Foam::phaseFluxIntegrators::EulerPhase::integrateFluxes
 )
 {
     dimensionedScalar deltaT = Ui.mesh().time().deltaT();
+
     volScalarField& alpha1 = phase1_;
     volScalarField& alpha2 = phase2_;
 
@@ -70,6 +71,7 @@ void Foam::phaseFluxIntegrators::EulerPhase::integrateFluxes
     phase2_.encode();
 
     phase1_.updateFluxes();
+    phase2_.alphaf() = 1.0 - phase1_.alphaf();
     phase2_.updateFluxes();
 
     phase1_.advect
@@ -80,6 +82,8 @@ void Foam::phaseFluxIntegrators::EulerPhase::integrateFluxes
         pi,
         false
     );
+    phase1_.decode();
+
     phase2_.advect
     (
         deltaT,
@@ -88,23 +92,9 @@ void Foam::phaseFluxIntegrators::EulerPhase::integrateFluxes
         pi,
         false
     );
-
-    phase1_.decode();
+    alpha2 = 1.0 - alpha1;
+    alpha2.correctBoundaryConditions();
     phase2_.decode();
-    if (phase2_.granular() || phase1_.slavePressure())
-    {
-        alpha1 = 1.0 - alpha2;
-        alpha1.correctBoundaryConditions();
-        phase1_.gradAlpha() = -gradAlpha_;
-        phase1_.encode();
-    }
-    else
-    {
-        alpha2 = 1.0 - alpha1;
-        alpha2.correctBoundaryConditions();
-        phase2_.gradAlpha() = -gradAlpha_;
-        phase2_.encode();
-    }
 
 
     Ui = phase1_.fluid().mixtureU();

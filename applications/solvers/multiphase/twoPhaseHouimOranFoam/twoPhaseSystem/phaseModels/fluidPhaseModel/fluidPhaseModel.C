@@ -92,56 +92,60 @@ void Foam::fluidPhaseModel::advect
     volScalarField& alpha = *this;
     if (oldTime)
     {
-        alpha = alpha.oldTime() - deltaT*(Ui & gradAlpha_);
-        alpha.correctBoundaryConditions();
+        if (!otherPhase().granular())
+        {
+            alpha = alpha.oldTime() - deltaT*(Ui & gradAlpha_);
+            alpha.correctBoundaryConditions();
+        }
 
-        alphaRho_ =
-            alphaRho_.oldTime()
-          - deltaT*fvc::div(massFlux_);
+        alphaRho_ = alphaRho_.oldTime() - deltaT*fvc::div(massFlux_);
         alphaRho_.correctBoundaryConditions();
 
         alphaRhoU_ =
-            alphaRhoU_.oldTime();
-          - deltaT
+            alphaRhoU_.oldTime()
+          + deltaT
            *(
-                fvc::div(momentumFlux_)
-              - pi*gradAlpha_
+              - fvc::div(momentumFlux_)
+              + p_*gradAlpha_
               + alpha*rho_*g
             );
         alphaRhoU_.correctBoundaryConditions();
 
         alphaRhoE_ =
             alphaRhoE_.oldTime()
-          - deltaT
+          + deltaT
            *(
-                fvc::div(energyFlux_)
-              - pi*(Ui & gradAlpha_)
+              - fvc::div(energyFlux_)
+              - pi*fvc::div(otherPhase().massFlux())/otherPhase().rho()
               + (alpha*rho_*g & U_)
             );
         alphaRhoE_.correctBoundaryConditions();
     }
     else
     {
-        alpha -= deltaT*(Ui & gradAlpha_);
-        alpha.correctBoundaryConditions();
+        if (!otherPhase().granular())
+        {
+            alpha -= deltaT*(Ui & gradAlpha_);
+            alpha.correctBoundaryConditions();
+        }
 
         alphaRho_ -= deltaT*fvc::div(massFlux_);
         alphaRho_.correctBoundaryConditions();
 
-        alphaRhoU_ -=
+        alphaRhoU_ +=
             deltaT
            *(
-                fvc::div(momentumFlux_)
-              - pi*gradAlpha_
+              - fvc::div(momentumFlux_)
+              + p_*gradAlpha_
               + alpha*rho_*g
             );
         alphaRhoU_.correctBoundaryConditions();
 
-        alphaRhoE_ -=
+        alphaRhoE_ +=
             deltaT
            *(
-                fvc::div(energyFlux_)
-              - pi*(Ui & gradAlpha_)
+              - fvc::div(energyFlux_)
+              - pi*fvc::div(otherPhase().massFlux())/otherPhase().rho()
               + (alpha*rho_*g & U_)
             );
         alphaRhoE_.correctBoundaryConditions();
@@ -168,23 +172,43 @@ void Foam::fluidPhaseModel::solveSources
 
 void Foam::fluidPhaseModel::updateFluxes()
 {
-    // calculate fluxes with
     volScalarField H(IOobject::groupName("H", name()), E_ + p_/rho_);
-    this->fluxFunction_->updateFluxes
-    (
-        gradAlpha_,
-        massFlux_,
-        momentumFlux_,
-        energyFlux_,
-        *this,
-        rho_,
-        U_,
-        H,
-        p_,
-        c(),
-        fluid_.U(),
-        fluid_.p()
-    );
+    if (otherPhase().granular())
+    {
+        this->fluxFunction_->updateFluxes
+        (
+            alphaf_,
+            massFlux_,
+            momentumFlux_,
+            energyFlux_,
+            *this,
+            rho_,
+            U_,
+            H,
+            p_,
+            c(),
+            fluid_.U(),
+            fluid_.p()
+        );
+    }
+    else
+    {
+        this->fluxFunction_->updateFluxes
+        (
+            massFlux_,
+            momentumFlux_,
+            energyFlux_,
+            alphaf_,
+            rho_,
+            U_,
+            H,
+            p_,
+            c(),
+            fluid_.U(),
+            fluid_.p()
+        );
+    }
+    gradAlpha_ = fvc::surfaceIntegrate(fluid_.mesh().Sf()*alphaf_);
 }
 
 
@@ -220,7 +244,6 @@ void Foam::fluidPhaseModel::encode()
     alphaRhoU_.correctBoundaryConditions();
 
     E_ = he_ + 0.5*magSqr(U_);
-
     alphaRhoE_ = alphaRho_*E_;
     alphaRhoE_.correctBoundaryConditions();
 }

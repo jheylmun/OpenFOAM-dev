@@ -89,7 +89,7 @@ void Foam::liquidPhaseModel::advect
         this->alphaRho_.correctBoundaryConditions();
 
         this->alphaRhoU_ =
-            this->alphaRhoU_.oldTime();
+            this->alphaRhoU_.oldTime()
           - deltaT
            *(
                 fvc::div(this->momentumFlux_)
@@ -155,23 +155,43 @@ void Foam::liquidPhaseModel::solveSources
 
 void Foam::liquidPhaseModel::updateFluxes()
 {
-    // calculate fluxes with
     volScalarField H(IOobject::groupName("H", name()), E_ + p_/rho_);
-    this->fluxFunction_->updateFluxes
-    (
-        gradAlpha_,
-        massFlux_,
-        momentumFlux_,
-        energyFlux_,
-        *this,
-        rho_,
-        U_,
-        H,
-        p_,
-        c(),
-        fluid_.U(),
-        fluid_.p()
-    );
+    if (otherPhase().granular())
+    {
+        this->fluxFunction_->updateFluxes
+        (
+            massFlux_,
+            momentumFlux_,
+            energyFlux_,
+            alphaf_,
+            rho_,
+            U_,
+            H,
+            p_,
+            c(),
+            fluid_.U(),
+            fluid_.p()
+        );
+    }
+    else
+    {
+        this->fluxFunction_->updateFluxes
+        (
+            alphaf_,
+            massFlux_,
+            momentumFlux_,
+            energyFlux_,
+            *this,
+            rho_,
+            U_,
+            H,
+            p_,
+            c(),
+            fluid_.U(),
+            fluid_.p()
+        );
+    }
+    gradAlpha_ = fvc::surfaceIntegrate(fluid_.mesh().Sf()*alphaf_);
 }
 
 

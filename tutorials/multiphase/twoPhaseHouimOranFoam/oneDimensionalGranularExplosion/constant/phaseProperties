@@ -44,15 +44,14 @@ particles
         d               5e-6;
     }
 
-    residualAlpha       1e-6;
+    residualAlpha       1e-4;
     residualRho         1e-4;
 
     equilibrium             off;
 
     e                       0.999;
-    alphaMax                0.62;
+    alphaMax                0.63;
     alphaMinFriction        0.5;
-    residualAlpha           1e-4;
 
     viscosityModel          Gidaspow;
     conductivityModel       Gidaspow;
@@ -92,7 +91,7 @@ drag
 (
     (particles in air)
     {
-        type            Ergun;
+        type            GidaspowSchillerNaumann;
         residualRe      1e-3;
         swarmCorrection
         {

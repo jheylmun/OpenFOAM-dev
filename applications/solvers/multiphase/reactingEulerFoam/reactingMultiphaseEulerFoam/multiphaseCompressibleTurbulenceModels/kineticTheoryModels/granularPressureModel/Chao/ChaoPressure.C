@@ -86,7 +86,8 @@ Foam::kineticTheoryModels::granularPressureModels::Chao::granularPressureCoeff
     return
         phase1*phase2
        *constant::mathematical::pi/(3.0*m0)*phase1.rho()*phase2.rho()
-       *(1.0 + e)*pow3((phase1.d() + phase2.d())/2.0)*g0;
+       *(1.0 + e)*pow3((phase1.d() + phase2.d())/2.0)*g0
+       *(Theta1 + Theta2 + 0.2*magSqr(phase1.U() - phase2.U()));
 }
 
 
@@ -112,6 +113,7 @@ granularPressureCoeffPrime
     (
         2.0*phase2*constant::mathematical::pi/(3.0*m0)*phase1.rho()
        *phase2.rho()*(1.0 + e)*pow3((phase1.d() + phase2.d())/2.0)
+       *(Theta1 + Theta2 + 0.2*magSqr(phase1.U() - phase2.U()))
     );
 
     if (&phase1 == &phase2)

@@ -90,6 +90,19 @@ Foam::phaseModel::phaseModel
     (
         rhoThermo::New(fluid.mesh(), phaseName)
     ),
+    alphaf_
+    (
+        IOobject
+        (
+            IOobject::groupName("alphaf", phaseName),
+            fluid.mesh().time().timeName(),
+            fluid.mesh(),
+            IOobject::NO_READ,
+            IOobject::NO_WRITE
+        ),
+        fluid.mesh(),
+        dimensionedScalar("alpha", dimless, 0)
+    ),
     rho_(thermoPtr_->rho()),
     U_
     (

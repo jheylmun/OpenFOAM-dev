@@ -16,24 +16,23 @@ FoamFile
 
 dimensions          [0 2 -2 0 0 0 0];
 
-internalField       uniform 1e-4;
+internalField       uniform 0;
+
+referenceLevel      1e-4;
 
 boundaryField
 {
-    primaryInlet
+    inlet
     {
         type               fixedValue;
         value              uniform 1e-4;
     }
-    secondaryInlet
-    {
-        type                fixedValue;
-        value               uniform 0;
-    }
-    gasOutlet
+
+    outlet
     {
         type               zeroGradient;
     }
+
     walls
     {
         type            JohnsonJacksonParticleTheta;
@@ -41,8 +40,9 @@ boundaryField
         specularityCoefficient   0.1;
         muF             0.25;
         sigma           2;
-        value           uniform 1e-4;
+        value uniform 1e-4;
     }
+
     defaultFaces
     {
         type               empty;

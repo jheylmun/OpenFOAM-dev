@@ -174,6 +174,7 @@ Foam::multiphaseKineticTheorySystem::multiphaseKineticTheorySystem
             zeroGradientFvPatchScalarField::typeName
         )
     ),
+    minAlphaMax_(1.0),
     residualAlpha_
     (
         "residualAlpha",
@@ -454,6 +455,8 @@ void Foam::multiphaseKineticTheorySystem::addPhase
 {
     const word& phaseName(phase.name());
     phases_.append(phaseName);
+
+    minAlphaMax_ = min(minAlphaMax_, phase.alphaMax());
 
     // Print granular quantities only if more than 1 phase is present
     if (phases_.size() == 2)

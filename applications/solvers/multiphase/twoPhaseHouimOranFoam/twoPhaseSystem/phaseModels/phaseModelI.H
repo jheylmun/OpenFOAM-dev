@@ -58,6 +58,16 @@ inline Foam::rhoThermo& Foam::phaseModel::thermo()
     return thermoPtr_();
 }
 
+inline const Foam::surfaceScalarField& Foam::phaseModel::alphaf() const
+{
+    return alphaf_;
+}
+
+inline Foam::surfaceScalarField& Foam::phaseModel::alphaf()
+{
+    return alphaf_;
+}
+
 inline const Foam::volScalarField& Foam::phaseModel::rho() const
 {
     return rho_;

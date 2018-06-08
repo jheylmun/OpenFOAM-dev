@@ -66,6 +66,9 @@ void Foam::phaseFluxIntegrators::RK45Phase::integrateFluxes
     volScalarField& alpha1 = phase1_;
     volScalarField& alpha2 = phase2_;
 
+    phase1_.encode();
+    phase2_.encode();
+
     //- 1st predictor step
     phase1_.updateFluxes();
     surfaceScalarField massFlux1(phase1_.massFlux());
@@ -80,6 +83,7 @@ void Foam::phaseFluxIntegrators::RK45Phase::integrateFluxes
         );
     }
 
+    phase2_.alphaf() = 1.0 - phase1_.alphaf();
     phase2_.updateFluxes();
     surfaceScalarField massFlux2(phase2_.massFlux());
     surfaceVectorField momentumFlux2(phase2_.momentumFlux());
@@ -105,6 +109,8 @@ void Foam::phaseFluxIntegrators::RK45Phase::integrateFluxes
         pi,
         false
     );
+    phase1_.decode();
+
     phase2_.advect
     (
         deltaT*0.5,
@@ -113,23 +119,10 @@ void Foam::phaseFluxIntegrators::RK45Phase::integrateFluxes
         pi,
         false
     );
-
-    phase1_.decode();
+    alpha2 = 1.0 - alpha1;
+    alpha2.correctBoundaryConditions();
     phase2_.decode();
-    if (phase2_.granular() || phase1_.slavePressure())
-    {
-        alpha1 = 1.0 - alpha2;
-        alpha1.correctBoundaryConditions();
-        phase1_.gradAlpha() = -gradAlpha_;
-        phase1_.encode();
-    }
-    else
-    {
-        alpha2 = 1.0 - alpha1;
-        alpha2.correctBoundaryConditions();
-        phase2_.gradAlpha() = -gradAlpha_;
-        phase2_.encode();
-    }
+
 
     Ui = phase1_.fluid().mixtureU();
     pi = phase1_.fluid().mixturep();
@@ -144,6 +137,7 @@ void Foam::phaseFluxIntegrators::RK45Phase::integrateFluxes
         PTEFlux1.ref() += 2.0*phase1_.PTEFlux();
     }
 
+    phase2_.alphaf() = 1.0 - phase1_.alphaf();
     phase2_.updateFluxes();
     massFlux2 += 2.0*phase2_.massFlux();
     momentumFlux2 += 2.0*phase2_.momentumFlux();
@@ -165,6 +159,8 @@ void Foam::phaseFluxIntegrators::RK45Phase::integrateFluxes
         pi,
         false
     );
+    phase1_.decode();
+
     phase2_.advect
     (
         deltaT*0.5,
@@ -173,23 +169,9 @@ void Foam::phaseFluxIntegrators::RK45Phase::integrateFluxes
         pi,
         false
     );
-
-    phase1_.decode();
+    alpha2 = 1.0 - alpha1;
+    alpha2.correctBoundaryConditions();
     phase2_.decode();
-    if (phase2_.granular() || phase1_.slavePressure())
-    {
-        alpha1 = 1.0 - alpha2;
-        alpha1.correctBoundaryConditions();
-        phase1_.gradAlpha() = -gradAlpha_;
-        phase1_.encode();
-    }
-    else
-    {
-        alpha2 = 1.0 - alpha1;
-        alpha2.correctBoundaryConditions();
-        phase2_.gradAlpha() = -gradAlpha_;
-        phase2_.encode();
-    }
 
     Ui = phase1_.fluid().mixtureU();
     pi = phase1_.fluid().mixturep();
@@ -204,6 +186,7 @@ void Foam::phaseFluxIntegrators::RK45Phase::integrateFluxes
         PTEFlux1.ref() += 2.0*phase1_.PTEFlux();
     }
 
+    phase2_.alphaf() = 1.0 - phase1_.alphaf();
     phase2_.updateFluxes();
     massFlux2 += 2.0*phase2_.massFlux();
     momentumFlux2 += 2.0*phase2_.momentumFlux();
@@ -225,6 +208,8 @@ void Foam::phaseFluxIntegrators::RK45Phase::integrateFluxes
         pi,
         true
     );
+    phase1_.decode();
+
     phase2_.advect
     (
         deltaT,
@@ -233,24 +218,9 @@ void Foam::phaseFluxIntegrators::RK45Phase::integrateFluxes
         pi,
         true
     );
-
-    phase1_.decode();
+    alpha2 = 1.0 - alpha1;
+    alpha2.correctBoundaryConditions();
     phase2_.decode();
-
-    if (phase2_.granular() || phase1_.slavePressure())
-    {
-        alpha1 = 1.0 - alpha2;
-        alpha1.correctBoundaryConditions();
-        phase1_.gradAlpha() = -gradAlpha_;
-        phase1_.encode();
-    }
-    else
-    {
-        alpha2 = 1.0 - alpha1;
-        alpha2.correctBoundaryConditions();
-        phase2_.gradAlpha() = -gradAlpha_;
-        phase2_.encode();
-    }
 
     Ui = phase1_.fluid().mixtureU();
     pi = phase1_.fluid().mixturep();
@@ -265,6 +235,7 @@ void Foam::phaseFluxIntegrators::RK45Phase::integrateFluxes
         phase1_.PTEFlux() = (PTEFlux1 + phase1_.PTEFlux())/6.0;
     }
 
+    phase2_.alphaf() = 1.0 - phase1_.alphaf();
     phase2_.updateFluxes();
     phase2_.massFlux() = (massFlux2 + phase2_.massFlux())/6.0;
     phase2_.momentumFlux() = (momentumFlux2 + phase2_.momentumFlux())/6.0;
@@ -276,16 +247,8 @@ void Foam::phaseFluxIntegrators::RK45Phase::integrateFluxes
 
     Ui = (KUi + Ui)/6.0;
     pi = (Kpi + pi)/6.0;
-    if (phase2_.granular() || phase1_.slavePressure())
-    {
-        phase2_.gradAlpha() = (KgradAlpha + gradAlpha_)/6.0;
-        phase1_.gradAlpha() = -gradAlpha_;
-    }
-    else
-    {
-        phase1_.gradAlpha() = (KgradAlpha + gradAlpha_)/6.0;
-        phase2_.gradAlpha() = -gradAlpha_;
-    }
+    phase1_.gradAlpha() = (KgradAlpha + gradAlpha_)/6.0;
+    phase2_.gradAlpha() = -gradAlpha_;
 
     phase1_.advect
     (
@@ -295,6 +258,8 @@ void Foam::phaseFluxIntegrators::RK45Phase::integrateFluxes
         pi,
         true
     );
+    phase1_.decode();
+
     phase2_.advect
     (
         deltaT,
@@ -303,23 +268,9 @@ void Foam::phaseFluxIntegrators::RK45Phase::integrateFluxes
         pi,
         true
     );
-
-    phase1_.decode();
+    alpha2 = 1.0 - alpha1;
+    alpha2.correctBoundaryConditions();
     phase2_.decode();
-    if (phase2_.granular() || phase1_.slavePressure())
-    {
-        alpha1 = 1.0 - alpha2;
-        alpha1.correctBoundaryConditions();
-        phase1_.gradAlpha() = -gradAlpha_;
-        phase1_.encode();
-    }
-    else
-    {
-        alpha2 = 1.0 - alpha1;
-        alpha2.correctBoundaryConditions();
-        phase2_.gradAlpha() = -gradAlpha_;
-        phase2_.encode();
-    }
 
     Ui = phase1_.fluid().mixtureU();
     pi = phase1_.fluid().mixturep();

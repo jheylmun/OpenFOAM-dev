@@ -133,6 +133,9 @@ class multiphaseKineticTheorySystem
             //- Maximum packing phase-fraction
             volScalarField alphaMax_;
 
+            //- Minimum phase alpha max
+            scalar minAlphaMax_;
+
             //- Residual phase fraction
             dimensionedScalar residualAlpha_;
 
@@ -228,6 +231,12 @@ public:
         const dimensionedScalar& residualAlpha() const
         {
             return residualAlpha_;
+        }
+
+        //- Return the minimum max alpha
+        scalar minAlphaMax() const
+        {
+            return minAlphaMax_;
         }
 
         //- Return total granular phase volume fraction
