@@ -141,12 +141,23 @@ Foam::granularPhaseModel::granularPhaseModel
                 this->rho_,
                 e_
             )
-         +  frictionalStressModel_->frictionalPressure
-            (
-                *this,
-                alphaMinFriction_,
-                alphaMax_
-            )
+        )
+    ),
+    Pfric_
+    (
+        IOobject
+        (
+            IOobject::groupName("Pfric", phaseName),
+            fluid.mesh().time().timeName(),
+            fluid.mesh(),
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
+        frictionalStressModel_->frictionalPressure
+        (
+            *this,
+            alphaMinFriction_,
+            alphaMax_
         )
     ),
 
@@ -276,7 +287,7 @@ Foam::tmp<Foam::volScalarField> Foam::granularPhaseModel::c() const
 
     tmp<volScalarField> cFric
     (
-        Ps_*dAlphaCrit/(pow(dAlphaMax, 5)*(this->rho_))
+        (Ps_ + Pfric_)*dAlphaCrit/(pow(dAlphaMax, 5)*(this->rho_))
        *(
             (*this)*(0.2 + 0.5*dAlphaCrit/dAlphaMax)
           + 0.1*dAlphaCrit
@@ -528,6 +539,11 @@ void Foam::granularPhaseModel::solveSources
 void Foam::granularPhaseModel::updateFluxes()
 {
     // calculate fluxes with
+    volScalarField Ptot
+    (
+        IOobject::groupName("Ptot", name()),
+        Ps_ + Pfric_
+    );
     this->fluxFunction_->updateFluxes
     (
         alphaf_,
@@ -540,7 +556,7 @@ void Foam::granularPhaseModel::updateFluxes()
         U_,
         E_,
         Theta_,
-        Ps_,
+        Ptot,
         c(),
         fluid_.p()
     );
@@ -577,15 +593,13 @@ void Foam::granularPhaseModel::decode()
     lambda_ = (4.0/3.0)*sqr(alpha)*da*gs0_*(1.0 + e_)*ThetaSqrt/sqrtPi;
 
     // Frictional pressure
-    volScalarField pf
-    (
+    Pfric_ =
         frictionalStressModel_->frictionalPressure
         (
             *this,
             alphaMinFriction_,
             alphaMax_
-        )
-    );
+        );
 
     volSymmTensorField D(symm(fvc::grad(U_)));
     nuFric_ = frictionalStressModel_->nu
@@ -593,7 +607,7 @@ void Foam::granularPhaseModel::decode()
         *this,
         alphaMinFriction_,
         alphaMax_,
-        pf/rho_,
+        Pfric_/rho_,
         D
     );
 
@@ -609,8 +623,7 @@ void Foam::granularPhaseModel::decode()
             gs0_,
             rho_,
             e_
-        )*Theta_
-      + pf;
+        )*Theta_;
 }
 
 
@@ -774,7 +787,8 @@ void Foam::granularPhaseModel::correctThermo()
     nuFric_ = Foam::min(nuFric_, maxNut_ - nut_);
     nut_ += nuFric_;
 
-    Ps_ = PsCoeff*Theta_ + pf;
+    Ps_ = PsCoeff*Theta_;
+    Pfric_ =  pf;
 
     if (debug)
     {

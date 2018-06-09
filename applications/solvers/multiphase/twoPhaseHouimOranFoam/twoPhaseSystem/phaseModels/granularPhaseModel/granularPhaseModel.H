@@ -105,6 +105,9 @@ protected:
             //- The granular pressure (collisional and frictional)
             volScalarField Ps_;
 
+            //- Frictional pressure
+            volScalarField Pfric_;
+
             //- The granular bulk viscosity
             volScalarField lambda_;
 

@@ -597,7 +597,7 @@ Foam::twoPhaseSystem::twoPhaseSystem
 {
     volScalarField& alpha2 = phase2_();
     alpha2 = (scalar(1) - phase1_());
-    phase2_->encode();
+    encode();
 
 
     // Blending

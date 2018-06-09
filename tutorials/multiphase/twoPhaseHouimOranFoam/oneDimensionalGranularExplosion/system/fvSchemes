@@ -29,12 +29,12 @@ compressible.particles
 ddtSchemes
 {
     default         Euler;
-    fluxIntegrator  Euler;
+    fluxIntegrator  RK45;
 }
 
 gradSchemes
 {
-    default         Gauss linear;
+    default         Gauss upwind massFlux.air;
 }
 
 divSchemes
@@ -52,18 +52,18 @@ interpolationSchemes
     default                 linear;
 
     reconstruct(alpha.particles) upwind;
-    reconstruct(alpha.air) upwind;
-    reconstruct(thermo:rho.air)    upwind;
+    reconstruct(alpha.air)       upwind;
+    reconstruct(thermo:rho.air)  upwind;
     reconstruct(thermo:rho.particles)  upwind;
-    reconstruct(U.air)      upwind;
-    reconstruct(U.particles)    upwind;
-    reconstruct(H.air)      upwind;
-    reconstruct(E.particles)      upwind;
-    reconstruct(Theta.particles)    upwind;
-    reconstruct(p.air)      upwind;
-    reconstruct(Ps.particles)    upwind;
-    reconstruct(a.air)      upwind;
-    reconstruct(a.particles)    upwind;
+    reconstruct(U.air)           upwind;
+    reconstruct(U.particles)     upwind;
+    reconstruct(H.air)           upwind;
+    reconstruct(E.particles)     upwind;
+    reconstruct(Theta.particles) upwind;
+    reconstruct(p.air)           upwind;
+    reconstruct(Ptot.particles)  upwind;
+    reconstruct(a.air)           upwind;
+    reconstruct(a.particles)     upwind;
 }
 
 snGradSchemes

@@ -64,11 +64,8 @@ void Foam::phaseFluxIntegrators::RK2Phase::integrateFluxes
 {
     const dimensionedScalar& deltaT = Ui.mesh().time().deltaT();
 
-    volScalarField& alpha1 = phase1_;
+    const volScalarField& alpha1 = phase1_;
     volScalarField& alpha2 = phase2_;
-
-    phase1_.encode();
-    phase2_.encode();
 
     //- Predictor step
     phase1_.updateFluxes();
@@ -81,7 +78,7 @@ void Foam::phaseFluxIntegrators::RK2Phase::integrateFluxes
         g,
         Ui,
         pi,
-        false
+        true
     );
     phase1_.decode();
 
@@ -91,7 +88,7 @@ void Foam::phaseFluxIntegrators::RK2Phase::integrateFluxes
         g,
         Ui,
         pi,
-        false
+        true
     );
     alpha2 = 1.0 - alpha1;
     alpha2.correctBoundaryConditions();

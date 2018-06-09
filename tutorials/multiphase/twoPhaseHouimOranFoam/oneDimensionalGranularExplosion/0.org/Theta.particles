@@ -23,12 +23,7 @@ boundaryField
 {
     walls
     {
-        type            zeroGradient;//JohnsonJacksonParticleTheta;
-        restitutionCoefficient 0.8;
-        specularityCoefficient   0.1;
-        muF             0.25;
-        sigma           2;
-        value uniform 1e-4;
+        type            zeroGradient;
     }
     frontAndBack
     {

@@ -64,11 +64,8 @@ void Foam::phaseFluxIntegrators::EulerPhase::integrateFluxes
 {
     dimensionedScalar deltaT = Ui.mesh().time().deltaT();
 
-    volScalarField& alpha1 = phase1_;
+    const volScalarField& alpha1 = phase1_;
     volScalarField& alpha2 = phase2_;
-
-    phase1_.encode();
-    phase2_.encode();
 
     phase1_.updateFluxes();
     phase2_.alphaf() = 1.0 - phase1_.alphaf();
@@ -80,7 +77,7 @@ void Foam::phaseFluxIntegrators::EulerPhase::integrateFluxes
         g,
         Ui,
         pi,
-        false
+        true
     );
     phase1_.decode();
 
@@ -90,7 +87,7 @@ void Foam::phaseFluxIntegrators::EulerPhase::integrateFluxes
         g,
         Ui,
         pi,
-        false
+        true
     );
     alpha2 = 1.0 - alpha1;
     alpha2.correctBoundaryConditions();

@@ -63,11 +63,8 @@ void Foam::phaseFluxIntegrators::RK45Phase::integrateFluxes
 )
 {
     const dimensionedScalar& deltaT = Ui.mesh().time().deltaT();
-    volScalarField& alpha1 = phase1_;
+    const volScalarField& alpha1 = phase1_;
     volScalarField& alpha2 = phase2_;
-
-    phase1_.encode();
-    phase2_.encode();
 
     //- 1st predictor step
     phase1_.updateFluxes();
