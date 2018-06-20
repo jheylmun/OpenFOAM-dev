@@ -122,11 +122,11 @@ heatTransfer
 
 lift
 (
-//     (particles in air)
-//     {
-//         type constantCoefficient;
-//         Cl 0.5;
-//     }
+    (particles in air)
+    {
+        type constantCoefficient;
+        Cl 0.5;
+    }
 );
 
 wallLubrication

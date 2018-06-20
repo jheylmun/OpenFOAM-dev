@@ -29,7 +29,7 @@ compressible.particles
 ddtSchemes
 {
     default         Euler;
-    fluxIntegrator  RK3SSP;
+    fluxIntegrator  RK4SSP;
 }
 
 gradSchemes
@@ -48,7 +48,7 @@ laplacianSchemes
 }
 
 scalarLimiter vanAlbada;
-vectorLimiter vanAlbadaV;
+vectorLimiter vanAlbada;
 
 interpolationSchemes
 {
