@@ -1,0 +1,74 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  dev                                   |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      fvSchemes;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+compressible.air
+{
+    fluxScheme      HLLC;
+}
+compressible.water
+{
+    fluxScheme      HLLC;
+}
+
+ddtSchemes
+{
+    default         Euler;
+    fluxIntegrator RK45;
+}
+
+gradSchemes
+{
+    default         cellLimited leastSquares 0.2;
+}
+
+divSchemes
+{
+    default             none;
+}
+
+laplacianSchemes
+{
+    default         Gauss linear corrected;
+}
+
+interpolationSchemes
+{
+    default                 linear;
+
+    reconstruct(alpha.air)  upwind;
+    reconstruct(alpha.water) upwind;
+    reconstruct(rho.air)    upwind;
+    reconstruct(rho.water)  upwind;
+    reconstruct(U.air)      upwind;
+    reconstruct(U.water)    upwind;
+    reconstruct(H.air)      upwind;
+    reconstruct(H.water)    upwind;
+    reconstruct(p.air)      upwind;
+    reconstruct(p.water)    upwind;
+    reconstruct(a.air)      upwind;
+    reconstruct(a.water)    upwind;
+    reconstruct(Ui)         upwind;
+    reconstruct(pi)         upwind;
+}
+
+snGradSchemes
+{
+    default         corrected;
+}
+
+
+// ************************************************************************* //

@@ -74,7 +74,6 @@ public:
         //- Update phase fluxes
         virtual void updateFluxes
         (
-            surfaceScalarField& alphaf,
             surfaceScalarField& massFlux,
             surfaceVectorField& momentumFlux,
             surfaceScalarField& energyFlux,
@@ -94,7 +93,7 @@ public:
             surfaceScalarField& massFlux,
             surfaceVectorField& momentumFlux,
             surfaceScalarField& energyFlux,
-            const surfaceScalarField& alpha,
+            const surfaceScalarField& alphaf,
             const volScalarField& rho,
             const volVectorField& U,
             const volScalarField& H,

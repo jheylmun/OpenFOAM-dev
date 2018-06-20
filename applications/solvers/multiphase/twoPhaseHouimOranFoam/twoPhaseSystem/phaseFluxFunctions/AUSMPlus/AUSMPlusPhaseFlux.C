@@ -40,6 +40,28 @@ namespace phaseFluxFunctions
 }
 
 
+// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
+
+Foam::tmp<Foam::surfaceScalarField>
+Foam::phaseFluxFunctions::AUSMPlusPhase::M1
+(
+    const surfaceScalarField& M,
+    const label sign
+)
+{
+    return 0.5*(M + sign*mag(M));
+}
+
+Foam::tmp<Foam::surfaceScalarField>
+Foam::phaseFluxFunctions::AUSMPlusPhase::M2
+(
+    const surfaceScalarField& M,
+    const label sign
+)
+{
+    return sign*0.25*sqr(M + sign);
+}
+
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 Foam::phaseFluxFunctions::AUSMPlusPhase::AUSMPlusPhase
@@ -49,8 +71,13 @@ Foam::phaseFluxFunctions::AUSMPlusPhase::AUSMPlusPhase
 )
 :
     phaseFluxFunction(mesh, phaseName),
-    alphaMax_(readScalar(dict_.lookup("alphaMax"))),
-    alphaMinFriction_(readScalar(dict_.lookup("alphaMinFriction")))
+    fa_(dict_.lookupOrDefault("fa", 1.0)),
+    D_(dict_.lookupOrDefault("D", 1.0)),
+    alphaMax_(dict_.lookupOrDefault("alphaMax", .63)),
+    alphaMinFriction_(dict_.lookupOrDefault("alphaMinFriction", 0.5)),
+    cutOffMa_("small", dimless, epsilon_),
+    residualRho_("small", dimDensity, epsilon_),
+    residualU_("small", dimVelocity, epsilon_)
 {}
 
 
@@ -64,14 +91,13 @@ Foam::phaseFluxFunctions::AUSMPlusPhase::~AUSMPlusPhase()
 
 void Foam::phaseFluxFunctions::AUSMPlusPhase::updateFluxes
 (
-    surfaceScalarField& alphaf,
     surfaceScalarField& massFlux,
     surfaceVectorField& momentumFlux,
     surfaceScalarField& energyFlux,
     const volScalarField& alpha,
     const volScalarField& rho,
     const volVectorField& U,
-    const volScalarField& H,
+    const volScalarField& E,
     const volScalarField& p,
     const volScalarField& a,
     const volVectorField& Ui,
@@ -100,11 +126,14 @@ void Foam::phaseFluxFunctions::AUSMPlusPhase::updateFluxes
     surfaceVectorField UOwn(fvc::interpolate(U, own_, interpScheme(U.name())));
     surfaceVectorField UNei(fvc::interpolate(U, nei_, interpScheme(U.name())));
 
-    surfaceScalarField HOwn(fvc::interpolate(H, own_, interpScheme(H.name())));
-    surfaceScalarField HNei(fvc::interpolate(H, nei_, interpScheme(H.name())));
+    surfaceScalarField EOwn(fvc::interpolate(E, own_, interpScheme(E.name())));
+    surfaceScalarField ENei(fvc::interpolate(E, nei_, interpScheme(E.name())));
 
     surfaceScalarField pOwn(fvc::interpolate(p, own_, interpScheme(p.name())));
     surfaceScalarField pNei(fvc::interpolate(p, nei_, interpScheme(p.name())));
+
+    surfaceScalarField HOwn(EOwn + pOwn/rhoOwn);
+    surfaceScalarField HNei(ENei + pNei/rhoNei);
 
     surfaceScalarField aOwn(fvc::interpolate(a, own_, interpScheme(a.name())));
     surfaceScalarField aNei(fvc::interpolate(a, nei_, interpScheme(a.name())));
@@ -183,9 +212,13 @@ void Foam::phaseFluxFunctions::AUSMPlusPhase::updateFluxes
       - Xi*(alphaNei*pNei - alphaOwn*pOwn)/(2.0*aStar)
     );
 
-    alphaf = pos0(mDot)*alphaOwn + neg(mDot)*alphaNei;
+    alphaf_ = pos0(mDot)*alphaOwn + neg(mDot)*alphaNei;
+    pf_ =
+        (BetaOwn*alphaOwn*pOwn + BetaNei*alphaNei*pNei)
+       /max(alphaOwn + alphaNei, residualAlpha_);
 
     massFlux = mesh_.magSf()*mDot;
+    phi_ = massFlux/(0.5*(rhoOwn + rhoNei));
 
     momentumFlux =
         mesh_.magSf()*0.5
@@ -212,10 +245,10 @@ void Foam::phaseFluxFunctions::AUSMPlusPhase::updateFluxes
     surfaceScalarField& massFlux,
     surfaceVectorField& momentumFlux,
     surfaceScalarField& energyFlux,
-    const surfaceScalarField& alpha,
+    const surfaceScalarField& alphaf,
     const volScalarField& rho,
     const volVectorField& U,
-    const volScalarField& H,
+    const volScalarField& E,
     const volScalarField& p,
     const volScalarField& a,
     const volVectorField& Ui,
@@ -223,6 +256,7 @@ void Foam::phaseFluxFunctions::AUSMPlusPhase::updateFluxes
 )
 {
     surfaceVectorField normal(mesh_.Sf()/mesh_.magSf());
+    alphaf_ = alphaf;
 
     surfaceScalarField rhoOwn
     (
@@ -236,11 +270,14 @@ void Foam::phaseFluxFunctions::AUSMPlusPhase::updateFluxes
     surfaceVectorField UOwn(fvc::interpolate(U, own_, interpScheme(U.name())));
     surfaceVectorField UNei(fvc::interpolate(U, nei_, interpScheme(U.name())));
 
-    surfaceScalarField HOwn(fvc::interpolate(H, own_, interpScheme(H.name())));
-    surfaceScalarField HNei(fvc::interpolate(H, nei_, interpScheme(H.name())));
+    surfaceScalarField EOwn(fvc::interpolate(E, own_, interpScheme(E.name())));
+    surfaceScalarField ENei(fvc::interpolate(E, nei_, interpScheme(E.name())));
 
     surfaceScalarField pOwn(fvc::interpolate(p, own_, interpScheme(p.name())));
     surfaceScalarField pNei(fvc::interpolate(p, nei_, interpScheme(p.name())));
+
+    surfaceScalarField HOwn(EOwn + pOwn/rhoOwn);
+    surfaceScalarField HNei(ENei + pNei/rhoNei);
 
     surfaceScalarField aOwn(fvc::interpolate(a, own_, interpScheme(a.name())));
     surfaceScalarField aNei(fvc::interpolate(a, nei_, interpScheme(a.name())));
@@ -306,10 +343,12 @@ void Foam::phaseFluxFunctions::AUSMPlusPhase::updateFluxes
             0.5*(rhoOwn*UvOwn + rhoNei*UvNei)
           - 0.5*magUBar*(rhoNei*(1.0 - gNei) - rhoOwn*(1.0 - gOwn))
           - Xi*(pNei - pOwn)/(2.0*aStar)
-        )*alpha
+        )*alphaf
     );
 
+    pf_ = (BetaOwn*pOwn + BetaNei*pNei);
     massFlux = mesh_.magSf()*mDot;
+    phi_ = massFlux/(0.5*(rhoOwn + rhoNei));
 
     momentumFlux =
         mesh_.magSf()*0.5
@@ -319,7 +358,7 @@ void Foam::phaseFluxFunctions::AUSMPlusPhase::updateFluxes
         )
       + (
             BetaOwn*pOwn + BetaNei*pNei
-        )*alpha*mesh_.Sf();
+        )*alphaf*mesh_.Sf();
 
     energyFlux =
         mesh_.magSf()*0.5
@@ -332,7 +371,6 @@ void Foam::phaseFluxFunctions::AUSMPlusPhase::updateFluxes
 
 void Foam::phaseFluxFunctions::AUSMPlusPhase::updateFluxes
 (
-    surfaceScalarField& alphaf,
     surfaceScalarField& massFlux,
     surfaceVectorField& momentumFlux,
     surfaceScalarField& energyFlux,
@@ -352,12 +390,10 @@ void Foam::phaseFluxFunctions::AUSMPlusPhase::updateFluxes
     (
         fvc::interpolate(alpha, own_, interpScheme(alpha.name()))
     );
-    alphaOwn.max(1e-10);
     surfaceScalarField alphaNei
     (
         fvc::interpolate(alpha, nei_, interpScheme(alpha.name()))
     );
-    alphaNei.max(1e-10);
 
     surfaceScalarField rhoOwn
     (
@@ -389,6 +425,7 @@ void Foam::phaseFluxFunctions::AUSMPlusPhase::updateFluxes
     surfaceScalarField aOwn(fvc::interpolate(a, own_, interpScheme(a.name())));
     surfaceScalarField aNei(fvc::interpolate(a, nei_, interpScheme(a.name())));
 
+
     surfaceScalarField UvOwn(UOwn & normal);
     surfaceScalarField UvNei(UNei & normal);
 
@@ -399,7 +436,7 @@ void Foam::phaseFluxFunctions::AUSMPlusPhase::updateFluxes
         (
             (alphaOwn*rhoOwn*sqr(aOwn) + alphaNei*rhoNei*sqr(aNei))
            /(alphaOwn*rhoOwn + alphaNei*rhoNei)
-        ) + cutoffMa_
+        ) + residualU_
     );
 
     // Compute slpit Mach numbers
@@ -407,46 +444,33 @@ void Foam::phaseFluxFunctions::AUSMPlusPhase::updateFluxes
     surfaceScalarField MaNei("MaNei", UvNei/a12);
     surfaceScalarField magMaOwn(mag(MaOwn));
     surfaceScalarField magMaNei(mag(MaNei));
-    surfaceScalarField MaBarSqr
-    (
-        (sqr(UvOwn) + sqr(UvNei))/(2.0*sqr(a12))
-    );
+    surfaceScalarField MaBarSqr((sqr(UvOwn) + sqr(UvNei))/(2.0*sqr(a12)));
 
     surfaceScalarField Ma4Own
     (
         "Ma4Own",
-        pos0(magMaOwn - 1)*0.5*(MaOwn + magMaOwn)
-      + neg(magMaOwn - 1)
-       *(
-            0.25*sqr(MaOwn + 1.0)
-           *(1.0 + 4.0*beta_*sqr(MaOwn - 1.0))
-        )
+        pos0(magMaOwn - 1)*M1(MaOwn, 1)
+      + neg(magMaOwn - 1)*M2(MaOwn, 1)*(1.0 - 16.0*beta_*M2(MaOwn, -1))
     );
     surfaceScalarField Ma4Nei
     (
         "Ma4Nei",
-        pos0(magMaNei - 1)*0.5*(MaNei - magMaNei)
-      + neg(magMaNei - 1)
-       *(
-            -0.25*sqr(MaOwn - 1.0)
-           *(1.0 + 4.0*beta_*sqr(MaOwn + 1.0))
-        )
+        pos0(magMaNei - 1)*M1(MaNei, -1)
+      + neg(magMaNei - 1)*M2(MaNei, -1)*(1.0 + 16.0*beta_*M2(MaNei, 1))
     );
 
     surfaceScalarField zeta
     (
         max
         (
-            fvc::interpolate
-            (
-                (alpha - alphaMinFriction_)/(alphaMax_ - alphaMinFriction_)
-            ),
+            (max(alphaOwn, alphaNei) - alphaMinFriction_)
+           /(alphaMax_ - alphaMinFriction_),
             0.0
         )
     );
-    surfaceScalarField G(max(2.0*(1.0 - zeta), 0.0));
+    surfaceScalarField G(max(2.0*(1.0 - D_*sqr(zeta)), 0.0));
 
-    scalar xi = 3.0/16.0;
+    scalar xi = 3.0/16.0*(5.0*sqr(fa_) - 4.0);
     surfaceScalarField Kp(0.25 + 0.75*(1.0 - G/2.0));
     surfaceScalarField Ku(0.75 + 0.25*(1.0 - G/2.0));
     surfaceScalarField sigma(0.75*G/2.0);
@@ -454,52 +478,37 @@ void Foam::phaseFluxFunctions::AUSMPlusPhase::updateFluxes
     surfaceScalarField Ma12
     (
         Ma4Own + Ma4Nei
-      - 2.0*Kp*max(1.0 - sigma*MaBarSqr, 0.0)
-       *(pOwn - pNei)
-       /(
-            (
-                alphaOwn*rhoOwn + alphaOwn*rhoOwn
-              + dimensionedScalar("small", dimDensity, cutoffMa_.value())
-            )*sqr(a12)
-        )
+      - 2.0*Kp/fa_*max(1.0 - sigma*MaBarSqr, 0.0)*(pNei - pOwn)
+       /((alphaOwn*rhoOwn + alphaOwn*rhoOwn + residualRho_)*sqr(a12))
     );
 
     surfaceScalarField p5Own
     (
         "p5Own",
-        pos0(magMaOwn - 1)*0.5*(1.0 + sign(MaOwn))
+        pos0(magMaOwn - 1)*pos(MaOwn)
       + neg(magMaOwn - 1)
-       *(
-            0.25*(2.0 - MaOwn)*sqr(MaOwn + 1.0)
-          + 4.0*xi*MaOwn*sqr(sqr(MaOwn) - 1.0)
-        )
+       *(M2(MaOwn, 1)*(2.0 - MaOwn) - 16.0*xi*MaOwn*M2(MaOwn, -1))
     );
 
     surfaceScalarField p5Nei
     (
         "p5Nei",
-        pos0(magMaNei - 1)*0.5*(1.0 - sign(MaNei))
+        pos0(magMaNei - 1)*neg(MaNei)
       + neg(magMaNei - 1)
-       *(
-            -0.25*(-2.0 + MaNei)*sqr(MaNei - 1.0)
-          + 4.0*xi*MaNei*sqr(sqr(MaNei) + 1.0)
-        )
+       *(M2(MaNei, -1)*(-2.0 - MaNei) + 16.0*xi*MaNei*M2(MaNei, 1))
     );
 
-    surfaceScalarField p12
-    (
-        -Ku*(a12 - cutoffMa_)*p5Own*p5Nei
+    pf_ =
+        -Ku*fa_*(a12 - residualU_)*p5Own*p5Nei
        *(alphaOwn*rhoNei + alphaNei*rhoNei)*(UvNei - UvOwn)
-      + p5Own*pOwn + p5Nei*pNei
-    );
+      + p5Own*pOwn + p5Nei*pNei;
 
     surfaceScalarField F
     (
-        (a12 - cutoffMa_)
+        (a12 - residualU_)
        *(1.0 + mag(Ma12)*(1.0 - G/2.0))
        *max(alphaOwn, alphaNei)
-       *(alphaOwn*rhoOwn - alphaNei*rhoNei)
-       /(2.0*alphaMax_)
+       *(alphaOwn*rhoOwn - alphaNei*rhoNei)/(2.0*alphaMax_)
     );
 
     surfaceScalarField mDot
@@ -507,34 +516,35 @@ void Foam::phaseFluxFunctions::AUSMPlusPhase::updateFluxes
         F
       + a12*Ma12
        *(
-            pos0(Ma12)*alphaOwn*rhoOwn
-          + neg(Ma12)*alphaNei*rhoNei
+            pos(Ma12)*alphaOwn*rhoOwn
+          + neg0(Ma12)*alphaNei*rhoNei
         )
     );
 
-    alphaf = pos0(mDot)*alphaOwn + neg(mDot)*alphaNei;
+    alphaf_ = pos(mDot)*alphaOwn + neg0(mDot)*alphaNei;
 
     massFlux = mesh_.magSf()*mDot;
+    phi_ = massFlux/(pos(mDot)*alphaOwn*rhoOwn + neg0(mDot)*alphaNei*rhoNei);
 
     momentumFlux =
-        mesh_.magSf()*mDot
+        massFlux
        *(
-            pos0(Ma12)*UOwn
-          + neg(Ma12)*UNei
+            pos(mDot)*UOwn
+          + neg0(mDot)*UNei
         )
-      + p12*mesh_.Sf();
+      + pf_*mesh_.Sf();
 
     energyFlux =
-        mesh_.magSf()*mDot
+        massFlux
        *(
-            pos0(Ma12)*EOwn
-          + neg(Ma12)*ENei
+            pos(mDot)*EOwn
+          + neg0(mDot)*ENei
         );
 
     PTEFlux =
-        mesh_.magSf()*mDot
+        massFlux
        *(
-            pos0(Ma12)*ThetaOwn
-          + neg(Ma12)*ThetaNei
+            pos(mDot)*ThetaOwn
+          + neg0(mDot)*ThetaNei
         )*3.0/2.0;
 }

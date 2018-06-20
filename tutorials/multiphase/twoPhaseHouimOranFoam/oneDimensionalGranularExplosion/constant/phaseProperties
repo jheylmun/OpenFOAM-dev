@@ -44,14 +44,14 @@ particles
         d               5e-6;
     }
 
-    residualAlpha       1e-4;
+    residualAlpha       1e-8;
     residualRho         1e-4;
 
     equilibrium             off;
 
     e                       0.999;
     alphaMax                0.63;
-    alphaMinFriction        0.5;
+    alphaMinFriction        0.55;
 
     viscosityModel          Gidaspow;
     conductivityModel       Gidaspow;
@@ -65,7 +65,15 @@ particles
         eta                     2;
         p                       5;
         phi                     28.5;
-        alphaDeltaMin           0.05;
+        alphaDeltaMin           1e-6;
+    }
+    SchaefferCoeffs
+    {
+        Fr                      0.05;
+        eta                     2;
+        p                       5;
+        phi                     28.5;
+        alphaDeltaMin           1e-5;
     }
 }
 
@@ -91,7 +99,7 @@ drag
 (
     (particles in air)
     {
-        type            GidaspowSchillerNaumann;
+        type            WenYu;
         residualRe      1e-3;
         swarmCorrection
         {
@@ -114,6 +122,11 @@ heatTransfer
 
 lift
 (
+//     (particles in air)
+//     {
+//         type constantCoefficient;
+//         Cl 0.5;
+//     }
 );
 
 wallLubrication

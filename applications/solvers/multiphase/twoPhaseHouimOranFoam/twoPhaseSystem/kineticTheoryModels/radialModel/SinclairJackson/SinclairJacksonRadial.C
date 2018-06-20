@@ -74,7 +74,7 @@ Foam::kineticTheoryModels::radialModels::SinclairJackson::g0
     const dimensionedScalar& alphaMax
 ) const
 {
-    return 1.0/(1.0 - cbrt(min(alpha, alphaMinFriction)/alphaMax));
+    return 1.0/(1.0 - cbrt((alpha)/alphaMax) + small);
 }
 
 
@@ -88,10 +88,10 @@ Foam::kineticTheoryModels::radialModels::SinclairJackson::g0prime
 {
     volScalarField aByaMax
     (
-        cbrt(min(max(alpha, scalar(1e-3)), alphaMinFriction)/alphaMax)
+        cbrt((max(alpha, scalar(1e-6)))/alphaMax)
     );
 
-    return (1.0/(3*alphaMax))/sqr(aByaMax - sqr(aByaMax));
+    return (1.0/(3*alphaMax))/sqr(aByaMax - sqr(aByaMax) + small);
 }
 
 

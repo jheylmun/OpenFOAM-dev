@@ -90,19 +90,6 @@ Foam::phaseModel::phaseModel
     (
         rhoThermo::New(fluid.mesh(), phaseName)
     ),
-    alphaf_
-    (
-        IOobject
-        (
-            IOobject::groupName("alphaf", phaseName),
-            fluid.mesh().time().timeName(),
-            fluid.mesh(),
-            IOobject::NO_READ,
-            IOobject::NO_WRITE
-        ),
-        fluid.mesh(),
-        dimensionedScalar("alpha", dimless, 0)
-    ),
     rho_(thermoPtr_->rho()),
     U_
     (
@@ -139,7 +126,7 @@ Foam::phaseModel::phaseModel
             fluid.mesh()
         ),
         (*this)*rho(),
-        rho_.boundaryField().types()
+        this->boundaryField().types()
     ),
     alphaRhoU_
     (
@@ -219,67 +206,6 @@ Foam::phaseModel::phaseModel
         fluid_.mesh(),
         IOobject::NO_READ
     );
-
-    if (phiHeader.typeHeaderOk<surfaceScalarField>(true))
-    {
-        Info<< "Reading face flux field " << phiName << endl;
-
-        phiPtr_.reset
-        (
-            new surfaceScalarField
-            (
-                IOobject
-                (
-                    phiName,
-                    fluid_.mesh().time().timeName(),
-                    fluid_.mesh(),
-                    IOobject::MUST_READ,
-                    IOobject::AUTO_WRITE
-                ),
-                fluid_.mesh()
-            )
-        );
-    }
-    else
-    {
-        Info<< "Calculating face flux field " << phiName << endl;
-
-        wordList phiTypes
-        (
-            U_.boundaryField().size(),
-            calculatedFvPatchScalarField::typeName
-        );
-
-        forAll(U_.boundaryField(), i)
-        {
-            if
-            (
-                isA<fixedValueFvPatchVectorField>(U_.boundaryField()[i])
-             || isA<slipFvPatchVectorField>(U_.boundaryField()[i])
-             || isA<partialSlipFvPatchVectorField>(U_.boundaryField()[i])
-            )
-            {
-                phiTypes[i] = fixedValueFvsPatchScalarField::typeName;
-            }
-        }
-
-        phiPtr_.reset
-        (
-            new surfaceScalarField
-            (
-                IOobject
-                (
-                    phiName,
-                    fluid_.mesh().time().timeName(),
-                    fluid_.mesh(),
-                    IOobject::NO_READ,
-                    IOobject::AUTO_WRITE
-                ),
-                fvc::flux(U_),
-                phiTypes
-            )
-        );
-    }
 
     dPtr_ = diameterModel::New
     (
@@ -393,6 +319,235 @@ Foam::tmp<Foam::fvVectorMatrix> Foam::phaseModel::divDevRhoReff
 void Foam::phaseModel::correct()
 {
     return dPtr_->correct();
+}
+
+
+void Foam::phaseModel::setNSteps(const label nSteps)
+{
+    bool setAlpha = !otherPhase().granular();
+    if (setAlpha)
+    {
+        alphas_.setSize(nSteps);
+        deltaAlpha_.setSize(nSteps);
+    }
+    alphaRhos_.setSize(nSteps);
+    deltaAlphaRho_.setSize(nSteps);
+    alphaRhoUs_.setSize(nSteps);
+    deltaAlphaRhoU_.setSize(nSteps);
+    alphaRhoEs_.setSize(nSteps);
+    deltaAlphaRhoE_.setSize(nSteps);
+
+    if (granular())
+    {
+        alphaRhoPTEs_.setSize(nSteps);
+        deltaAlphaRhoPTE_.setSize(nSteps);
+    }
+
+    forAll (deltaAlphaRho_, stepi)
+    {
+        if (setAlpha)
+        {
+            alphas_.set
+            (
+                stepi,
+                new volScalarField
+                (
+                    IOobject
+                    (
+                        IOobject::groupName
+                        (
+                            "alpha"+Foam::name(stepi),
+                            name()
+                        ),
+                        fluid_.mesh().time().timeName(),
+                        fluid_.mesh()
+                    ),
+                    fluid_.mesh(),
+                    dimensionedScalar("zero", dimless, 0.0)
+                )
+            );
+            deltaAlpha_.set
+            (
+                stepi,
+                new volScalarField
+                (
+                    IOobject
+                    (
+                        IOobject::groupName
+                        (
+                            "deltaAlpha"+Foam::name(stepi),
+                            name()
+                        ),
+                        fluid_.mesh().time().timeName(),
+                        fluid_.mesh()
+                    ),
+                    fluid_.mesh(),
+                    dimensionedScalar("zero", dimless/dimTime, 0.0)
+                )
+            );
+        }
+        alphaRhos_.set
+        (
+            stepi,
+            new volScalarField
+            (
+                IOobject
+                (
+                    IOobject::groupName
+                    (
+                        "alphaRho" + Foam::name(stepi),
+                        name()
+                    ),
+                    fluid_.mesh().time().timeName(),
+                    fluid_.mesh()
+                ),
+                fluid_.mesh(),
+                dimensionedScalar("zero", alphaRho_.dimensions(), 0.0)
+            )
+        );
+        deltaAlphaRho_.set
+        (
+            stepi,
+            new volScalarField
+            (
+                IOobject
+                (
+                    IOobject::groupName
+                    (
+                        "deltaAlphaRho" + Foam::name(stepi),
+                        name()
+                    ),
+                    fluid_.mesh().time().timeName(),
+                    fluid_.mesh()
+                ),
+                fluid_.mesh(),
+                dimensionedScalar("zero", alphaRho_.dimensions()/dimTime, 0.0)
+            )
+        );
+        alphaRhoUs_.set
+        (
+            stepi,
+            new volVectorField
+            (
+                IOobject
+                (
+                    IOobject::groupName
+                    (
+                        "alphaRhoU" + Foam::name(stepi),
+                        name()
+                    ),
+                    fluid_.mesh().time().timeName(),
+                    fluid_.mesh()
+                ),
+                fluid_.mesh(),
+                dimensionedVector("zero", alphaRhoU_.dimensions(), Zero)
+            )
+        );
+        deltaAlphaRhoU_.set
+        (
+            stepi,
+            new volVectorField
+            (
+                IOobject
+                (
+                    IOobject::groupName
+                    (
+                        "deltaAlphaRhoU" + Foam::name(stepi),
+                        name()
+                    ),
+                    fluid_.mesh().time().timeName(),
+                    fluid_.mesh()
+                ),
+                fluid_.mesh(),
+                dimensionedVector("zero", alphaRhoU_.dimensions()/dimTime, Zero)
+            )
+        );
+        alphaRhoEs_.set
+        (
+            stepi,
+            new volScalarField
+            (
+                IOobject
+                (
+                    IOobject::groupName
+                    (
+                        "alphaRhoE" + Foam::name(stepi),
+                        name()
+                    ),
+                    fluid_.mesh().time().timeName(),
+                    fluid_.mesh()
+                ),
+                fluid_.mesh(),
+                dimensionedScalar("zero", alphaRhoE_.dimensions(), 0.0)
+            )
+        );
+        deltaAlphaRhoE_.set
+        (
+            stepi,
+            new volScalarField
+            (
+                IOobject
+                (
+                    IOobject::groupName
+                    (
+                        "deltaAlphaRhoE" + Foam::name(stepi),
+                        name()
+                    ),
+                    fluid_.mesh().time().timeName(),
+                    fluid_.mesh()
+                ),
+                fluid_.mesh(),
+                dimensionedScalar("zero", alphaRhoE_.dimensions()/dimTime, 0.0)
+            )
+        );
+
+        if (granular())
+        {
+            alphaRhoPTEs_.set
+            (
+                stepi,
+                new volScalarField
+                (
+                    IOobject
+                    (
+                        IOobject::groupName
+                        (
+                            "alphaRhoPTE" + Foam::name(stepi),
+                            name()
+                        ),
+                        fluid_.mesh().time().timeName(),
+                        fluid_.mesh()
+                    ),
+                    fluid_.mesh(),
+                    dimensionedScalar("zero", alphaRhoE_.dimensions(), 0.0)
+                )
+            );
+            deltaAlphaRhoPTE_.set
+            (
+                stepi,
+                new volScalarField
+                (
+                    IOobject
+                    (
+                        IOobject::groupName
+                        (
+                            "deltaAlphaRhoPTE" + Foam::name(stepi),
+                            name()
+                        ),
+                        fluid_.mesh().time().timeName(),
+                        fluid_.mesh()
+                    ),
+                    fluid_.mesh(),
+                    dimensionedScalar
+                    (
+                        "zero",
+                        alphaRhoE_.dimensions()/dimTime,
+                        0.0
+                    )
+                )
+            );
+        }
+    }
 }
 
 

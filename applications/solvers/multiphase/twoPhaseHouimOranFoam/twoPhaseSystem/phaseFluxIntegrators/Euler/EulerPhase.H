@@ -55,6 +55,19 @@ class EulerPhase
 {
     // Private data
 
+        //- Number of steps
+        virtual label nSteps() const
+        {
+            return 1;
+        }
+
+        //- Conserved variable coeffients
+        virtual List<scalarList> coeffs() const;
+
+        //- Flux coefficients
+        virtual List<scalarList> Fcoeffs() const;
+
+
 public:
 
     //- Runtime type information
@@ -65,17 +78,6 @@ public:
 
     //- Destructor
     virtual ~EulerPhase();
-
-
-    // Edit functions
-
-        //- Transport conservative variables
-        virtual void integrateFluxes
-        (
-            const dimensionedVector& g,
-            volVectorField& Ui,
-            volScalarField& pi
-        );
 };
 
 

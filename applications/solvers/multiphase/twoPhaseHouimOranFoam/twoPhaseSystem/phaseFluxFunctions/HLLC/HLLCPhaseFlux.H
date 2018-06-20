@@ -56,6 +56,10 @@ class HLLCPhase
 {
     // Private Data
 
+        //- Cut off mach Number
+        dimensionedScalar residualU_;
+
+
 public:
 
     //- Runtime type information
@@ -74,14 +78,13 @@ public:
         //- Update phase fluxes
         virtual void updateFluxes
         (
-            surfaceScalarField& alphaf,
             surfaceScalarField& massFlux,
             surfaceVectorField& momentumFlux,
             surfaceScalarField& energyFlux,
             const volScalarField& alpha,
             const volScalarField& rho,
             const volVectorField& U,
-            const volScalarField& H,
+            const volScalarField& E,
             const volScalarField& p,
             const volScalarField& a,
             const volVectorField& Ui,
@@ -94,10 +97,10 @@ public:
             surfaceScalarField& massFlux,
             surfaceVectorField& momentumFlux,
             surfaceScalarField& energyFlux,
-            const surfaceScalarField& alpha,
+            const surfaceScalarField& alphaf,
             const volScalarField& rho,
             const volVectorField& U,
-            const volScalarField& H,
+            const volScalarField& E,
             const volScalarField& p,
             const volScalarField& a,
             const volVectorField& Ui,

@@ -56,7 +56,7 @@ Foam::liquidPhaseModel::liquidPhaseModel
 )
 :
     phaseModel(fluid, phaseProperties, phaseName),
-    p_(otherPhase().p())
+    p_(thermoPtr_->p())
 {}
 
 
@@ -70,142 +70,99 @@ Foam::liquidPhaseModel::~liquidPhaseModel()
 
 void Foam::liquidPhaseModel::advect
 (
+    const label stepi,
+    const scalarList& coeffs,
+    const scalarList& Fcoeffs,
     const dimensionedScalar& deltaT,
     const dimensionedVector& g,
-    const volVectorField& Ui,
-    const volScalarField& pi,
-    const bool oldTime
-)
-{
-    volScalarField& alpha = *this;
-    if (oldTime)
-    {
-        alpha = alpha.oldTime() - deltaT*(Ui & gradAlpha_);
-        alpha.correctBoundaryConditions();
-
-        this->alphaRho_ =
-            this->alphaRho_.oldTime()
-          - deltaT*fvc::div(this->massFlux_);
-        this->alphaRho_.correctBoundaryConditions();
-
-        this->alphaRhoU_ =
-            this->alphaRhoU_.oldTime()
-          - deltaT
-           *(
-                fvc::div(this->momentumFlux_)
-              - pi*this->gradAlpha_
-              + alpha*this->rho()*g
-            );
-        this->alphaRhoU_.correctBoundaryConditions();
-
-        this->alphaRhoE_ =
-            this->alphaRhoE_.oldTime()
-          - deltaT
-           *(
-                fvc::div(energyFlux_)
-              - pi*(Ui & this->gradAlpha_)
-              + (alpha*this->rho()*g & this->U_)
-            );
-        this->alphaRhoE_.correctBoundaryConditions();
-    }
-    else
-    {
-        alpha -= deltaT*(Ui & gradAlpha_);
-        alpha.correctBoundaryConditions();
-
-        this->alphaRho_ -= deltaT*fvc::div(this->massFlux_);
-        this->alphaRho_.correctBoundaryConditions();
-
-        this->alphaRhoU_ -=
-            deltaT
-           *(
-                fvc::div(this->momentumFlux_)
-              - pi*this->gradAlpha_
-              + alpha*this->rho()*g
-            );
-        this->alphaRhoU_.correctBoundaryConditions();
-
-        this->alphaRhoE_ -=
-            deltaT
-           *(
-                fvc::div(energyFlux_)
-              - pi*(Ui & this->gradAlpha_)
-              + (alpha*this->rho()*g & this->U_)
-            );
-        this->alphaRhoE_.correctBoundaryConditions();
-    }
-}
-
-
-void Foam::liquidPhaseModel::solveSources
-(
-    const dimensionedScalar& deltaT,
-    const volScalarField& Mdot,
-    const volVectorField& Ftot,
-    const volScalarField& qConv,
-    const volScalarField& gamma,
+    const volVectorField& F,
     const volVectorField& Ui,
     const volScalarField& pi
 )
 {
-    alphaRho_ += deltaT*Mdot;
-    alphaRhoU_ += deltaT*Ftot;
-    alphaRhoE_ += deltaT*(gamma - qConv);
+    alphaRhos_[stepi] = alphaRho_;
+    alphaRhoUs_[stepi] = alphaRhoU_;
+    alphaRhoEs_[stepi] = alphaRhoE_;
+
+    deltaAlphaRho_[stepi] = -fvc::div(massFlux_);
+    deltaAlphaRhoU_[stepi] = -fvc::div(momentumFlux_) + alphaRho_*g + F;
+    deltaAlphaRhoE_[stepi] = -fvc::div(energyFlux_) + ((*this)*rho_*g & U_);
+
+    volScalarField alphaRho(alphaRho_*coeffs[stepi]);
+    volVectorField alphaRhoU(alphaRhoU_*coeffs[stepi]);
+    volScalarField alphaRhoE(alphaRhoE_*coeffs[stepi]);
+
+    volScalarField deltaAlphaRho(deltaAlphaRho_[stepi]*Fcoeffs[stepi]);
+    volVectorField deltaAlphaRhoU(deltaAlphaRhoU_[stepi]*Fcoeffs[stepi]);
+    volScalarField deltaAlphaRhoE(deltaAlphaRhoE_[stepi]*Fcoeffs[stepi]);
+
+    for (label i = 0; i < stepi; i++)
+    {
+        alphaRho += alphaRhos_[i]*coeffs[i];
+        alphaRhoU += alphaRhoUs_[i]*coeffs[i];
+        alphaRhoE += alphaRhoEs_[i]*coeffs[i];
+
+        deltaAlphaRho += deltaAlphaRho_[i]*Fcoeffs[i];
+        deltaAlphaRhoU += deltaAlphaRhoU_[i]*Fcoeffs[i];
+        deltaAlphaRhoE += deltaAlphaRhoE_[i]*Fcoeffs[i];
+    }
+
+    alphaRho_ = alphaRho + deltaT*deltaAlphaRho;
+    alphaRho_.correctBoundaryConditions();
+
+    alphaRhoU_ = alphaRhoU + deltaT*deltaAlphaRhoU;
+    alphaRhoU_.correctBoundaryConditions();
+
+    alphaRhoE_ = alphaRhoE + deltaT*deltaAlphaRhoE;
+    alphaRhoE_.correctBoundaryConditions();
 }
+
 
 void Foam::liquidPhaseModel::updateFluxes()
 {
     volScalarField H(IOobject::groupName("H", name()), E_ + p_/rho_);
-    if (otherPhase().granular())
-    {
-        this->fluxFunction_->updateFluxes
-        (
-            massFlux_,
-            momentumFlux_,
-            energyFlux_,
-            alphaf_,
-            rho_,
-            U_,
-            H,
-            p_,
-            c(),
-            fluid_.U(),
-            fluid_.p()
-        );
-    }
-    else
-    {
-        this->fluxFunction_->updateFluxes
-        (
-            alphaf_,
-            massFlux_,
-            momentumFlux_,
-            energyFlux_,
-            *this,
-            rho_,
-            U_,
-            H,
-            p_,
-            c(),
-            fluid_.U(),
-            fluid_.p()
-        );
-    }
-    gradAlpha_ = fvc::surfaceIntegrate(fluid_.mesh().Sf()*alphaf_);
+    this->fluxFunction_->updateFluxes
+    (
+        massFlux_,
+        momentumFlux_,
+        energyFlux_,
+        *this,
+        rho_,
+        U_,
+        H,
+        p_,
+        c(),
+        fluid_.U(),
+        fluid_.p()
+    );
+    gradAlpha_ = fluxFunction_->gradAlpha();
+}
+
+void Foam::liquidPhaseModel::updateFluxes(const surfaceScalarField& alphaf)
+{
+    volScalarField H(IOobject::groupName("H", name()), E_ + p_/rho_);
+    this->fluxFunction_->updateFluxes
+    (
+        massFlux_,
+        momentumFlux_,
+        energyFlux_,
+        alphaf,
+        rho_,
+        U_,
+        H,
+        p_,
+        c(),
+        fluid_.U(),
+        fluid_.p()
+    );
+    gradAlpha_ = fluxFunction_->gradAlpha();
 }
 
 
 void Foam::liquidPhaseModel::decode()
 {
-    (*this).max(this->residualAlpha_);
-    (*this).correctBoundaryConditions();
-
-    this->rho_ = alphaRho_/(*this);
-    this->rho_.correctBoundaryConditions();
-
     this->U_ = this->alphaRhoU_/this->alphaRho_;
     this->U_.correctBoundaryConditions();
-    this->phiPtr_() = fvc::flux(this->U_);
 
     this->E_ = this->alphaRhoE_/this->alphaRho_;
     this->he_ -= 0.5*magSqr(this->U_);
@@ -231,6 +188,7 @@ void Foam::liquidPhaseModel::encode()
 void Foam::liquidPhaseModel::correctThermo()
 {
     this->E_ = this->he_ + 0.5*magSqr(U_);
+    thermoPtr_->correct();
 }
 
 void Foam::liquidPhaseModel::store()

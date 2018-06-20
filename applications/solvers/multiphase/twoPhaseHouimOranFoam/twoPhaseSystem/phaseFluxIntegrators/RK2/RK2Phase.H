@@ -53,6 +53,19 @@ class RK2Phase
 :
     public phaseFluxIntegrator
 {
+    //- Number of steps
+    virtual label nSteps() const
+    {
+        return 2;
+    }
+
+    //- Conserved variable coeffients
+    virtual List<scalarList> coeffs() const;
+
+    //- Flux coefficients
+    virtual List<scalarList> Fcoeffs() const;
+
+
 public:
 
     //- Runtime type information
@@ -63,17 +76,6 @@ public:
 
     //- Destructor
     virtual ~RK2Phase();
-
-
-    // Edit functions
-
-        //- Transport conservative variables
-        virtual void integrateFluxes
-        (
-            const dimensionedVector& g,
-            volVectorField& Ui,
-            volScalarField& pi
-        );
 };
 
 

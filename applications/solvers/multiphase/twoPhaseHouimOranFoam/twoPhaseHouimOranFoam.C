@@ -69,14 +69,14 @@ int main(int argc, char *argv[])
         fluid.advect();
         fluid.relax();
 
+        fluid.encode();
+
         if (runTime.outputTime())
         {
             volScalarField("c.air", phase1.c()).write();
             volScalarField("c.particles", phase2.c()).write();
         }
-//         U1.write();
-//         U2.write();
-//         p.write();
+
         runTime.write();
 
         Info<< "ExecutionTime = "

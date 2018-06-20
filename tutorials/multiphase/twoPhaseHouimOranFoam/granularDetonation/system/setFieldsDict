@@ -1,0 +1,62 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  dev                                   |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      setFieldsDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+alpha1  1;    alpha2  .75;
+p1      10; p2      1.38e9;
+T1      100;  T2      4020;
+
+defaultFieldValues
+(
+    volScalarFieldValue alpha.air $alpha1
+    volVectorFieldValue U.air (0 0 0)
+    volVectorFieldValue U.particles (0 0 0)
+    volScalarFieldValue T.air $T1
+    volScalarFieldValue T.particles $T1
+    volScalarFieldValue p $p1
+    volScalarFieldValue Theta.particles 1e-4
+);
+
+regions
+(
+    boxToCell
+    {
+        box (0 0 0) (10 10 .1);
+        fieldValues
+        (
+            volScalarFieldValue alpha.air $alpha2
+            volScalarFieldValue T.air $T1
+            volScalarFieldValue T.particles $T1
+            volScalarFieldValue p $p1
+        );
+    }
+    cylinderToCell
+    {
+        radius 0.1;
+        p1 (5 8.5 0);
+        p2 (5 8.5 .1);
+        fieldValues
+        (
+            volScalarFieldValue alpha.air $alpha1
+            volScalarFieldValue T.air $T2
+            volScalarFieldValue T.particles $T2
+            volScalarFieldValue p $p2
+        );
+    }
+);
+
+
+// ************************************************************************* //

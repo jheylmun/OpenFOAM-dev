@@ -15,7 +15,7 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-alpha1  .999;    alpha2  0.6;
+alpha1  1;    alpha2  0.6;
 p1      1e7;    p2      1e5;
 T1      300; T2      300;
 
@@ -27,6 +27,7 @@ defaultFieldValues
     volScalarFieldValue T.air $T2
     volScalarFieldValue T.particles $T2
     volScalarFieldValue p $p2
+    volScalarFieldValue Theta.particle 0
 );
 
 regions

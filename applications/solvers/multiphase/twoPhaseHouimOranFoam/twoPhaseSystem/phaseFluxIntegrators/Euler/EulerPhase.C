@@ -44,7 +44,10 @@ Foam::phaseFluxIntegrators::EulerPhase::EulerPhase
 )
 :
     phaseFluxIntegrator(phase1, phase2)
-{}
+{
+    phase1_.setNSteps(1);
+    phase2_.setNSteps(1);
+}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
@@ -53,47 +56,18 @@ Foam::phaseFluxIntegrators::EulerPhase::~EulerPhase()
 {}
 
 
-// * * * * * * * * * * * * * Public Member Fucntions * * * * * * * * * * * * //
+// * * * * * * * * * * *  Protected Member Fucntions * * * * * * * * * * * * //
 
-void Foam::phaseFluxIntegrators::EulerPhase::integrateFluxes
-(
-    const dimensionedVector& g,
-    volVectorField& Ui,
-    volScalarField& pi
-)
+Foam::List<Foam::scalarList>
+Foam::phaseFluxIntegrators::EulerPhase::coeffs() const
 {
-    dimensionedScalar deltaT = Ui.mesh().time().deltaT();
-
-    const volScalarField& alpha1 = phase1_;
-    volScalarField& alpha2 = phase2_;
-
-    phase1_.updateFluxes();
-    phase2_.alphaf() = 1.0 - phase1_.alphaf();
-    phase2_.updateFluxes();
-
-    phase1_.advect
-    (
-        deltaT,
-        g,
-        Ui,
-        pi,
-        true
-    );
-    phase1_.decode();
-
-    phase2_.advect
-    (
-        deltaT,
-        g,
-        Ui,
-        pi,
-        true
-    );
-    alpha2 = 1.0 - alpha1;
-    alpha2.correctBoundaryConditions();
-    phase2_.decode();
-
-
-    Ui = phase1_.fluid().mixtureU();
-    pi = phase1_.fluid().mixturep();
+    return {{1.0}};
 }
+
+Foam::List<Foam::scalarList>
+Foam::phaseFluxIntegrators::EulerPhase::Fcoeffs() const
+{
+    return {{1.0}};
+}
+
+// ************************************************************************* //

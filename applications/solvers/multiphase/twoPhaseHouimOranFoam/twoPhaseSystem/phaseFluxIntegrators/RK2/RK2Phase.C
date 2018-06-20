@@ -44,7 +44,10 @@ Foam::phaseFluxIntegrators::RK2Phase::RK2Phase
 )
 :
     phaseFluxIntegrator(phase1, phase2)
-{}
+{
+    phase1_.setNSteps(nSteps());
+    phase2_.setNSteps(nSteps());
+}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
@@ -52,79 +55,18 @@ Foam::phaseFluxIntegrators::RK2Phase::RK2Phase
 Foam::phaseFluxIntegrators::RK2Phase::~RK2Phase()
 {}
 
+// * * * * * * * * * * *  Protected Member Fucntions * * * * * * * * * * * * //
 
-// * * * * * * * * * * * * * Public Member Fucntions * * * * * * * * * * * * //
-
-void Foam::phaseFluxIntegrators::RK2Phase::integrateFluxes
-(
-    const dimensionedVector& g,
-    volVectorField& Ui,
-    volScalarField& pi
-)
+Foam::List<Foam::scalarList>
+Foam::phaseFluxIntegrators::RK2Phase::coeffs() const
 {
-    const dimensionedScalar& deltaT = Ui.mesh().time().deltaT();
-
-    const volScalarField& alpha1 = phase1_;
-    volScalarField& alpha2 = phase2_;
-
-    //- Predictor step
-    phase1_.updateFluxes();
-    phase2_.alphaf() = 1.0 - phase1_.alphaf();
-    phase2_.updateFluxes();
-
-    phase1_.advect
-    (
-        deltaT*0.5,
-        g,
-        Ui,
-        pi,
-        true
-    );
-    phase1_.decode();
-
-    phase2_.advect
-    (
-        deltaT*0.5,
-        g,
-        Ui,
-        pi,
-        true
-    );
-    alpha2 = 1.0 - alpha1;
-    alpha2.correctBoundaryConditions();
-    phase2_.decode();
-
-
-    Ui = phase1_.fluid().mixtureU();
-    pi = phase1_.fluid().mixturep();
-
-    //- Corrector
-    phase1_.updateFluxes();
-    phase2_.alphaf() = 1.0 - phase1_.alphaf();
-    phase2_.updateFluxes();
-
-    phase1_.advect
-    (
-        deltaT,
-        g,
-        Ui,
-        pi,
-        true
-    );
-    phase1_.decode();
-
-    phase2_.advect
-    (
-        deltaT,
-        g,
-        Ui,
-        pi,
-        true
-    );
-    alpha2 = 1.0 - alpha1;
-    alpha2.correctBoundaryConditions();
-    phase2_.decode();
-
-    Ui = phase1_.fluid().mixtureU();
-    pi = phase1_.fluid().mixturep();
+    return  {{1.0}, {1.0, 0.0}};
 }
+
+Foam::List<Foam::scalarList>
+Foam::phaseFluxIntegrators::RK2Phase::Fcoeffs() const
+{
+    return {{0.5}, {0.0, 1.0}};
+}
+
+// ************************************************************************* //

@@ -599,7 +599,6 @@ Foam::twoPhaseSystem::twoPhaseSystem
     alpha2 = (scalar(1) - phase1_());
     encode();
 
-
     // Blending
     forAllConstIter(dictionary, subDict("blending"), iter)
     {
@@ -927,7 +926,7 @@ void Foam::twoPhaseSystem::relax()
     volScalarField deltaE
     (
         (phase1_->thermo().T() - phase2_->thermo().T())/XiE
-       *(exp(-Kh()*XiE*deltaT) - 1.0)
+       *(exp(-max(Kh()*XiE*deltaT, vSmall)) - 1.0)
     );
     phase1_->store();
     phase2_->store();
@@ -964,8 +963,9 @@ void Foam::twoPhaseSystem::relax()
             );
         volScalarField ThetaStar
         (
-            Theta*exp(-2.0*dragCoeff*deltaT/alphaRhop)
+            Theta*exp(-max(2.0*dragCoeff*deltaT/alphaRhop, vSmall))
         );
+        ThetaStar.max(vSmall);
 
         volScalarField XiSlip
         (
@@ -975,8 +975,13 @@ void Foam::twoPhaseSystem::relax()
 
         volScalarField ThetaStarStar
         (
-            pow(XiSlip/alphaRhop*deltaT + pow(ThetaStar, 1.5), 2.0/3.0)
+            pow
+            (
+                XiSlip/alphaRhop*deltaT
+              + pow(ThetaStar, 1.5), 2.0/3.0
+            )
         );
+        gas->alphaRhoE() -= 1.5*alphaRhop*(ThetaStarStar - Theta);
 
         Theta =
             ThetaStarStar*9.0*sqr(alphaRhop)
@@ -987,11 +992,32 @@ void Foam::twoPhaseSystem::relax()
             );
 
         particles->alphaRhoPTE() = 1.5*alphaRhop*Theta;
-        particles->alphaRhoE() -= 1.5*alphaRhop*(Theta - ThetaStarStar);
-        gas->alphaRhoE() -= 1.5*alphaRhop*(ThetaStarStar - Theta.oldTime());
-
         particles->alphaRhoPTE().correctBoundaryConditions();
+
+        particles->alphaRhoE() -= 1.5*alphaRhop*(Theta - ThetaStarStar);
     }
+    else
+    {
+        volScalarField magSqrU1
+        (
+            magSqr(phase1_->alphaRhoU()/phase1_->alphaRho())
+        );
+        volScalarField magSqrU2
+        (
+            magSqr(phase2_->alphaRhoU()/phase2_->alphaRho())
+        );
+        phase1_->alphaRhoE() -=
+            phase1_->alphaRho()*0.5
+           *(
+                magSqrU1 - magSqr(phase1_->U())
+            );
+        phase2_->alphaRhoE() -=
+            phase2_->alphaRho()*0.5
+           *(
+                magSqrU2 - magSqr(phase2_->U())
+            );
+    }
+
     phase1_->alphaRhoU().correctBoundaryConditions();
     phase2_->alphaRhoU().correctBoundaryConditions();
     phase1_->alphaRhoE().correctBoundaryConditions();

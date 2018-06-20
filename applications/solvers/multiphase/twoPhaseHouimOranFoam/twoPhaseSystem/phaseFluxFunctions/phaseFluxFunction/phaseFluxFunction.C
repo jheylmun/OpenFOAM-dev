@@ -77,25 +77,40 @@ Foam::phaseFluxFunction::phaseFluxFunction
         mesh,
         dimensionedScalar("nei", dimless, -1.0)
     ),
-    residualAlpha_
+    residualAlpha_(dict_.lookupOrDefault("residualAlpha", 0)),
+    epsilon_(dict_.lookupOrDefault("cut)ffMa", 1e-10)),
+    alphaf_
     (
-        dimensionedScalar::lookupOrDefault
+        IOobject
         (
-            "alpha",
-            dict_,
-            dimless,
-            0.0
-        )
+            IOobject::groupName("alphaf", phaseName),
+            mesh.time().timeName(),
+            mesh
+        ),
+        mesh,
+        dimensionedScalar("zero", dimless, 0.0)
     ),
-    cutoffMa_
+    phi_
     (
-        dimensionedScalar::lookupOrDefault
+        IOobject
         (
-            "cutoffMa",
-            dict_,
-            dimVelocity,
-            1e-10
-        )
+            IOobject::groupName("phi", phaseName),
+            mesh.time().timeName(),
+            mesh
+        ),
+        mesh,
+        dimensionedScalar("zero", dimVelocity*dimArea, 0.0)
+    ),
+    pf_
+    (
+        IOobject
+        (
+            IOobject::groupName("pf", phaseName),
+            mesh.time().timeName(),
+            mesh
+        ),
+        mesh,
+        dimensionedScalar("zero", dimPressure, 0.0)
     )
 {}
 
@@ -105,5 +120,23 @@ Foam::phaseFluxFunction::phaseFluxFunction
 Foam::phaseFluxFunction::~phaseFluxFunction()
 {}
 
+
+// * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * * //
+
+Foam::tmp<Foam::surfaceScalarField> Foam::phaseFluxFunction::alphaPhi() const
+{
+    return phi_*alphaf_;
+}
+
+Foam::tmp<Foam::volVectorField> Foam::phaseFluxFunction::gradAlpha() const
+{
+    return fvc::surfaceIntegrate(mesh_.Sf()*alphaf_);
+}
+
+
+Foam::tmp<Foam::volVectorField> Foam::phaseFluxFunction::gradp() const
+{
+    return fvc::surfaceIntegrate(mesh_.Sf()*pf_);
+}
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

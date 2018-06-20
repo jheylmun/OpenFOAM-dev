@@ -92,7 +92,6 @@ Foam::granularPhaseModel::granularPhaseModel
         )
     ),
 
-    equilibrium_(this->phaseDict_.lookup("equilibrium")),
     e_("e", dimless, this->phaseDict_),
     alphaMax_("alphaMax", dimless, this->phaseDict_),
     alphaMinFriction_
@@ -151,7 +150,7 @@ Foam::granularPhaseModel::granularPhaseModel
             fluid.mesh().time().timeName(),
             fluid.mesh(),
             IOobject::NO_READ,
-            IOobject::AUTO_WRITE
+            IOobject::NO_WRITE
         ),
         frictionalStressModel_->frictionalPressure
         (
@@ -267,40 +266,25 @@ Foam::granularPhaseModel::~granularPhaseModel()
 
 Foam::tmp<Foam::volScalarField> Foam::granularPhaseModel::c() const
 {
-    volScalarField A(1.0 + 2.0*(1.0 + e_)*(*this)*gs0_);
-    tmp<volScalarField> B
-    (
-        2.0*(1.0 + e_)
-       *(
-            gs0_
-          + radialModel_->g0prime
-            (
-                *this,
-                alphaMinFriction_,
-                alphaMax_
-            )*(*this)
-        )
-    );
-
-    volScalarField dAlphaCrit(*this - alphaMinFriction_);
-    volScalarField dAlphaMax(alphaMax_ - *this);
-
-    tmp<volScalarField> cFric
-    (
-        (Ps_ + Pfric_)*dAlphaCrit/(pow(dAlphaMax, 5)*(this->rho_))
-       *(
-            (*this)*(0.2 + 0.5*dAlphaCrit/dAlphaMax)
-          + 0.1*dAlphaCrit
-        )
-    );
-    cFric.ref() *= pos(dAlphaCrit);
-
     return tmp<volScalarField>
     (
         new volScalarField
         (
             IOobject::groupName("a", name()),
-            sqrt(Theta_*(A + 2.0/3.0*sqr(A) + (*this)*B) + cFric)
+            sqrt
+            (
+                pPrime()/rho_
+            + 2.0/3.0*sqr
+                (
+                    granularPressureModel_->granularPressureCoeff
+                    (
+                        *this,
+                        gs0_,
+                        rho_,
+                        e_
+                    )
+                )*Theta_/sqr(Foam::max(alphaRho_, residualAlphaRho()))
+            )
         )
     );
 }
@@ -398,7 +382,7 @@ Foam::granularPhaseModel::devRhoReff() const
                 IOobject::NO_WRITE
             ),
           - (this->rho_*nut_)*dev(twoSymm(fvc::grad(this->U_)))
-          - ((this->rho_*lambda_)*fvc::div(this->phiPtr_()))*symmTensor::I
+          - ((this->rho_*lambda_)*fvc::div(phi()))*symmTensor::I
         )
     );
 }
@@ -447,7 +431,7 @@ Foam::granularPhaseModel::productionCoeff() const
             81.0*(*this)*sqr(otherPhase().mu())*magSqr(U_ - otherPhase().U())
            /(
                 gs0_*pow3(d())*rho_*sqrt(Foam::constant::mathematical::pi)
-              + dimensionedScalar("small", dimMass, small)
+              + dimensionedScalar("small", dimMass, vSmall)
             )
         )
     );
@@ -456,83 +440,67 @@ Foam::granularPhaseModel::productionCoeff() const
 
 void Foam::granularPhaseModel::advect
 (
+    const label stepi,
+    const scalarList& coeffs,
+    const scalarList& Fcoeffs,
     const dimensionedScalar& deltaT,
     const dimensionedVector& g,
-    const volVectorField& Ui,
-    const volScalarField& pi,
-    const bool oldTime
-)
-{
-    volScalarField& alpha = *this;
-    if (oldTime)
-    {
-        alphaRho_ = alphaRho_.oldTime() - deltaT*fvc::div(massFlux_);
-        alphaRho_.correctBoundaryConditions();
-
-        alphaRhoU_ =
-            alphaRhoU_.oldTime()
-          - deltaT
-           *(
-                fvc::div(momentumFlux_)
-              + alpha*fvc::grad(pi)
-              - alphaRho_*g
-            );
-        alphaRhoU_.correctBoundaryConditions();
-
-        alphaRhoE_ =
-            alphaRhoE_.oldTime()
-          - deltaT*fvc::div(energyFlux_);
-        alphaRhoE_.correctBoundaryConditions();
-
-        alphaRhoPTE_ =
-            alphaRhoPTE_.oldTime()
-          - deltaT*(fvc::div(PTEFlux_)  + Ps_*fvc::div(phiPtr_()));
-        alphaRhoPTE_.correctBoundaryConditions();
-    }
-    else
-    {
-        alphaRho_ -= deltaT*fvc::div(massFlux_);
-        alphaRho_.correctBoundaryConditions();
-
-        alphaRhoU_ -=
-            deltaT
-           *(
-                fvc::div(momentumFlux_)
-              + alpha*fvc::grad(pi)
-              - alphaRho_*g
-            );
-        alphaRhoU_.correctBoundaryConditions();
-
-        alphaRhoE_ -= deltaT*(fvc::div(energyFlux_));
-        alphaRhoE_.correctBoundaryConditions();
-
-        alphaRhoPTE_ -= deltaT*(fvc::div(PTEFlux_) + Ps_*fvc::div(phiPtr_()));
-        alphaRhoPTE_.correctBoundaryConditions();
-    }
-}
-
-
-void Foam::granularPhaseModel::solveSources
-(
-    const dimensionedScalar& deltaT,
-    const volScalarField& Mdot,
-    const volVectorField& Ftot,
-    const volScalarField& qConv,
-    const volScalarField& gamma,
+    const volVectorField& F,
     const volVectorField& Ui,
     const volScalarField& pi
 )
 {
-    volScalarField dissipation
+    alphaRhos_[stepi] = alphaRho_;
+    alphaRhoUs_[stepi] = alphaRhoU_;
+    alphaRhoEs_[stepi] = alphaRhoE_;
+    alphaRhoPTEs_[stepi] = alphaRhoPTE_;
+
+    deltaAlphaRho_[stepi] = -fvc::div(massFlux_);
+    deltaAlphaRhoU_[stepi] =
+      - fvc::div(momentumFlux_)
+      + F
+      - (*this)*otherPhase().gradp()
+      + alphaRho_*g;
+    deltaAlphaRhoE_[stepi] = -fvc::div(energyFlux_);
+    deltaAlphaRhoPTE_[stepi] = -fvc::div(PTEFlux_) - Ps_*fvc::div(phi());
+
+    volScalarField alphaRho(alphaRhos_[stepi]*coeffs[stepi]);
+    volVectorField alphaRhoU(alphaRhoUs_[stepi]*coeffs[stepi]);
+    volScalarField alphaRhoE(alphaRhoEs_[stepi]*coeffs[stepi]);
+    volScalarField alphaRhoPTE(alphaRhoPTEs_[stepi]*coeffs[stepi]);
+
+    volScalarField deltaAlphaRho(deltaAlphaRho_[stepi]*Fcoeffs[stepi]);
+    volVectorField deltaAlphaRhoU(deltaAlphaRhoU_[stepi]*Fcoeffs[stepi]);
+    volScalarField deltaAlphaRhoE(deltaAlphaRhoE_[stepi]*Fcoeffs[stepi]);
+    volScalarField deltaAlphaRhoPTE
     (
-        (12.0*(1.0 - sqr(e_))*gs0_*sqr(*this)*rho_*pow(Theta_, 1.5))
-       /(sqrt(Foam::constant::mathematical::pi)*d())
+        deltaAlphaRhoPTE_[stepi]*Fcoeffs[stepi]
     );
 
-    alphaRho_ += deltaT*Mdot;
-    alphaRhoU_ += deltaT*Ftot;
-    alphaRhoE_ += deltaT*(dissipation + qConv);
-    alphaRhoPTE_ += deltaT*(-dissipation + gamma);
+    for (label i = 0; i < stepi; i++)
+    {
+        alphaRho += alphaRhos_[i]*coeffs[i];
+        alphaRhoU += alphaRhoUs_[i]*coeffs[i];
+        alphaRhoE += alphaRhoEs_[i]*coeffs[i];
+        alphaRhoPTE += alphaRhoPTEs_[i]*coeffs[i];
+
+        deltaAlphaRho += deltaAlphaRho_[i]*Fcoeffs[i];
+        deltaAlphaRhoU += deltaAlphaRhoU_[i]*Fcoeffs[i];
+        deltaAlphaRhoE += deltaAlphaRhoE_[i]*Fcoeffs[i];
+        deltaAlphaRhoPTE += deltaAlphaRhoPTE_[i]*Fcoeffs[i];
+    }
+
+    alphaRho_ = alphaRho + deltaT*deltaAlphaRho;
+    alphaRho_.correctBoundaryConditions();
+
+    alphaRhoU_ = alphaRhoU + deltaT*deltaAlphaRhoU;
+    alphaRhoU_.correctBoundaryConditions();
+
+    alphaRhoE_ = alphaRhoE + deltaT*deltaAlphaRhoE;
+    alphaRhoE_.correctBoundaryConditions();
+
+    alphaRhoPTE_ = alphaRhoPTE + deltaT*deltaAlphaRhoPTE;
+    alphaRhoPTE_.correctBoundaryConditions();
 }
 
 
@@ -546,7 +514,6 @@ void Foam::granularPhaseModel::updateFluxes()
     );
     this->fluxFunction_->updateFluxes
     (
-        alphaf_,
         massFlux_,
         momentumFlux_,
         energyFlux_,
@@ -560,7 +527,12 @@ void Foam::granularPhaseModel::updateFluxes()
         c(),
         fluid_.p()
     );
-    gradAlpha_ = fvc::surfaceIntegrate(fluid_.mesh().Sf()*alphaf_);
+    gradAlpha_ = fluxFunction_->gradAlpha();
+}
+
+void Foam::granularPhaseModel::updateFluxes(const surfaceScalarField& alphaf)
+{
+    NotImplemented;
 }
 
 
@@ -569,11 +541,8 @@ void Foam::granularPhaseModel::decode()
     volScalarField& alpha = *this;
     alpha = alphaRho_/rho_;
     alpha.max(residualAlpha_);
-    alphaRho_ = alpha*rho_;
 
     U_ = alphaRhoU_/alphaRho_;
-    phiPtr_() = fvc::flux(U_);
-
     E_ = alphaRhoE_/this->alphaRho_;
     he_ = E_;
     thermoPtr_->correct();
@@ -629,8 +598,9 @@ void Foam::granularPhaseModel::decode()
 
 void Foam::granularPhaseModel::encode()
 {
-    (*this).max(residualAlpha_);
-    (*this).correctBoundaryConditions();
+    this->max(residualAlpha_);
+    this->min(alphaMax_);
+    this->correctBoundaryConditions();
 
     alphaRho_ = (*this)*rho_;
     alphaRho_.correctBoundaryConditions();
@@ -642,143 +612,45 @@ void Foam::granularPhaseModel::encode()
     alphaRhoE_ = alphaRho_*E_;
     alphaRhoE_.correctBoundaryConditions();
 
+    Theta_.correctBoundaryConditions();
     alphaRhoPTE_ = 1.5*alphaRho_*Theta_;
-    alphaRhoPTE_.correctBoundaryConditions();
 }
 
 
 void Foam::granularPhaseModel::correctThermo()
 {
+    E_ = he_;
+    thermoPtr_->correct();
+
     // Local references
     volScalarField alpha(*this);
     alpha.max(residualAlpha_);
 
-    const volScalarField& rho = this->rho();
-    const volVectorField& U = U_;
-    const volVectorField& Uc = otherPhase().U();
+    volScalarField ThetaSqrt(sqrt(Theta_));
+    scalar sqrtPi = sqrt(Foam::constant::mathematical::pi);
+    volScalarField da(dPtr_->d());
 
-    const scalar sqrtPi = sqrt(constant::mathematical::pi);
-    dimensionedScalar ThetaSmall("ThetaSmall", Theta_.dimensions(), 1.0e-6);
-    dimensionedScalar ThetaSmallSqrt(sqrt(ThetaSmall));
-
-    tmp<volScalarField> tda(d());
-    const volScalarField& da = tda();
-
-    tmp<volTensorField> tgradU(fvc::grad(U));
-    const volTensorField& gradU(tgradU());
-    volSymmTensorField D(symm(gradU));
-
-    // Calculating the radial distribution function
-    gs0_ = radialModel_->g0(alpha, alphaMinFriction_, alphaMax_);
-
-    // Particle viscosity (Table 3.2, p.47)
-    nut_ = viscosityModel_->nu(alpha, Theta_, gs0_, rho, da, e_);
-
-    volScalarField ThetaSqrt("sqrtTheta", sqrt(Theta_));
-
-    // Bulk viscosity  p. 45 (Lun et al. 1984).
-    lambda_ = (4.0/3.0)*sqr(alpha)*da*gs0_*(1.0 + e_)*ThetaSqrt/sqrtPi;
-
-    // Stress tensor, Definitions, Table 3.1, p. 43
-    volSymmTensorField tau
-    (
-        rho*(2.0*nut_*D + (lambda_ - (2.0/3.0)*nut_)*tr(D)*I)
-    );
-
-    // Dissipation (Eq. 3.24, p.50)
-    volScalarField gammaCoeff
-    (
-        "gammaCoeff",
-        12.0*(1.0 - sqr(e_))
-        *Foam::max(sqr(alpha), residualAlpha_)
-        *rho*gs0_*(1.0/da)*ThetaSqrt/sqrtPi
-    );
-
-    // Drag
-    volScalarField beta
-    (
-        fluid_.lookupSubModel<dragModel>(*this, otherPhase()).K()
-    );
-
-    // Eq. 3.25, p. 50 Js = J1 - J2
-    volScalarField J1("J1", 3.0*beta);
-    volScalarField J2
-    (
-        "J2",
-        0.25*sqr(beta)*da*magSqr(U - Uc)
-        /(
-            Foam::max(alpha, residualAlpha_)*rho
-            *sqrtPi*(ThetaSqrt + ThetaSmallSqrt)
-        )
-    );
-
-    // particle pressure - coefficient in front of Theta (Eq. 3.22, p. 45)
-    volScalarField PsCoeff
-    (
-        granularPressureModel_->granularPressureCoeff
-        (
-            alpha,
-            gs0_,
-            rho,
-            e_
-        )
-    );
-
-    // 'thermal' conductivity (Table 3.3, p. 49)
-    kappa_ = conductivityModel_->kappa(alpha, Theta_, gs0_, rho, da, e_);
-
-
-    // Construct the granular temperature equation (Eq. 3.20, p. 44)
-    // NB. note that there are two typos in Eq. 3.20:
-    //     Ps should be without grad
-    //     the laplacian has the wrong sign
-//     fvScalarMatrix ThetaEqn
-//     (
-//         1.5*
-//         (
-//             fvm::ddt(alpha, rho, Theta_)
-//             + fvm::div(alphaRhoPhi, Theta_)
-//             - fvc::Sp(fvc::ddt(alpha, rho) + fvc::div(alphaRhoPhi), Theta_)
-//         )
-//         - fvm::laplacian(kappa_, Theta_, "laplacian(kappa,Theta)")
-//         ==
-//         - fvm::SuSp((PsCoeff*I) && gradU, Theta_)
-//         + (tau && gradU)
-//         + fvm::Sp(-gammaCoeff, Theta_)
-//         + fvm::Sp(-J1, Theta_)
-//         + fvm::Sp(J2/(Theta_ + ThetaSmall), Theta_)
-//         + fvOptions(alpha, rho, Theta_)
-//     );
-
-
-    Theta_.max(0);
-    Theta_.min(100);
-
-    // particle viscosity (Table 3.2, p.47)
-    nut_ = viscosityModel_->nu(alpha, Theta_, gs0_, rho, da, e_);
-
-    ThetaSqrt = sqrt(Theta_);
-
-    // Bulk viscosity  p. 45 (Lun et al. 1984).
+    gs0_ = radialModel_->g0(*this, alphaMinFriction_, alphaMax_);
+    kappa_ = conductivityModel_->kappa(*this, Theta_, gs0_, rho_, da, e_);
+    nut_ = viscosityModel_->nu(*this, Theta_, gs0_, rho_, da, e_);
     lambda_ = (4.0/3.0)*sqr(alpha)*da*gs0_*(1.0 + e_)*ThetaSqrt/sqrtPi;
 
     // Frictional pressure
-    volScalarField pf
-    (
+    Pfric_ =
         frictionalStressModel_->frictionalPressure
         (
             *this,
             alphaMinFriction_,
             alphaMax_
-        )
-    );
+        );
 
+    volSymmTensorField D(symm(fvc::grad(U_)));
     nuFric_ = frictionalStressModel_->nu
     (
         *this,
         alphaMinFriction_,
         alphaMax_,
-        pf/rho,
+        Pfric_/rho_,
         D
     );
 
@@ -787,21 +659,19 @@ void Foam::granularPhaseModel::correctThermo()
     nuFric_ = Foam::min(nuFric_, maxNut_ - nut_);
     nut_ += nuFric_;
 
-    Ps_ = PsCoeff*Theta_;
-    Pfric_ =  pf;
-
-    if (debug)
-    {
-        Info<< typeName << ':' << nl
-            << "    max(Theta) = " << Foam::max(Theta_).value() << nl
-            << "    max(nut) = " << Foam::max(nut_).value() << endl;
-    }
+    Ps_ =
+        granularPressureModel_->granularPressureCoeff
+        (
+            *this,
+            gs0_,
+            rho_,
+            e_
+        )*Theta_;
 }
 
 
 bool Foam::granularPhaseModel::read(const dictionary& phaseProperties)
 {
-    phaseDict_.lookup("equilibrium") >> equilibrium_;
     e_.readIfPresent(phaseDict_);
     alphaMax_.readIfPresent(phaseDict_);
     alphaMinFriction_.readIfPresent(phaseDict_);

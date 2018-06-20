@@ -24,7 +24,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "phaseFluxIntegrator.H"
-
+#include "twoPhaseSystem.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
@@ -62,5 +62,72 @@ Foam::phaseFluxIntegrator::phaseFluxIntegrator
 Foam::phaseFluxIntegrator::~phaseFluxIntegrator()
 {}
 
+
+// * * * * * * * * * * * * * Public Member Fucntions * * * * * * * * * * * * //
+
+
+void Foam::phaseFluxIntegrator::integrateFluxes
+(
+    const dimensionedVector& g,
+    volVectorField& Ui,
+    volScalarField& pi
+)
+{
+    List<scalarList> c = coeffs();
+    List<scalarList> f = Fcoeffs();
+
+    const dimensionedScalar& deltaT = Ui.mesh().time().deltaT();
+
+    const volScalarField& alpha1 = phase1_;
+    volScalarField& alpha2 = phase2_;
+
+    label sign = 1;
+    if (&phase1_ != &(phase1_.fluid().phase1()))
+    {
+        sign = -1;
+    }
+
+    for (label stepi = 0; stepi < nSteps(); stepi++)
+    {
+        volVectorField Fh(phase1_.fluid().F()*sign);
+
+        phase1_.updateFluxes();
+        phase2_.updateFluxes(1.0 - phase1_.alphaf());
+
+        phase1_.advect
+        (
+            stepi,
+            c[stepi],
+            f[stepi],
+            deltaT,
+            g,
+            Fh,
+            Ui,
+            pi
+        );
+        phase1_.decode();
+        phase1_.encode();
+
+        phase2_.advect
+        (
+            stepi,
+            c[stepi],
+            f[stepi],
+            deltaT,
+            g,
+            -Fh,
+            Ui,
+            pi
+        );
+        alpha2 = 1.0 - alpha1;
+        alpha2.correctBoundaryConditions();
+        phase2_.decode();
+        phase2_.encode();
+
+
+        Ui = phase1_.fluid().mixtureU();
+        pi = phase1_.fluid().mixturep();
+    }
+}
 
 // ************************************************************************* //

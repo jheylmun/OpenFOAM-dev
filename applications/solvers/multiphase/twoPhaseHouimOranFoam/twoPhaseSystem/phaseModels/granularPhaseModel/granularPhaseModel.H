@@ -246,27 +246,21 @@ public:
         //- Advect with conservative fluxes
         virtual void advect
         (
+            const label stepi,
+            const scalarList& coeffs,
+            const scalarList& Fcoeffs,
             const dimensionedScalar& deltaT,
             const dimensionedVector& g,
-            const volVectorField& Ui,
-            const volScalarField& pi,
-            const bool oldTime
-        );
-
-        //- Update conservative variables with sources
-        virtual void solveSources
-        (
-            const dimensionedScalar& deltaT,
-            const volScalarField& Mdot,
-            const volVectorField& Ftot,
-            const volScalarField& qConv,
-            const volScalarField& gamma,
+            const volVectorField& F,
             const volVectorField& Ui,
             const volScalarField& pi
         );
 
-        //- Decode conservative variables
+        //- Update hyperbolic fluxes
         virtual void updateFluxes();
+
+        //- Update hyperbolic fluxes using a set interplated volume fraction
+        virtual void updateFluxes(const surfaceScalarField& alphaf);
 
         //- Correct primatives based on internal energy/enthalpy
         virtual void correctThermo();

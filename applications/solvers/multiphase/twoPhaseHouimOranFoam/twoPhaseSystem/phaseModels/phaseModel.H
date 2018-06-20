@@ -87,17 +87,11 @@ protected:
 
         // Primative variables
 
-            //- Face volume fraction
-            surfaceScalarField alphaf_;
-
             //- Phase density
             volScalarField& rho_;
 
             //- Phase velocity
             volVectorField U_;
-
-            //- phase volumetric flux
-            autoPtr<surfaceScalarField> phiPtr_;
 
             //- Phase internal energy
             volScalarField& he_;
@@ -128,6 +122,30 @@ protected:
 
             //- Total energy flux
             surfaceScalarField energyFlux_;
+
+
+        //- Fields stored for partial ode steps
+
+            //- Changes in alpha
+            PtrList<volScalarField> alphas_;
+            PtrList<volScalarField> deltaAlpha_;
+
+            //- Changes in mass
+            PtrList<volScalarField> alphaRhos_;
+            PtrList<volScalarField> deltaAlphaRho_;
+
+            //- Changes in momentum
+            PtrList<volVectorField> alphaRhoUs_;
+            PtrList<volVectorField> deltaAlphaRhoU_;
+
+            //- Changes in energy
+            PtrList<volScalarField> alphaRhoEs_;
+            PtrList<volScalarField> deltaAlphaRhoE_;
+
+            //- Changes in pseudo thermo energy
+            PtrList<volScalarField> alphaRhoPTEs_;
+            PtrList<volScalarField> deltaAlphaRhoPTE_;
+
 
         //- Gradient of alpha
         volVectorField gradAlpha_;
@@ -234,12 +252,6 @@ public:
         //- Return non-const access to the thermodynamic model
         inline rhoThermo& thermo();
 
-        //- Const access to the interpolated voluem fraction
-        inline const surfaceScalarField& alphaf() const;
-
-        //- Non-const access to the interpolated voluem fraction
-        inline surfaceScalarField& alphaf();
-
         //- Const access to the phase density
         inline const volScalarField& rho() const;
 
@@ -255,8 +267,8 @@ public:
         //- Const access to the phase volumentric flux
         inline const surfaceScalarField& phi() const;
 
-        //- Non-const access to the phase volumetric flux
-        inline surfaceScalarField& phi();
+        //- Const access to the phase volumentric flux
+        inline tmp<surfaceScalarField> alphaPhi() const;
 
         //- Const access to the phase total energy
         inline const volScalarField& E() const;
@@ -440,11 +452,17 @@ public:
             return energyFlux_;
         }
 
-        //- Return the volumetric flux of the phase
+        //- Return the gradient of pressure
+        inline const surfaceScalarField& alphaf() const;
+
+        //- Return the gradient of volume fraction
         inline const volVectorField& gradAlpha() const;
 
-        //- Return non-const access to the volumetric flux of the phase
+        //- Return non-const access to the gradient of volume fraction
         inline volVectorField& gradAlpha();
+
+        //- Return the gradient of pressure
+        inline tmp<volVectorField> gradp() const;
 
         //- Ensure that the flux at inflow/outflow BCs is preserved
         void correctInflowOutflow(surfaceScalarField& alphaPhi) const;
@@ -456,24 +474,18 @@ public:
         //  which have special treatment
         void correct();
 
+        //- Set the number of steps used in ode solution to hyperbolic terms
+        virtual void setNSteps(const label nSteps);
+
         //- Advect with conservative fluxes
         virtual void advect
         (
+            const label stepi,
+            const scalarList& coeffs,
+            const scalarList& Fcoeffs,
             const dimensionedScalar& deltaT,
             const dimensionedVector& g,
-            const volVectorField& Ui,
-            const volScalarField& pi,
-            const bool oldTime
-        ) = 0;
-
-        //- Update conservative variables with sources
-        virtual void solveSources
-        (
-            const dimensionedScalar& deltaT,
-            const volScalarField& Mdot,
-            const volVectorField& Ftot,
-            const volScalarField& qConv,
-            const volScalarField& gamma,
+            const volVectorField& F,
             const volVectorField& Ui,
             const volScalarField& pi
         ) = 0;
@@ -486,6 +498,9 @@ public:
 
         //- Decode conservative variables
         virtual void updateFluxes() = 0;
+
+        //- Decode conservative variables
+        virtual void updateFluxes(const surfaceScalarField& alphaf) = 0;
 
         //- Correct primatives based on internal energy/enthalpy
         virtual void correctThermo() = 0;

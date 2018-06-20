@@ -30,7 +30,11 @@ phaseFluxIntegrators/phaseFluxIntegrator/phaseFluxIntegrator.C
 phaseFluxIntegrators/phaseFluxIntegrator/newPhaseFluxIntegrator.C
 phaseFluxIntegrators/Euler/EulerPhase.C
 phaseFluxIntegrators/RK2/RK2Phase.C
+phaseFluxIntegrators/RK2SSP/RK2SSPPhase.C
+phaseFluxIntegrators/RK3SSP/RK3SSPPhase.C
 phaseFluxIntegrators/RK45/RK45Phase.C
+phaseFluxIntegrators/RKF45/RKF45Phase.C
+phaseFluxIntegrators/RK4SSP/RK4SSPPhase.C
 
 kineticTheoryModels/granularViscosityModel/granularViscosityModel/granularViscosityModel.C
 kineticTheoryModels/granularViscosityModel/granularViscosityModel/newGranularViscosityModel.C

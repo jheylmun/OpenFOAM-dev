@@ -70,7 +70,16 @@ protected:
         dimensionedScalar residualAlpha_;
 
         //- Cutoff Mach number
-        dimensionedScalar cutoffMa_;
+        scalar epsilon_;
+
+        //- Face interpolated volume fraction
+        surfaceScalarField alphaf_;
+
+        //- Volumetric flux
+        surfaceScalarField phi_;
+
+        //- Face interpolated pressure
+        surfaceScalarField pf_;
 
 
     //- Protected functions
@@ -115,17 +124,37 @@ public:
 
     // Public Functions
 
+        //- Return the initerpolated volume fraction
+        const surfaceScalarField& alphaf() const
+        {
+            return alphaf_;
+        }
+
+        //- Return volumetric flux
+        const surfaceScalarField& phi() const
+        {
+            return phi_;
+        }
+
+        //- Return the volume flux of volume fraction
+        tmp<surfaceScalarField> alphaPhi() const;
+
+        //- Return the volume fraction gradient
+        tmp<volVectorField> gradAlpha() const;
+
+        //- Return the pressure gradient
+        tmp<volVectorField> gradp() const;
+
         //- Update fluxes
         virtual void updateFluxes
         (
-            surfaceScalarField& alphaf,
             surfaceScalarField& massFlux,
             surfaceVectorField& momentumFlux,
             surfaceScalarField& energyFlux,
             const volScalarField& alpha,
             const volScalarField& rho,
             const volVectorField& U,
-            const volScalarField& H,
+            const volScalarField& E,
             const volScalarField& p,
             const volScalarField& a,
             const volVectorField& Ui,
@@ -138,10 +167,10 @@ public:
             surfaceScalarField& massFlux,
             surfaceVectorField& momentumFlux,
             surfaceScalarField& energyFlux,
-            const surfaceScalarField& alpha,
+            const surfaceScalarField& alphaf,
             const volScalarField& rho,
             const volVectorField& U,
-            const volScalarField& H,
+            const volScalarField& E,
             const volScalarField& p,
             const volScalarField& a,
             const volVectorField& Ui,
@@ -150,7 +179,6 @@ public:
 
         virtual void updateFluxes
         (
-            surfaceScalarField& alphaf,
             surfaceScalarField& massFlux,
             surfaceVectorField& momentumFlux,
             surfaceScalarField& energyFlux,

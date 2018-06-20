@@ -56,6 +56,8 @@ class AUSMPhase
 {
     // Private Data
 
+        //- Minimum velocity
+        dimensionedScalar residualU_;
 
 public:
 
@@ -74,14 +76,13 @@ public:
 
         virtual void updateFluxes
         (
-            surfaceScalarField& alphaf,
             surfaceScalarField& massFlux,
             surfaceVectorField& momentumFlux,
             surfaceScalarField& energyFlux,
             const volScalarField& alpha,
             const volScalarField& rho,
             const volVectorField& U,
-            const volScalarField& H,
+            const volScalarField& E,
             const volScalarField& p,
             const volScalarField& a,
             const volVectorField& Ui,
@@ -94,10 +95,10 @@ public:
             surfaceScalarField& massFlux,
             surfaceVectorField& momentumFlux,
             surfaceScalarField& energyFlux,
-            const surfaceScalarField& alpha,
+            const surfaceScalarField& alphaf,
             const volScalarField& rho,
             const volVectorField& U,
-            const volScalarField& H,
+            const volScalarField& E,
             const volScalarField& p,
             const volScalarField& a,
             const volVectorField& Ui,

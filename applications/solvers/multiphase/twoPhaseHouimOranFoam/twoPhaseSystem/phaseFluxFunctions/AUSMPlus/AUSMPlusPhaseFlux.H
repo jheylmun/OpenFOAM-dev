@@ -56,10 +56,45 @@ class AUSMPlusPhase
 {
     // Private Data
 
-    //- Coefficients
-    scalar beta_ = 0.125;
-    scalar alphaMax_;
-    scalar alphaMinFriction_;
+        //- Coefficients
+        scalar beta_ = 0.125;
+        scalar fa_;
+
+        //- Dispersion coefficient
+        scalar D_;
+
+        //- Max volume fraction
+        scalar alphaMax_;
+
+        //- Minimum volume fraction where frictional pressure is present
+        scalar alphaMinFriction_;
+
+        //- Cut off mach Number
+        dimensionedScalar cutOffMa_;
+
+        //- Residual density
+        dimensionedScalar residualRho_;
+
+        //- Minimum velocity
+        dimensionedScalar residualU_;
+
+
+        // Private functions
+
+            //- First polynomial
+            tmp<surfaceScalarField> M1
+            (
+                const surfaceScalarField& M,
+                const label sign
+            );
+
+            //- Second polynomial
+            tmp<surfaceScalarField> M2
+            (
+                const surfaceScalarField& M,
+                const label sign
+            );
+
 
 public:
 
@@ -79,14 +114,13 @@ public:
         //- Update fluxes
         virtual void updateFluxes
         (
-            surfaceScalarField& alphaf,
             surfaceScalarField& massFlux,
             surfaceVectorField& momentumFlux,
             surfaceScalarField& energyFlux,
             const volScalarField& alpha,
             const volScalarField& rho,
             const volVectorField& U,
-            const volScalarField& H,
+            const volScalarField& E,
             const volScalarField& p,
             const volScalarField& a,
             const volVectorField& Ui,
@@ -99,10 +133,10 @@ public:
             surfaceScalarField& massFlux,
             surfaceVectorField& momentumFlux,
             surfaceScalarField& energyFlux,
-            const surfaceScalarField& alpha,
+            const surfaceScalarField& alphaf,
             const volScalarField& rho,
             const volVectorField& U,
-            const volScalarField& H,
+            const volScalarField& E,
             const volScalarField& p,
             const volScalarField& a,
             const volVectorField& Ui,
@@ -112,7 +146,6 @@ public:
         //- Update fluxes for a granular phase
         virtual void updateFluxes
         (
-            surfaceScalarField& alphaf,
             surfaceScalarField& massFlux,
             surfaceVectorField& momentumFlux,
             surfaceScalarField& energyFlux,
