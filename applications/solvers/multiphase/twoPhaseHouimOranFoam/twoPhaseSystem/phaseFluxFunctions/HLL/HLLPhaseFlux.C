@@ -161,16 +161,14 @@ void Foam::phaseFluxFunctions::HLLPhase::updateFluxes
             )*rDeltaS
           + neg(SNei)*massFluxNei
         );
-    phi_ =
-        mesh_.magSf()
+    Uf_ =
+        pos0(SOwn)*UOwn
+      + pos0(SNei)*neg(SOwn)
        *(
-            pos0(SOwn)*UvOwn
-          + pos0(SNei)*neg(SOwn)
-           *(
-                SNei*UvOwn - SOwn*UvNei + SOwn*SNei
-            )*rDeltaS
-          + neg(SNei)*UvNei
-        );
+            SNei*UOwn - SOwn*UNei + SOwn*SNei*normal
+        )*rDeltaS
+      + neg(SNei)*UNei;
+    phi_ = Uf_ & mesh_.Sf();
 
     momentumFlux =
         mesh_.magSf()
@@ -286,16 +284,14 @@ void Foam::phaseFluxFunctions::HLLPhase::updateFluxes
             )*rDeltaS
           + neg(SNei)*massFluxNei
         );
-    phi_ =
-        mesh_.magSf()
+    Uf_ =
+        pos0(SOwn)*UOwn
+      + pos0(SNei)*neg(SOwn)
        *(
-            pos0(SOwn)*UvOwn
-          + pos0(SNei)*neg(SOwn)
-           *(
-                SNei*UvOwn - SOwn*UvNei + SOwn*SNei
-            )*rDeltaS
-          + neg(SNei)*UvNei
-        );
+            SNei*UOwn - SOwn*UNei + SOwn*SNei*normal
+        )*rDeltaS
+      + neg(SNei)*UNei;
+    phi_ = Uf_ & mesh_.Sf();
 
     momentumFlux =
         mesh_.magSf()

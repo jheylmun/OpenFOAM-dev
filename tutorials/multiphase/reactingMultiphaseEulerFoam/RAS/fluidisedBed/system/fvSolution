@@ -48,7 +48,7 @@ solvers
     {
         solver          PBiCG;
         preconditioner  DILU;
-        tolerance       1e-8;
+        tolerance       1e-5;
         relTol          0;
         minIter         1;
     }
@@ -64,8 +64,8 @@ solvers
 
     "Theta.*"
     {
-        solver          PBiCGStab;
-        preconditioner  DILU;
+        solver          smoothSolver;
+        smoother        symGaussSeidel;
         tolerance       1e-8;
         relTol          0;
         minIter         1;

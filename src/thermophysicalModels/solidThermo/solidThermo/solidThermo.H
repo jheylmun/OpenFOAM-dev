@@ -138,8 +138,23 @@ public:
             //- Return non-const access to the local density field [kg/m^3]
             virtual volScalarField& rho();
 
+            //- compressibility
+            virtual tmp<volScalarField> psi() const;
+
             //- Thermal conductivity [W/m/K]
             virtual tmp<volVectorField> Kappa() const = 0;
+
+            //- Dynamic viscosity of mixture [kg/m/s]
+            virtual tmp<volScalarField> mu() const;
+
+            //- Dynamic viscosity of mixture for patch [kg/m/s]
+            virtual tmp<scalarField> mu(const label patchi) const;
+
+            //- Kinematic viscosity of mixture [m^2/s]
+            virtual tmp<volScalarField> nu() const;
+
+            //- Kinematic viscosity of mixture for patch [m^2/s]
+            virtual tmp<scalarField> nu(const label patchi) const;
 
             //- Return true if thermal conductivity is isotropic
             virtual bool isotropic() const = 0;

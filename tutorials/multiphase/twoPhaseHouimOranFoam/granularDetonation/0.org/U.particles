@@ -23,13 +23,17 @@ boundaryField
 {
     walls
     {
-        type            noSlip;
+        type            slip;
     }
     outlet
     {
         type            zeroGradient;
     }
-    frontAndBack
+    center
+    {
+        type            symmetry;
+    }
+    frontBack
     {
         type            empty;
     }

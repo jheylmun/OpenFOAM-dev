@@ -78,6 +78,9 @@ protected:
         //- Volumetric flux
         surfaceScalarField phi_;
 
+        //- Interpolated velocity
+        surfaceVectorField Uf_;
+
         //- Face interpolated pressure
         surfaceScalarField pf_;
 
@@ -131,16 +134,16 @@ public:
         }
 
         //- Return volumetric flux
-        const surfaceScalarField& phi() const
-        {
-            return phi_;
-        }
+        const surfaceScalarField& phi() const;
 
         //- Return the volume flux of volume fraction
         tmp<surfaceScalarField> alphaPhi() const;
 
         //- Return the volume fraction gradient
         tmp<volVectorField> gradAlpha() const;
+
+        //- Return the velocity gradient
+        tmp<volTensorField> gradU() const;
 
         //- Return the pressure gradient
         tmp<volVectorField> gradp() const;

@@ -274,6 +274,11 @@ inline Foam::volVectorField& Foam::phaseModel::gradAlpha()
     return gradAlpha_;
 }
 
+inline Foam::tmp<Foam::volTensorField> Foam::phaseModel::gradU() const
+{
+    return fluxFunction_->gradU();
+}
+
 inline Foam::tmp<Foam::volVectorField> Foam::phaseModel::gradp() const
 {
     return fluxFunction_->gradp();

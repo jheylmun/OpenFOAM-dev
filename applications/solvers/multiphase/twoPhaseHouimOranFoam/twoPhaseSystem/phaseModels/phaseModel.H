@@ -264,10 +264,10 @@ public:
         //- Non-const access to the phase velocity
         inline volVectorField& U();
 
-        //- Const access to the phase volumentric flux
+        //- Return the phase volumentric flux
         inline const surfaceScalarField& phi() const;
 
-        //- Const access to the phase volumentric flux
+        //- Return the phase volumentric flux
         inline tmp<surfaceScalarField> alphaPhi() const;
 
         //- Const access to the phase total energy
@@ -460,6 +460,9 @@ public:
 
         //- Return non-const access to the gradient of volume fraction
         inline volVectorField& gradAlpha();
+
+        //- Return the gradient of velocity
+        inline tmp<volTensorField> gradU() const;
 
         //- Return the gradient of pressure
         inline tmp<volVectorField> gradp() const;

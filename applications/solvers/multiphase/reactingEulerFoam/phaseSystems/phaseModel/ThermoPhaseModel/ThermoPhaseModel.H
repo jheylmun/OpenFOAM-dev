@@ -89,13 +89,19 @@ public:
             virtual bool compressible() const;
 
             //- Return the thermophysical model
-            virtual const rhoThermo& thermo() const;
+            virtual const basicThermo& thermo() const;
 
             //- Access the thermophysical model
-            virtual rhoThermo& thermoRef();
+            virtual basicThermo& thermoRef();
 
             //- Return the density field
             virtual tmp<volScalarField> rho() const;
+
+            //- Return non-const access to the density field
+            virtual volScalarField& rhoRef();
+
+            //- Return the compressibility field
+            virtual tmp<volScalarField> psi() const;
 
 
         // Transport

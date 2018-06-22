@@ -296,7 +296,7 @@ template<class BasePhaseModel>
 Foam::tmp<Foam::volScalarField>
 Foam::StationaryPhaseModel<BasePhaseModel>::muEff() const
 {
-    return this->thermo().mu();
+    return this->mu();
 }
 
 
@@ -312,7 +312,7 @@ template<class BasePhaseModel>
 Foam::tmp<Foam::volScalarField>
 Foam::StationaryPhaseModel<BasePhaseModel>::nuEff() const
 {
-    return this->thermo().nu();
+    return this->nu();
 }
 
 

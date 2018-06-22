@@ -545,12 +545,14 @@ void Foam::granularPhaseModel::decode()
     U_ = alphaRhoU_/alphaRho_;
     E_ = alphaRhoE_/this->alphaRho_;
     he_ = E_;
+    he_.correctBoundaryConditions();
     thermoPtr_->correct();
 
     // Update kinetic theory quantities
     Theta_ = 2.0/3.0*alphaRhoPTE_/alphaRho_;
     Theta_.max(0);
     Theta_.min(100);
+    Theta_.correctBoundaryConditions();
 
     volScalarField ThetaSqrt(sqrt(Theta_));
     scalar sqrtPi = sqrt(Foam::constant::mathematical::pi);
@@ -569,8 +571,9 @@ void Foam::granularPhaseModel::decode()
             alphaMinFriction_,
             alphaMax_
         );
+    Pfric_.correctBoundaryConditions();
 
-    volSymmTensorField D(symm(fvc::grad(U_)));
+    volSymmTensorField D(symm(gradU()));
     nuFric_ = frictionalStressModel_->nu
     (
         *this,
@@ -593,6 +596,7 @@ void Foam::granularPhaseModel::decode()
             rho_,
             e_
         )*Theta_;
+    Ps_.correctBoundaryConditions();
 }
 
 
@@ -614,6 +618,7 @@ void Foam::granularPhaseModel::encode()
 
     Theta_.correctBoundaryConditions();
     alphaRhoPTE_ = 1.5*alphaRho_*Theta_;
+    alphaRhoPTE_.correctBoundaryConditions();
 }
 
 
@@ -643,8 +648,9 @@ void Foam::granularPhaseModel::correctThermo()
             alphaMinFriction_,
             alphaMax_
         );
+    Pfric_.correctBoundaryConditions();
 
-    volSymmTensorField D(symm(fvc::grad(U_)));
+    volSymmTensorField D(symm(gradU()));
     nuFric_ = frictionalStressModel_->nu
     (
         *this,
@@ -667,6 +673,7 @@ void Foam::granularPhaseModel::correctThermo()
             rho_,
             e_
         )*Theta_;
+    Ps_.correctBoundaryConditions();
 }
 
 

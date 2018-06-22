@@ -236,7 +236,7 @@ while (pimple.correct())
     {
         phaseModel& phase = phases[phasei];
         const volScalarField& alpha = phase;
-        volScalarField& rho = phase.thermoRef().rho();
+        volScalarField& rho = phase.rhoRef();
 
         if (phase.compressible())
         {
@@ -245,7 +245,7 @@ while (pimple.correct())
                 surfaceScalarField phid
                 (
                     IOobject::groupName("phid", phase.name()),
-                    fvc::interpolate(phase.thermo().psi())*phase.phi()
+                    fvc::interpolate(phase.psi())*phase.phi()
                 );
 
                 pEqnComps.set
@@ -264,7 +264,7 @@ while (pimple.correct())
                         (
                             (alpha/rho)*
                             (
-                                phase.thermo().psi()*fvm::ddt(p_rgh)
+                                phase.psi()*fvm::ddt(p_rgh)
                               + fvm::div(phid, p_rgh)
                               - fvm::Sp(fvc::div(phid), p_rgh)
                             )
@@ -293,7 +293,7 @@ while (pimple.correct())
                                 rho
                             )
                         )/rho
-                      + (alpha*phase.thermo().psi()/rho)
+                      + (alpha*phase.psi()/rho)
                        *correction(fvm::ddt(p_rgh))
                     ).ptr()
                 );
@@ -418,7 +418,7 @@ while (pimple.correct())
     forAll(phases, phasei)
     {
         phaseModel& phase = phases[phasei];
-        phase.thermoRef().rho() += phase.thermo().psi()*(p_rgh - p_rgh_0);
+        phase.rhoRef() += phase.psi()*(p_rgh - p_rgh_0);
     }
 
     // Correct p_rgh for consistency with p and the updated densities

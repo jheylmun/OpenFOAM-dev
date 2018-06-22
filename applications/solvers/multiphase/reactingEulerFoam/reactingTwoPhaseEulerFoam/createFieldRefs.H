@@ -14,14 +14,14 @@ const surfaceScalarField& alphaPhi2 = phase2.alphaPhi();
 
 surfaceScalarField& phi = fluid.phi();
 
-rhoThermo& thermo1 = phase1.thermoRef();
-rhoThermo& thermo2 = phase2.thermoRef();
+basicThermo& thermo1 = phase1.thermoRef();
+basicThermo& thermo2 = phase2.thermoRef();
 
-volScalarField& rho1 = thermo1.rho();
-const volScalarField& psi1 = thermo1.psi();
+volScalarField& rho1 = phase1.rhoRef();
+const volScalarField& psi1 = phase1.psi();
 
-volScalarField& rho2 = thermo2.rho();
-const volScalarField& psi2 = thermo2.psi();
+volScalarField& rho2 = phase2.rhoRef();
+const volScalarField& psi2 = phase2.psi();
 
 const IOMRFZoneList& MRF = fluid.MRF();
 fv::options& fvOptions = fluid.fvOptions();

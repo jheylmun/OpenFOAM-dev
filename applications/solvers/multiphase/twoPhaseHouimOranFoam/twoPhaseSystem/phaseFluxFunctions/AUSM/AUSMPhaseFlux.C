@@ -164,7 +164,8 @@ void Foam::phaseFluxFunctions::AUSMPhase::updateFluxes
            max(0.0, Ma12)*alphaOwn*rhoOwn*aOwn
          + min(0.0, Ma12)*alphaNei*rhoNei*aNei
         );
-    phi_ = mesh_.magSf()*(max(0.0, Ma12)*aOwn + min(0.0, Ma12)*aNei);
+    Uf_ = (max(0.0, Ma12)*aOwn + min(0.0, Ma12)*aNei)*normal;
+    phi_ = Uf_ & mesh_.Sf();
 
     momentumFlux =
         mesh_.magSf()
@@ -277,7 +278,8 @@ void Foam::phaseFluxFunctions::AUSMPhase::updateFluxes
            max(0.0, Ma12)*rhoOwn*aOwn
          + min(0.0, Ma12)*rhoNei*aNei
         );
-    phi_ = mesh_.magSf()*(max(0.0, Ma12)*aOwn + min(0.0, Ma12)*aNei);
+    Uf_ = (max(0.0, Ma12)*aOwn + min(0.0, Ma12)*aNei)*normal;
+    phi_ = Uf_ & mesh_.Sf();
 
     momentumFlux =
         mesh_.magSf()*alphaf

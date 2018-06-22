@@ -47,8 +47,8 @@ laplacianSchemes
     default         none;
 }
 
-scalarLimiter vanAlbada;
-vectorLimiter vanAlbada;
+scalarLimiter upwind;
+vectorLimiter upwind;
 
 interpolationSchemes
 {

@@ -79,7 +79,7 @@ blending
 
     default
     {
-        type                linear;
+        type                none;
         continuousPhase     air;
         minFullyContinuousAlpha.air 0;
         minPartlyContinuousAlpha.air 0;
@@ -255,10 +255,9 @@ kineticTheory
         eta                     2;
         p                       5;
         phi                     28.5;
-        alphaDeltaMin           0.05;
+        alphaDeltaMin           0.001;
     }
 
-    alphaMinFriction        0.55;
     JohnsonJacksonCoeffs
     {
         alphaMinFriction        0.55;

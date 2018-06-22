@@ -172,7 +172,7 @@ Foam::MovingPhaseModel<BasePhaseModel>::MovingPhaseModel
         phaseCompressibleTurbulenceModel::New
         (
             *this,
-            this->thermo().rho(),
+            this->rho(),
             U_,
             alphaRhoPhi_,
             phi_,
@@ -225,7 +225,7 @@ void Foam::MovingPhaseModel<BasePhaseModel>::correct()
 
     this->fluid().MRF().correctBoundaryVelocity(U_);
 
-    volScalarField& rho = this->thermoRef().rho();
+    volScalarField& rho = this->rhoRef();
 
     continuityErrorFlow_ = fvc::ddt(*this, rho) + fvc::div(alphaRhoPhi_);
 

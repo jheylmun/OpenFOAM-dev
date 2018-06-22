@@ -73,7 +73,7 @@ bool Foam::ThermoPhaseModel<BasePhaseModel, ThermoType>::compressible() const
 
 
 template<class BasePhaseModel, class ThermoType>
-const Foam::rhoThermo&
+const Foam::basicThermo&
 Foam::ThermoPhaseModel<BasePhaseModel, ThermoType>::thermo() const
 {
     return thermo_();
@@ -81,7 +81,7 @@ Foam::ThermoPhaseModel<BasePhaseModel, ThermoType>::thermo() const
 
 
 template<class BasePhaseModel, class ThermoType>
-Foam::rhoThermo&
+Foam::basicThermo&
 Foam::ThermoPhaseModel<BasePhaseModel, ThermoType>::thermoRef()
 {
     return thermo_();
@@ -91,6 +91,22 @@ Foam::ThermoPhaseModel<BasePhaseModel, ThermoType>::thermoRef()
 template<class BasePhaseModel, class ThermoType>
 Foam::tmp<Foam::volScalarField>
 Foam::ThermoPhaseModel<BasePhaseModel, ThermoType>::rho() const
+{
+    return thermo_->rho();
+}
+
+
+template<class BasePhaseModel, class ThermoType>
+Foam::tmp<Foam::volScalarField>
+Foam::ThermoPhaseModel<BasePhaseModel, ThermoType>::psi() const
+{
+    return thermo_->psi();
+}
+
+
+template<class BasePhaseModel, class ThermoType>
+Foam::volScalarField&
+Foam::ThermoPhaseModel<BasePhaseModel, ThermoType>::rhoRef()
 {
     return thermo_->rho();
 }

@@ -135,6 +135,90 @@ Foam::volScalarField& Foam::solidThermo::rho()
 }
 
 
+Foam::tmp<Foam::volScalarField> Foam::solidThermo::psi() const
+{
+    return tmp<volScalarField>
+    (
+        new volScalarField
+        (
+            IOobject
+            (
+                IOobject::groupName("psi", this->phaseName_),
+                p_.mesh().time().timeName(),
+                p_.mesh(),
+                IOobject::NO_READ,
+                IOobject::NO_WRITE,
+                false
+            ),
+            p_.mesh(),
+            dimensionedScalar("zero", sqr(dimTime/dimLength), 0.0)
+        )
+    );
+}
+
+
+Foam::tmp<Foam::volScalarField> Foam::solidThermo::mu() const
+{
+    return tmp<volScalarField>
+    (
+        new volScalarField
+        (
+            IOobject
+            (
+                IOobject::groupName("mu", this->phaseName_),
+                p_.mesh().time().timeName(),
+                p_.mesh(),
+                IOobject::NO_READ,
+                IOobject::NO_WRITE,
+                false
+            ),
+            p_.mesh(),
+            dimensionedScalar("zero", dimDynamicViscosity, 0.0)
+        )
+    );
+}
+
+
+Foam::tmp<Foam::scalarField> Foam::solidThermo::mu(const label patchi) const
+{
+    return tmp<scalarField>
+    (
+        new scalarField(rho_.boundaryField()[patchi].size(), 0.0)
+    );
+}
+
+
+Foam::tmp<Foam::volScalarField> Foam::solidThermo::nu() const
+{
+    return tmp<volScalarField>
+    (
+        new volScalarField
+        (
+            IOobject
+            (
+                IOobject::groupName("nu", this->phaseName_),
+                p_.mesh().time().timeName(),
+                p_.mesh(),
+                IOobject::NO_READ,
+                IOobject::NO_WRITE,
+                false
+            ),
+            p_.mesh(),
+            dimensionedScalar("zero", dimViscosity, 0.0)
+        )
+    );
+}
+
+
+Foam::tmp<Foam::scalarField> Foam::solidThermo::nu(const label patchi) const
+{
+    return tmp<scalarField>
+    (
+        new scalarField(rho_.boundaryField()[patchi].size(), 0.0)
+    );
+}
+
+
 bool Foam::solidThermo::read()
 {
     return regIOobject::read();

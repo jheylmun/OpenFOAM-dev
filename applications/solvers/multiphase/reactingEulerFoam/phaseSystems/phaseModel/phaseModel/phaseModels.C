@@ -27,8 +27,11 @@ License
 
 #include "rhoThermo.H"
 #include "rhoReactionThermo.H"
+#include "solidThermo.H"
+#include "solidReactionThermo.H"
 
 #include "CombustionModel.H"
+#include "solidChemistryModel.H"
 
 #include "phaseModel.H"
 #include "ThermoPhaseModel.H"
@@ -38,6 +41,7 @@ License
 #include "MultiComponentPhaseModel.H"
 #include "InertPhaseModel.H"
 #include "ReactingPhaseModel.H"
+#include "ReactingSolidPhaseModel.H"
 #include "MovingPhaseModel.H"
 #include "StationaryPhaseModel.H"
 
@@ -76,6 +80,30 @@ namespace Foam
             <
                 InertPhaseModel
                 <
+                    MovingPhaseModel
+                    <
+                        ThermoPhaseModel<phaseModel, solidThermo>
+                    >
+                >
+            >
+        >
+        pureSolidPhaseModel;
+
+    addNamedToRunTimeSelectionTable
+    (
+        phaseModel,
+        pureSolidPhaseModel,
+        phaseSystem,
+        pureSolidPhaseModel
+    );
+
+    typedef
+        AnisothermalPhaseModel
+        <
+            PurePhaseModel
+            <
+                InertPhaseModel
+                <
                     StationaryPhaseModel
                     <
                         ThermoPhaseModel<phaseModel, rhoThermo>
@@ -91,6 +119,30 @@ namespace Foam
         pureStationaryPhaseModel,
         phaseSystem,
         pureStationaryPhaseModel
+    );
+
+    typedef
+        AnisothermalPhaseModel
+        <
+            PurePhaseModel
+            <
+                InertPhaseModel
+                <
+                    StationaryPhaseModel
+                    <
+                        ThermoPhaseModel<phaseModel, solidThermo>
+                    >
+                >
+            >
+        >
+        pureStationarySolidPhaseModel;
+
+    addNamedToRunTimeSelectionTable
+    (
+        phaseModel,
+        pureStationarySolidPhaseModel,
+        phaseSystem,
+        pureStationarySolidPhaseModel
     );
 
     typedef
@@ -124,6 +176,30 @@ namespace Foam
             <
                 InertPhaseModel
                 <
+                    MovingPhaseModel
+                    <
+                        ThermoPhaseModel<phaseModel, solidThermo>
+                    >
+                >
+            >
+        >
+        pureIsothermalSolidPhaseModel;
+
+    addNamedToRunTimeSelectionTable
+    (
+        phaseModel,
+        pureIsothermalSolidPhaseModel,
+        phaseSystem,
+        pureIsothermalSolidPhaseModel
+    );
+
+    typedef
+        IsothermalPhaseModel
+        <
+            PurePhaseModel
+            <
+                InertPhaseModel
+                <
                     StationaryPhaseModel
                     <
                         ThermoPhaseModel<phaseModel, rhoThermo>
@@ -139,6 +215,30 @@ namespace Foam
         pureStationaryIsothermalPhaseModel,
         phaseSystem,
         pureStationaryIsothermalPhaseModel
+    );
+
+    typedef
+        IsothermalPhaseModel
+        <
+            PurePhaseModel
+            <
+                InertPhaseModel
+                <
+                    StationaryPhaseModel
+                    <
+                        ThermoPhaseModel<phaseModel, solidThermo>
+                    >
+                >
+            >
+        >
+        pureStationaryIsothermalSolidPhaseModel;
+
+    addNamedToRunTimeSelectionTable
+    (
+        phaseModel,
+        pureStationaryIsothermalSolidPhaseModel,
+        phaseSystem,
+        pureStationaryIsothermalSolidPhaseModel
     );
 
     typedef
@@ -170,6 +270,30 @@ namespace Foam
         <
             MultiComponentPhaseModel
             <
+                InertPhaseModel
+                <
+                    MovingPhaseModel
+                    <
+                        ThermoPhaseModel<phaseModel, solidReactionThermo>
+                    >
+                >
+            >
+        >
+        multiComponentSolidPhaseModel;
+
+    addNamedToRunTimeSelectionTable
+    (
+        phaseModel,
+        multiComponentSolidPhaseModel,
+        phaseSystem,
+        multiComponentSolidPhaseModel
+    );
+
+    typedef
+        AnisothermalPhaseModel
+        <
+            MultiComponentPhaseModel
+            <
                 ReactingPhaseModel
                 <
                     MovingPhaseModel
@@ -188,6 +312,31 @@ namespace Foam
         reactingPhaseModel,
         phaseSystem,
         reactingPhaseModel
+    );
+
+    typedef
+        AnisothermalPhaseModel
+        <
+            MultiComponentPhaseModel
+            <
+                ReactingSolidPhaseModel
+                <
+                    MovingPhaseModel
+                    <
+                        ThermoPhaseModel<phaseModel, solidReactionThermo>
+                    >,
+                    solidReactionThermo
+                >
+            >
+        >
+        reactingSolidPhaseModel;
+
+    addNamedToRunTimeSelectionTable
+    (
+        phaseModel,
+        reactingSolidPhaseModel,
+        phaseSystem,
+        reactingSolidPhaseModel
     );
 }
 

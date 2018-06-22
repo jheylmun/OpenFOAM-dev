@@ -29,7 +29,11 @@ boundaryField
     {
         type            zeroGradient;
     }
-    frontAndBack
+    center
+    {
+        type            symmetry;
+    }
+    frontBack
     {
         type            empty;
     }

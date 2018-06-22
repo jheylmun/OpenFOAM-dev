@@ -234,6 +234,7 @@ void Foam::fluidPhaseModel::decode()
 
         E_ = alphaRhoE_/alphaRho_;
         he_ = E_ - 0.5*magSqr(U_);
+        he_.correctBoundaryConditions();
 
         phaseModel& liquid = fluid_.mesh().lookupObjectRef<phaseModel>
         (
@@ -271,9 +272,14 @@ void Foam::fluidPhaseModel::decode()
     {
         this->max(residualAlpha_);
         rho_ = alphaRho_/(*this);
+        rho_.correctBoundaryConditions();
 
         U_ = alphaRhoU_/alphaRho_;
+        U_.correctBoundaryConditions();
+
         E_ = alphaRhoE_/alphaRho_;
+        E_.correctBoundaryConditions();
+
         he_ = E_ - 0.5*magSqr(U_);
         he_.correctBoundaryConditions();
 
@@ -303,7 +309,10 @@ void Foam::fluidPhaseModel::encode()
 void Foam::fluidPhaseModel::correctThermo()
 {
     E_ = he_ + 0.5*magSqr(U_);
+    E_.correctBoundaryConditions();
+
     alphaRhoE_ = alphaRho_*E_;
+    alphaRhoE_.correctBoundaryConditions();
 
     thermoPtr_->correctP();
     p_ = thermoPtr_->p();

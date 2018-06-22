@@ -90,6 +90,17 @@ Foam::phaseFluxFunction::phaseFluxFunction
         mesh,
         dimensionedScalar("zero", dimless, 0.0)
     ),
+    Uf_
+    (
+        IOobject
+        (
+            IOobject::groupName("Uf", phaseName),
+            mesh.time().timeName(),
+            mesh
+        ),
+        mesh,
+        dimensionedVector("zero", dimVelocity, Zero)
+    ),
     phi_
     (
         IOobject
@@ -123,6 +134,11 @@ Foam::phaseFluxFunction::~phaseFluxFunction()
 
 // * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * * //
 
+const Foam::surfaceScalarField& Foam::phaseFluxFunction::phi() const
+{
+    return phi_;
+}
+
 Foam::tmp<Foam::surfaceScalarField> Foam::phaseFluxFunction::alphaPhi() const
 {
     return phi_*alphaf_;
@@ -133,6 +149,10 @@ Foam::tmp<Foam::volVectorField> Foam::phaseFluxFunction::gradAlpha() const
     return fvc::surfaceIntegrate(mesh_.Sf()*alphaf_);
 }
 
+Foam::tmp<Foam::volTensorField> Foam::phaseFluxFunction::gradU() const
+{
+    return fvc::surfaceIntegrate(mesh_.Sf()*Uf_);
+}
 
 Foam::tmp<Foam::volVectorField> Foam::phaseFluxFunction::gradp() const
 {

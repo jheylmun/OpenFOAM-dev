@@ -16,29 +16,29 @@ FoamFile
 
 convertToMeters 1;
 
-l 10;
-h 20;
-w 0.1;
+theta #calc "0.5*3.141529/180";
+x 5;
+y 20;
+cellSize 0.015;
+nXCells #calc "round($x/$cellSize)";
+nYCells #calc "round($y/$cellSize)";
+
 
 vertices
 (
     (0  0  0)
-    ($l 0  0)
-    ($l $h 0)
-    (0  $h 0)
-    (0  0  $w)
-    ($l 0  $w)
-    ($l $h $w)
-    (0  $h $w)
+    ($x 0  0)
+    ($x $y 0)
+    (0  $y 0)
+    (0  0  .1)
+    ($x 0  .1)
+    ($x $y .1)
+    (0  $y .1)
 );
 
 blocks
 (
-    hex (0 1 2 3 4 5 6 7) (500 800 1) simpleGrading (1 1 1)
-);
-
-edges
-(
+    hex (0 1 2 3 4 5 6 7) ($nXCells $nYCells 1) simpleGrading (1 1 1)
 );
 
 boundary
@@ -56,20 +56,25 @@ boundary
         type patch;
         faces
         (
-            (0 4 7 3)
             (2 6 5 1)
             (3 7 6 2)
         );
     }
-    frontAndBack
+    frontBack
     {
         type empty;
         faces
         (
-//             (3 7 6 2)
-//             (1 5 4 0)
             (0 3 2 1)
             (4 5 6 7)
+        );
+    }
+    center
+    {
+        type symmetry;
+        faces
+        (
+            (0 4 7 3)
         );
     }
 );

@@ -218,7 +218,8 @@ void Foam::phaseFluxFunctions::AUSMPlusPhase::updateFluxes
        /max(alphaOwn + alphaNei, residualAlpha_);
 
     massFlux = mesh_.magSf()*mDot;
-    phi_ = massFlux/(0.5*(rhoOwn + rhoNei));
+    Uf_ = mDot/(0.5*(rhoOwn + rhoNei))*normal;
+    phi_ = Uf_ & mesh_.Sf();
 
     momentumFlux =
         mesh_.magSf()*0.5
@@ -348,7 +349,8 @@ void Foam::phaseFluxFunctions::AUSMPlusPhase::updateFluxes
 
     pf_ = (BetaOwn*pOwn + BetaNei*pNei);
     massFlux = mesh_.magSf()*mDot;
-    phi_ = massFlux/(0.5*(rhoOwn + rhoNei));
+    Uf_ = mDot/(0.5*(rhoOwn + rhoNei))*normal;
+    phi_ = Uf_ & mesh_.Sf();
 
     momentumFlux =
         mesh_.magSf()*0.5
@@ -524,7 +526,8 @@ void Foam::phaseFluxFunctions::AUSMPlusPhase::updateFluxes
     alphaf_ = pos(mDot)*alphaOwn + neg0(mDot)*alphaNei;
 
     massFlux = mesh_.magSf()*mDot;
-    phi_ = massFlux/(pos(mDot)*alphaOwn*rhoOwn + neg0(mDot)*alphaNei*rhoNei);
+    Uf_ = mDot*normal/(pos(mDot)*alphaOwn*rhoOwn + neg0(mDot)*alphaNei*rhoNei);
+    phi_ = Uf_ & mesh_.Sf();
 
     momentumFlux =
         massFlux

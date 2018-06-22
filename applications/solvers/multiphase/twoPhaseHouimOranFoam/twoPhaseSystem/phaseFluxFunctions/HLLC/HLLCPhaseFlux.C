@@ -193,14 +193,12 @@ void Foam::phaseFluxFunctions::HLLCPhase::updateFluxes
       + neg(SStar)*pos0(SNei)*rhoNeiStar
       + neg(SNei)*rhoNei
     );
-    surfaceVectorField UR
-    (
-        "UR",
+    Uf_ =
         pos0(SOwn)*UOwn
-      + neg(SOwn)*pos0(SStar)*SStar*normal
-      + neg(SStar)*pos0(SNei)*SStar*normal
-      + neg(SNei)*UNei
-    );
+      + (neg(SOwn)*pos0(SStar) + neg(SStar)*pos0(SNei))*SStar*normal
+      + neg(SNei)*UNei;
+    phi_ = Uf_ & mesh_.Sf();
+
     surfaceScalarField ER
     (
         "ER",
@@ -211,15 +209,13 @@ void Foam::phaseFluxFunctions::HLLCPhase::updateFluxes
     );
     pf_ =
         pos0(SOwn)*pOwn
-      + neg(SOwn)*pos0(SStar)*pStar
-      + neg(SStar)*pos0(SNei)*pStar
+      + (neg(SOwn)*pos0(SStar) + neg(SStar)*pos0(SNei))*pStar
       + neg(SNei)*pNei;
 
     // Set total fluxes
-      phi_ = UR & mesh_.Sf();
-    massFlux = alphaf_*rhoR*phi_;
-    momentumFlux = massFlux*UR + alphaf_*pf_*mesh_.Sf();
-    energyFlux = alphaf_*phi_*(rhoR*ER + pf_);
+    massFlux = alphaf_*rhoR*phi();
+    momentumFlux = massFlux*Uf_ + alphaf_*pf_*mesh_.Sf();
+    energyFlux = alphaf_*phi()*(rhoR*ER + pf_);
 }
 
 
@@ -339,13 +335,12 @@ void Foam::phaseFluxFunctions::HLLCPhase::updateFluxes
       + neg(SStar)*pos0(SNei)*rhoNeiStar
       + neg(SNei)*rhoNei
     );
-    surfaceVectorField UR
-    (
-        "UR",
+    Uf_ =
         pos0(SOwn)*UOwn
       + (neg(SOwn)*pos0(SStar) + neg(SStar)*pos0(SNei))*SStar*normal
-      + neg(SNei)*UNei
-    );
+      + neg(SNei)*UNei;
+    phi_ = Uf_ & mesh_.Sf();
+
     surfaceScalarField ER
     (
         "ER",
@@ -354,14 +349,15 @@ void Foam::phaseFluxFunctions::HLLCPhase::updateFluxes
       + neg(SStar)*pos0(SNei)*ENeiStar
       + neg(SNei)*ENei
     );
+
     pf_ =
         pos0(SOwn)*pOwn
       + (neg(SOwn)*pos0(SStar) + neg(SStar)*pos0(SNei))*pStar
       + neg(SNei)*pNei;
 
     // Set total fluxes
-    phi_ = UR & mesh_.Sf();
-    massFlux = alphaf_*rhoR*phi_;
-    momentumFlux = massFlux*UR + alphaf_*pf_*mesh_.Sf();
-    energyFlux = alphaf_*phi_*(rhoR*ER + pf_);
+
+    massFlux = alphaf_*rhoR*phi();
+    momentumFlux = massFlux*Uf_ + alphaf_*pf_*mesh_.Sf();
+    energyFlux = alphaf_*phi()*(rhoR*ER + pf_);
 }

@@ -17,7 +17,7 @@ FoamFile
 
 application     reactingMuliphaseEulerFoam;
 
-startFrom       latestTime;
+startFrom       startTime;
 
 startTime       0;
 
@@ -45,11 +45,11 @@ timePrecision   6;
 
 runTimeModifiable on;
 
-adjustTimeStep  no;
+adjustTimeStep  yes;
 
 maxCo           0.2;
 
-maxDeltaT       2e-4;
+maxDeltaT       5e-4;
 
 functions
 {
@@ -118,12 +118,32 @@ functions
                  base        time;
             }
 
-            p
+            Theta.Particles
             {
                  mean        on;
                  prime2Mean  off;
                  base        time;
             }
+            Theta.particles
+            {
+                 mean        on;
+                 prime2Mean  off;
+                 base        time;
+            }
+            Theta.particles1
+            {
+                 mean        on;
+                 prime2Mean  off;
+                 base        time;
+            }
+            Theta.particles2
+            {
+                 mean        on;
+                 prime2Mean  off;
+                 base        time;
+            }
+
+
         );
     }
 }

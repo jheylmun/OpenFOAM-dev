@@ -226,13 +226,19 @@ public:
             virtual tmp<fvScalarMatrix> heEqn() = 0;
 
             //- Return the thermophysical model
-            virtual const rhoThermo& thermo() const = 0;
+            virtual const basicThermo& thermo() const = 0;
 
             //- Access the thermophysical model
-            virtual rhoThermo& thermoRef() = 0;
+            virtual basicThermo& thermoRef() = 0;
 
             //- Return the density field
             virtual tmp<volScalarField> rho() const = 0;
+
+            //- Return non-const access to the density field
+            virtual volScalarField& rhoRef() = 0;
+
+            //- Return the compressibility field
+            virtual tmp<volScalarField> psi() const = 0;
 
 
         // Species

@@ -122,7 +122,7 @@ Foam::kineticTheoryModels::viscosityModels::Princeton::nu
         if
         (
             pair.phase1().name() == phase.name()
-            || pair.phase2().name() == phase.name()
+         || pair.phase2().name() == phase.name()
         )
         {
             if
@@ -160,9 +160,12 @@ Foam::kineticTheoryModels::viscosityModels::Princeton::nu
     (
         phase*g0*Theta*nu()
        /(
-            alphag0*Theta
-          + (2.0*Beta*nu())/(5.0*rho1*max(phase, phase.residualAlpha()))
-          + dimensionedScalar("small", dimensionSet(0, 2, -2, 0, 0), SMALL)
+            max
+            (
+                alphag0*Theta
+              + (2.0*Beta*nu())/(5.0*rho1*max(phase, phase.residualAlpha())),
+                dimensionedScalar("small", dimensionSet(0, 2, -2, 0, 0), 1e-4)
+            )
         )
     );
     return

@@ -131,7 +131,7 @@ void Foam::fixedMultiPhaseHeatFluxFvPatchScalarField::updateCoeffs()
     forAll(fluid.phases(), phasei)
     {
         const phaseModel& phase = fluid.phases()[phasei];
-        const fluidThermo& thermo = phase.thermo();
+        const basicThermo& thermo = phase.thermo();
 
         const fvPatchScalarField& alpha =
             phase.boundaryField()[patch().index()];
