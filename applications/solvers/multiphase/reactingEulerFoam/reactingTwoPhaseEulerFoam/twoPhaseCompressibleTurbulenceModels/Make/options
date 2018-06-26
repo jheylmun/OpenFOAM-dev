@@ -17,6 +17,7 @@ EXE_INC = \
 LIB_LIBS = \
     -lsolidThermo \
     -lreactingPhaseSystem \
+    -lfluidThermophysicalModels \
     -lreactingTwoPhaseSystem \
     -lreactingEulerianInterfacialModels \
     -lreactingEulerianInterfacialCompositionModels \

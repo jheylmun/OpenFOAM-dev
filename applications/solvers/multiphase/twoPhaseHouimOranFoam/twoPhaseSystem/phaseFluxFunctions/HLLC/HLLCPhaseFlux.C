@@ -143,74 +143,81 @@ void Foam::phaseFluxFunctions::HLLCPhase::updateFluxes
     );
 
     //- Star quantities
-    surfaceScalarField SStar
+    surfaceVectorField SStar
     (
         "SStar",
         (
-            pNei - pOwn
-          + rhoOwn*UvOwn*(SOwn - UvOwn)
-          - rhoNei*UvNei*(SNei - UvNei)
+            (pNei - pOwn)*normal
+          + rhoOwn*UOwn*(SOwn - UvOwn)
+          - rhoNei*UNei*(SNei - UvNei)
         )/(rhoOwn*(SOwn - UvOwn) - rhoNei*(SNei - UvNei))
     );
+    surfaceScalarField sstar(SStar & normal);
     surfaceScalarField pStar
     (
         "pOwnNei",
-        pOwn + rhoOwn*(SOwn - UvOwn)*(SStar - UvOwn)
+        (
+            pOwn + rhoOwn*(SOwn - UvOwn)*(sstar - UvOwn)
+          + pNei + rhoNei*(SNei - UvNei)*(sstar - UvNei)
+        )*0.5
     );
     surfaceScalarField rhoOwnStar
     (
         "rhoOwnStar",
-        rhoOwn*(SOwn - UvOwn)/(SOwn - SStar)
+        rhoOwn*(SOwn - UvOwn)/(SOwn - sstar)
     );
     surfaceScalarField rhoNeiStar
     (
         "rhoNeiStar",
-        rhoNei*(SNei - UvNei)/(SNei - SStar)
+        rhoNei*(SNei - UvNei)/(SNei - sstar)
     );
     surfaceScalarField EOwnStar
     (
         "EOwnStar",
-        EOwn + (pStar*SStar - pOwn*UvOwn)/(rhoOwn*(SOwn - UvOwn))
+        EOwn + (pStar*sstar - pOwn*UvOwn)/(rhoOwn*(SOwn - UvOwn))
     );
     surfaceScalarField ENeiStar
     (
         "ENeiStar",
-        ENei + (pStar*SStar - pNei*UvNei)/(rhoNei*(SNei - UvNei))
+        ENei + (pStar*sstar - pNei*UvNei)/(rhoNei*(SNei - UvNei))
     );
 
     // Reimann primitive quantities
-    alphaf_ =
-        pos0(SOwn)*alphaOwn
-      + neg(SOwn)*pos0(SStar)*alphaOwn
-      + neg(SStar)*pos0(SNei)*alphaNei
-      + neg(SNei)*alphaNei;
+    alphaf_ = alphaOwn;
 
-    surfaceScalarField rhoR
-    (
-        "rhoR",
-        pos0(SOwn)*rhoOwn
-      + neg(SOwn)*pos0(SStar)*rhoOwnStar
-      + neg(SStar)*pos0(SNei)*rhoNeiStar
-      + neg(SNei)*rhoNei
-    );
-    Uf_ =
-        pos0(SOwn)*UOwn
-      + (neg(SOwn)*pos0(SStar) + neg(SStar)*pos0(SNei))*SStar*normal
-      + neg(SNei)*UNei;
+    // Reimann primitive quantities
+    surfaceScalarField rhoR("rhoR", rhoOwn);
+    Uf_ = UOwn;
+    surfaceScalarField ER("ER", EOwn);
+    pf_ = pOwn;
+
+    forAll(rhoR, facei)
+    {
+        if (SOwn[facei] < 0 && sstar[facei] >= 0)
+        {
+            rhoR[facei] = rhoOwnStar[facei];
+            Uf_[facei] = SStar[facei];
+            pf_[facei] = pStar[facei];
+            ER[facei] = EOwnStar[facei];
+        }
+        else if (sstar[facei] < 0 && SNei[facei] >= 0)
+        {
+            alphaf_[facei] = alphaNei[facei];
+            rhoR[facei] = rhoNeiStar[facei];
+            Uf_[facei] = SStar[facei];
+            pf_[facei] = pStar[facei];
+            ER[facei] = ENeiStar[facei];
+        }
+        else if (SNei[facei] < 0)
+        {
+            alphaf_[facei] = alphaNei[facei];
+            rhoR[facei] = rhoNei[facei];
+            Uf_[facei] = UNei[facei];
+            pf_[facei] = pNei[facei];
+            ER[facei] = ENei[facei];
+        }
+    }
     phi_ = Uf_ & mesh_.Sf();
-
-    surfaceScalarField ER
-    (
-        "ER",
-        pos0(SOwn)*EOwn
-      + neg(SOwn)*pos0(SStar)*EOwnStar
-      + neg(SStar)*pos0(SNei)*ENeiStar
-      + neg(SNei)*ENei
-    );
-    pf_ =
-        pos0(SOwn)*pOwn
-      + (neg(SOwn)*pos0(SStar) + neg(SStar)*pos0(SNei))*pStar
-      + neg(SNei)*pNei;
 
     // Set total fluxes
     massFlux = alphaf_*rhoR*phi();
@@ -268,92 +275,203 @@ void Foam::phaseFluxFunctions::HLLCPhase::updateFluxes
         (sqrt(rhoOwn)*aOwn + sqrt(rhoNei)*aNei)
        /(sqrt(rhoOwn) + sqrt(rhoNei))
     );
-    surfaceScalarField uTilde
+    surfaceVectorField uTilde
     (
         "uTilde",
-        (
-            (sqrt(rhoOwn)*UOwn + sqrt(rhoNei)*UNei)
-           /(sqrt(rhoOwn) + sqrt(rhoNei))
-        ) & normal
+        (sqrt(rhoOwn)*UOwn + sqrt(rhoNei)*UNei)
+       /(sqrt(rhoOwn) + sqrt(rhoNei))
     );
 
     // Compute wave speeds
     surfaceScalarField SOwn
     (
-        "SOwn", min(UvOwn - aOwn, uTilde - aTilde)
+        "SOwn", min(UvOwn - aOwn, (uTilde & normal) - aTilde)
     );
     surfaceScalarField SNei
     (
-        "SNei", max(UvNei + aNei, uTilde + aTilde)
+        "SNei", max(UvNei + aNei, (uTilde & normal) + aTilde)
     );
 
     //- Star quantities
-    surfaceScalarField SStar
+    surfaceVectorField SStar
     (
         "SStar",
         (
-            pNei - pOwn
-          + rhoOwn*UvOwn*(SOwn - UvOwn)
-          - rhoNei*UvNei*(SNei - UvNei)
+            (pNei - pOwn)*normal
+          + rhoOwn*UOwn*(SOwn - UvOwn)
+          - rhoNei*UNei*(SNei - UvNei)
         )/(rhoOwn*(SOwn - UvOwn) - rhoNei*(SNei - UvNei))
     );
+    surfaceScalarField sstar(SStar & normal);
     surfaceScalarField pStar
     (
         "pOwnNei",
         (
-            pOwn + rhoOwn*(SOwn - UvOwn)*(SStar - UvOwn)
-          + pNei + rhoNei*(SNei - UvNei)*(SStar - UvNei)
+            pOwn + rhoOwn*(SOwn - UvOwn)*(sstar - UvOwn)
+          + pNei + rhoNei*(SNei - UvNei)*(sstar - UvNei)
         )*0.5
     );
     surfaceScalarField rhoOwnStar
     (
         "rhoOwnStar",
-        rhoOwn*(SOwn - UvOwn)/(SOwn - SStar)
+        rhoOwn*(SOwn - UvOwn)/(SOwn - sstar)
     );
     surfaceScalarField rhoNeiStar
     (
         "rhoNeiStar",
-        rhoNei*(SNei - UvNei)/(SNei - SStar)
+        rhoNei*(SNei - UvNei)/(SNei - sstar)
     );
     surfaceScalarField EOwnStar
     (
         "EOwnStar",
-        EOwn + (pStar*SStar - pOwn*UvOwn)/(rhoOwn*(SOwn - UvOwn))
+        EOwn + (pStar*sstar - pOwn*UvOwn)/(rhoOwn*(SOwn - UvOwn))
     );
     surfaceScalarField ENeiStar
     (
         "ENeiStar",
-        ENei + (pStar*SStar - pNei*UvNei)/(rhoNei*(SNei - UvNei))
+        ENei + (pStar*sstar - pNei*UvNei)/(rhoNei*(SNei - UvNei))
     );
 
     // Reimann primitive quantities
+//     surfaceScalarField posSOwn(pos0(SOwn));
+//     surfaceScalarField SOwnSStar(neg(SOwn)*pos0(sstar));
+//     surfaceScalarField SStarSNei(neg(sstar)*pos0(SNei));
+//     surfaceScalarField negSNei(neg(SNei));
+//
+//     surfaceScalarField rhoR
+//     (
+//         "rhoR",
+//         posSOwn*rhoOwn
+//       + SOwnSStar*rhoOwnStar
+//       + SStarSNei*rhoNeiStar
+//       + negSNei*rhoNei
+//     );
+//     Uf_ =
+//         posSOwn*UOwn
+//       + min(neg(SOwn) + pos0(SNei), 1.0)*SStar
+//       + negSNei*UNei;
+//     phi_ = Uf_ & mesh_.Sf();
+//
+//     surfaceScalarField ER
+//     (
+//         "ER",
+//         posSOwn*EOwn
+//       + SOwnSStar*EOwnStar
+//       + SStarSNei*ENeiStar
+//       + negSNei*ENei
+//     );
+//
+//     pf_ =
+//         posSOwn*pOwn
+//       + min(neg(SOwn) + pos0(SNei), 1.0)*pStar
+//       + negSNei*pNei;
     surfaceScalarField rhoR
     (
-        "rhoR",
-        pos0(SOwn)*rhoOwn
-      + neg(SOwn)*pos0(SStar)*rhoOwnStar
-      + neg(SStar)*pos0(SNei)*rhoNeiStar
-      + neg(SNei)*rhoNei
+        IOobject
+        (
+            "rhoR",
+            rho.time().timeName(),
+            rho.mesh()
+        ),
+        rho.mesh(),
+        dimensionedScalar("0", dimDensity, 0.0)
     );
-    Uf_ =
-        pos0(SOwn)*UOwn
-      + (neg(SOwn)*pos0(SStar) + neg(SStar)*pos0(SNei))*SStar*normal
-      + neg(SNei)*UNei;
-    phi_ = Uf_ & mesh_.Sf();
-
+    Uf_ = dimensionedVector("0", dimVelocity, Zero);
+    pf_ = dimensionedScalar("0", dimPressure, 0.0);
     surfaceScalarField ER
     (
-        "ER",
-        pos0(SOwn)*EOwn
-      + neg(SOwn)*pos0(SStar)*EOwnStar
-      + neg(SStar)*pos0(SNei)*ENeiStar
-      + neg(SNei)*ENei
+        IOobject
+        (
+            "ER",
+            E.time().timeName(),
+            E.mesh()
+        ),
+        E.mesh(),
+        dimensionedScalar("0", E.dimensions(), 0.0)
     );
+    forAll(rhoR, facei)
+    {
+        if (SOwn[facei] >= 0)
+        {
+            rhoR[facei] = rhoOwn[facei];
+            Uf_[facei] = UOwn[facei];
+            pf_[facei] = pOwn[facei];
+            ER[facei] = EOwn[facei];
+        }
+        else if (SNei[facei] <= 0)
+        {
+            rhoR[facei] = rhoNei[facei];
+            Uf_[facei] = UNei[facei];
+            pf_[facei] = pNei[facei];
+            ER[facei] = ENei[facei];
+        }
+        else if (SOwn[facei] <= 0 && 0 <= sstar[facei])
+        {
+            rhoR[facei] = rhoOwnStar[facei];
+            Uf_[facei] = SStar[facei];
+            pf_[facei] = pStar[facei];
+            ER[facei] = EOwnStar[facei];
+        }
+        else// if (sstar[facei] <= 0 && 0 <= SNei[facei])
+        {
+            rhoR[facei] = rhoNeiStar[facei];
+            Uf_[facei] = SStar[facei];
+            pf_[facei] = pStar[facei];
+            ER[facei] = ENeiStar[facei];
+        }
+    }
+    forAll(rhoR.boundaryField(), patchi)
+    {
+        forAll(rhoR.boundaryField()[patchi], facei)
+        {
+            if (SOwn[facei] >= 0)
+            {
+                rhoR.boundaryFieldRef()[patchi][facei] =
+                    rhoOwn.boundaryField()[patchi][facei];
+                Uf_.boundaryFieldRef()[patchi][facei] =
+                    UOwn.boundaryField()[patchi][facei];
+                pf_.boundaryFieldRef()[patchi][facei] =
+                    pOwn.boundaryField()[patchi][facei];
+                ER.boundaryFieldRef()[patchi][facei] =
+                    EOwn.boundaryField()[patchi][facei];
+            }
+            else if (SNei[facei] <= 0)
+            {
+                rhoR.boundaryFieldRef()[patchi][facei] =
+                    rhoNei.boundaryField()[patchi][facei];
+                Uf_.boundaryFieldRef()[patchi][facei] =
+                    UNei.boundaryField()[patchi][facei];
+                pf_.boundaryFieldRef()[patchi][facei] =
+                    pNei.boundaryField()[patchi][facei];
+                ER.boundaryFieldRef()[patchi][facei] =
+                    ENei.boundaryField()[patchi][facei];
+            }
+            else if (SOwn[facei] <= 0 && 0 <= sstar[facei])
+            {
+                rhoR.boundaryFieldRef()[patchi][facei] =
+                    rhoOwnStar.boundaryField()[patchi][facei];
+                Uf_.boundaryFieldRef()[patchi][facei] =
+                    SStar.boundaryField()[patchi][facei];
+                pf_.boundaryFieldRef()[patchi][facei] =
+                    pStar.boundaryField()[patchi][facei];
+                ER.boundaryFieldRef()[patchi][facei] =
+                    EOwnStar.boundaryField()[patchi][facei];
+            }
+            else if (sstar[facei] <= 0 && 0 <= SNei[facei])
+            {
+                rhoR.boundaryFieldRef()[patchi][facei] =
+                    rhoNeiStar.boundaryField()[patchi][facei];
+                Uf_.boundaryFieldRef()[patchi][facei] =
+                    SStar.boundaryField()[patchi][facei];
+                pf_.boundaryFieldRef()[patchi][facei] =
+                    pStar.boundaryField()[patchi][facei];
+                ER.boundaryFieldRef()[patchi][facei] =
+                    ENeiStar.boundaryField()[patchi][facei];
+            }
+        }
+    }
+    phi_ = Uf_ & mesh_.Sf();
 
-    pf_ =
-        pos0(SOwn)*pOwn
-      + (neg(SOwn)*pos0(SStar) + neg(SStar)*pos0(SNei))*pStar
-      + neg(SNei)*pNei;
 
     // Set total fluxes
 

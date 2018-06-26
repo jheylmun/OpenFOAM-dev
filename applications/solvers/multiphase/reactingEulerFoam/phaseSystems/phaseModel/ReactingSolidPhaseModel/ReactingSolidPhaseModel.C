@@ -40,23 +40,12 @@ ReactingSolidPhaseModel
 )
 :
     BasePhaseModel(fluid, phaseName, index),
-    dict_
-    (
-        IOobject
-        (
-            IOobject::groupName("solidChemistryDict", phaseName),
-            fluid.mesh().time().constant(),
-            fluid.mesh(),
-            IOobject::MUST_READ,
-            IOobject::NO_WRITE
-        )
-    ),
-    active_(dict_.lookupOrDefault("active", true)),
+    chemistryPtr_(BasicChemistryModel<ReactionType>::New(this->thermo_())),
+    active_(chemistryPtr_->lookupOrDefault("active", true)),
     integrateReactionRate_
     (
-        dict_.lookupOrDefault("integrateReactionRate", true)
-    ),
-    chemistryPtr_(basicSolidChemistryModel::New(this->thermo_()))
+        chemistryPtr_->lookupOrDefault("integrateReactionRate", true)
+    )
 {
     if (integrateReactionRate_)
     {
@@ -65,15 +54,6 @@ ReactingSolidPhaseModel
     else
     {
         Info<< "    using instantaneous reaction rate" << endl;
-    }
-
-    if (dict_.typeHeaderOk<IOdictionary>(true))
-    {
-        dict_.readOpt() = IOobject::MUST_READ_IF_MODIFIED;
-    }
-    else
-    {
-        dict_.readOpt() = IOobject::NO_READ;
     }
 }
 
@@ -102,11 +82,14 @@ void Foam::ReactingSolidPhaseModel<BasePhaseModel, ReactionType>::correctThermo(
                 const scalarField& rDeltaT =
                     fv::localEulerDdt::localRDeltaT(this->fluid().mesh());
 
-                if (coeffs_.found("maxIntegrationTime"))
+                if (chemistryPtr_->found("maxIntegrationTime"))
                 {
                     scalar maxIntegrationTime
                     (
-                        readScalar(dict_.lookup("maxIntegrationTime"))
+                        readScalar
+                        (
+                            chemistryPtr_->lookup("maxIntegrationTime")
+                        )
                     );
 
                     chemistryPtr_->solve
@@ -121,7 +104,10 @@ void Foam::ReactingSolidPhaseModel<BasePhaseModel, ReactionType>::correctThermo(
             }
             else
             {
-                chemistryPtr_->solve(this->fluid().mesh().time().deltaTValue());
+                chemistryPtr_->solve
+                (
+                    this->fluid().mesh().time().deltaTValue()
+                );
             }
         }
         else

@@ -82,7 +82,11 @@ pyrolysisChemistryModel
             (
                 IOobject
                 (
-                    "Y0Default",
+                    basicThermo::phasePropertyName
+                    (
+                        "Y0Default",
+                        this->Ys_[0].group()
+                    ),
                     this->mesh().time().timeName(),
                     this->mesh(),
                     IOobject::MUST_READ,
@@ -141,7 +145,7 @@ pyrolysisChemistryModel
         dictionary thermoDict =
             this->mesh().template lookupObject<dictionary>
             (
-                basicThermo::dictName
+                thermo.phasePropertyName(basicThermo::dictName)
             ).subDict(pyrolisisGases_[gasI]);
 
         gasThermo_.set

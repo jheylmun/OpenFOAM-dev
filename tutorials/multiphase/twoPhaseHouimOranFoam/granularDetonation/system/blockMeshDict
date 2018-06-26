@@ -18,8 +18,8 @@ convertToMeters 1;
 
 theta #calc "0.5*3.141529/180";
 x 5;
-y 20;
-cellSize 0.015;
+y 30;
+cellSize 0.035;
 nXCells #calc "round($x/$cellSize)";
 nYCells #calc "round($y/$cellSize)";
 

@@ -22,7 +22,7 @@ compressible.air
 compressible.particles
 {
     fluxScheme      AUSMPlus;
-    alphaMax        0.63;
+    alphaMax        0.65;
     alphaMinFriction 0.55;
 }
 

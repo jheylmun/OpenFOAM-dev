@@ -39,7 +39,7 @@ mixture
     }
     transport
     {
-        mu          1e-4;
+        mu          4e-5;
         Pr          0.66;
     }
 //     specie

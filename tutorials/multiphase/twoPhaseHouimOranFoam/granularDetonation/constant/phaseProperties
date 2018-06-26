@@ -44,11 +44,11 @@ particles
         d               1e-6;
     }
 
-    residualAlpha       1e-8;
+    residualAlpha       1e-10;
     residualRho         1;
 
     e                       0.01;
-    alphaMax                0.63;
+    alphaMax                0.65;
     alphaMinFriction        0.55;
 
     viscosityModel          Gidaspow;
@@ -97,7 +97,7 @@ drag
 (
     (particles in air)
     {
-        type            WenYu;
+        type            GidaspowErgunWenYu;
         residualRe      1e-3;
         swarmCorrection
         {
@@ -121,11 +121,11 @@ heatTransfer
 
 lift
 (
-//     (particles in air)
-//     {
-//         type constantCoefficient;
-//         Cl 0.5;
-//     }
+    (particles in air)
+    {
+        type constantCoefficient;
+        Cl 0.5;
+    }
 );
 
 wallLubrication

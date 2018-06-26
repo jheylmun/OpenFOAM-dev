@@ -60,7 +60,7 @@ protected:
     // Protected data
 
         //- Phase-name
-        const word& phaseName_;
+        const word phaseName_;
 
 
         // Fields

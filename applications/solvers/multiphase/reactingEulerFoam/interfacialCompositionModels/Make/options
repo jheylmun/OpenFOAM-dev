@@ -1,5 +1,4 @@
 EXE_INC = \
-    -DFULLDEBUG -g -O0 \
     -I../phaseSystems/lnInclude \
     -I$(LIB_SRC)/thermophysicalModels/specie/lnInclude \
     -I$(LIB_SRC)/thermophysicalModels/solidSpecie/lnInclude \
@@ -23,6 +22,7 @@ EXE_INC = \
 LIB_LIBS = \
     -lfluidThermophysicalModels \
     -lreactionThermophysicalModels \
+    -lchemistryModel \
     -lsolidThermo \
     -lspecie \
     -lsolidSpecie

@@ -27,7 +27,7 @@ defaultFieldValues
     volScalarFieldValue T.air $T1
     volScalarFieldValue T.particles $T1
     volScalarFieldValue p $p1
-    volScalarFieldValue Theta.particles 0
+    volScalarFieldValue Theta.particles 1e-4
 );
 
 regions
@@ -41,14 +41,16 @@ regions
             volScalarFieldValue T.air $T1
             volScalarFieldValue T.particles $T1
             volScalarFieldValue p $p1
+            volScalarFieldValue Theta.particles 1e-4
         );
     }
     boxToCell
     {
-        box (0 6.965 -1) (0.035 7.035 1);
+        box (0 8.465 -1) (0.035 8.535 1);
         fieldValues
         (
             volScalarFieldValue T.air $T2
+            volScalarFieldValue T.particles $T2
             volScalarFieldValue p $p2
         );
     }

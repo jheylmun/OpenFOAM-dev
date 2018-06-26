@@ -28,7 +28,7 @@ License
 #include "phasePair.H"
 #include "pureMixture.H"
 #include "multiComponentMixture.H"
-#include "rhoThermo.H"
+#include "basicThermo.H"
 
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
@@ -233,7 +233,7 @@ void Foam::InterfaceCompositionModel<Thermo, OtherThermo>::addMDotL
     {
         volScalarField rhoKDL
         (
-            thermo_.rhoThermo::rho()
+            refCast<const basicThermo>(thermo_).rho()
            *K
            *D(*iter)
            *L(*iter, Tf)

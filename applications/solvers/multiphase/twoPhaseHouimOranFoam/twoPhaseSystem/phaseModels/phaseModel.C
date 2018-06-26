@@ -196,6 +196,7 @@ Foam::phaseModel::phaseModel
     )
 {
     thermoPtr_->validate("phaseModel " + name_, "h", "e");
+    rho_.writeOpt() = IOobject::AUTO_WRITE;
 
     const word phiName = IOobject::groupName("phi", name_);
 

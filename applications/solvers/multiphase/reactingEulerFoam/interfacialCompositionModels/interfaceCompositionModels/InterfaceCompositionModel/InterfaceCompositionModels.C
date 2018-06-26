@@ -35,11 +35,11 @@ License
 #include "Saturated.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
 #include "makeReactionThermo.H"
+#include "makeReactingSolidThermo.H"
 
 #include "thermoPhysicsTypes.H"
-
+#include "solidThermoPhysicsTypes.H"
 #include "rhoConst.H"
 #include "perfectFluid.H"
 
@@ -49,8 +49,11 @@ License
 #include "SpecieMixture.H"
 
 #include "rhoThermo.H"
+#include "solidThermo.H"
 #include "rhoReactionThermo.H"
+#include "solidReactionThermo.H"
 #include "heRhoThermo.H"
+#include "heSolidThermo.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -191,6 +194,34 @@ namespace Foam
         heRhoThermo,
         rhoReactionThermo,
         reactingMixture,
+        constGasEThermoPhysics
+    );
+
+    // multi-component gas in the presence of a multi-component solid
+    makeSpecieInterfaceCompositionType
+    (
+        Saturated,
+        heSolidThermo,
+        solidReactionThermo,
+        reactingMixture,
+        hConstSolidThermoPhysics,
+        heRhoThermo,
+        rhoReactionThermo,
+        reactingMixture,
+        gasEThermoPhysics
+    );
+
+    // multi-component gas in the presence of a multi-component solid
+    makeSpecieInterfaceCompositionType
+    (
+        Saturated,
+        heSolidThermo,
+        solidReactionThermo,
+        reactingMixture,
+        hConstSolidThermoPhysics,
+        heRhoThermo,
+        rhoReactionThermo,
+        multiComponentMixture,
         constGasEThermoPhysics
     );
 }

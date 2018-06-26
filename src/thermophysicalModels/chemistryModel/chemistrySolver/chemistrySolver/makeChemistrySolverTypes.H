@@ -37,7 +37,7 @@ License
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-#define makeChemistrySolverType(SS, Comp, Thermo)                              \
+#define makeStandardChemistrySolverType(SS, Comp, Thermo)                      \
                                                                                \
     typedef SS<StandardChemistryModel<Comp, Thermo>> SS##Comp##Thermo;         \
                                                                                \
@@ -52,7 +52,10 @@ License
     BasicChemistryModel<Comp>::                                                \
         add##thermo##ConstructorToTable<SS##Comp##Thermo>                      \
         add##SS##Comp##Thermo##thermo##ConstructorTo##BasicChemistryModel##Comp\
-##Table_; \
+##Table_;
+
+
+#define makeTDACChemistrySolverType(SS, Comp, Thermo)                          \
                                                                                \
     typedef SS<TDACChemistryModel<Comp, Thermo>> TDAC##SS##Comp##Thermo;       \
                                                                                \
@@ -72,27 +75,70 @@ License
 
 #define makeChemistrySolverTypes(Comp, Thermo)                                 \
                                                                                \
-    makeChemistrySolverType                                                    \
+    makeStandardChemistrySolverType                                            \
     (                                                                          \
         noChemistrySolver,                                                     \
         Comp,                                                                  \
         Thermo                                                                 \
     );                                                                         \
                                                                                \
-    makeChemistrySolverType                                                    \
+    makeStandardChemistrySolverType                                            \
     (                                                                          \
         EulerImplicit,                                                         \
         Comp,                                                                  \
         Thermo                                                                 \
     );                                                                         \
                                                                                \
-    makeChemistrySolverType                                                    \
+    makeStandardChemistrySolverType                                            \
+    (                                                                          \
+        ode,                                                                   \
+        Comp,                                                                  \
+        Thermo                                                                 \
+    );                                                                         \
+                                                                               \
+    makeTDACChemistrySolverType                                                \
+    (                                                                          \
+        noChemistrySolver,                                                     \
+        Comp,                                                                  \
+        Thermo                                                                 \
+    );                                                                         \
+                                                                               \
+    makeTDACChemistrySolverType                                                \
+    (                                                                          \
+        EulerImplicit,                                                         \
+        Comp,                                                                  \
+        Thermo                                                                 \
+    );                                                                         \
+                                                                               \
+    makeTDACChemistrySolverType                                                \
     (                                                                          \
         ode,                                                                   \
         Comp,                                                                  \
         Thermo                                                                 \
     );                                                                         \
 
+#define makeStandardChemistrySolverTypes(Comp, Thermo)                                 \
+                                                                               \
+    makeStandardChemistrySolverType                                            \
+    (                                                                          \
+        noChemistrySolver,                                                     \
+        Comp,                                                                  \
+        Thermo                                                                 \
+    );                                                                         \
+                                                                               \
+    makeStandardChemistrySolverType                                            \
+    (                                                                          \
+        EulerImplicit,                                                         \
+        Comp,                                                                  \
+        Thermo                                                                 \
+    );                                                                         \
+                                                                               \
+    makeStandardChemistrySolverType                                            \
+    (                                                                          \
+        ode,                                                                   \
+        Comp,                                                                  \
+        Thermo                                                                 \
+    );                                                                         \
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

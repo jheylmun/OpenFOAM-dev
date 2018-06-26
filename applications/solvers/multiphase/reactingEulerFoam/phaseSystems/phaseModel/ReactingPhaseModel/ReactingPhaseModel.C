@@ -39,7 +39,9 @@ Foam::ReactingPhaseModel<BasePhaseModel, ReactionType>::ReactingPhaseModel
 :
     BasePhaseModel(fluid, phaseName, index),
     reaction_(ReactionType::New(this->thermo_(), this->turbulence_()))
-{}
+{
+    Info<<this->thermo_().type()<<endl;
+}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //

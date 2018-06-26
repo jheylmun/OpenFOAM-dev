@@ -73,7 +73,7 @@ Foam::phaseFluxFunctions::AUSMPlusPhase::AUSMPlusPhase
     phaseFluxFunction(mesh, phaseName),
     fa_(dict_.lookupOrDefault("fa", 1.0)),
     D_(dict_.lookupOrDefault("D", 1.0)),
-    alphaMax_(dict_.lookupOrDefault("alphaMax", .63)),
+    alphaMax_(dict_.lookupOrDefault("alphaMax", 0.63)),
     alphaMinFriction_(dict_.lookupOrDefault("alphaMinFriction", 0.5)),
     cutOffMa_("small", dimless, epsilon_),
     residualRho_("small", dimDensity, epsilon_),
@@ -524,26 +524,12 @@ void Foam::phaseFluxFunctions::AUSMPlusPhase::updateFluxes
     );
 
     alphaf_ = pos(mDot)*alphaOwn + neg0(mDot)*alphaNei;
-
-    massFlux = mesh_.magSf()*mDot;
-    Uf_ = mDot*normal/(pos(mDot)*alphaOwn*rhoOwn + neg0(mDot)*alphaNei*rhoNei);
+    Uf_ = pos(mDot)*UOwn + neg0(mDot)*UNei;
     phi_ = Uf_ & mesh_.Sf();
 
-    momentumFlux =
-        massFlux
-       *(
-            pos(mDot)*UOwn
-          + neg0(mDot)*UNei
-        )
-      + pf_*mesh_.Sf();
-
-    energyFlux =
-        massFlux
-       *(
-            pos(mDot)*EOwn
-          + neg0(mDot)*ENei
-        );
-
+    massFlux = mesh_.magSf()*mDot;
+    momentumFlux = massFlux*(Uf_) + pf_*mesh_.Sf();
+    energyFlux = massFlux*(pos(mDot)*EOwn + neg0(mDot)*ENei);
     PTEFlux =
         massFlux
        *(

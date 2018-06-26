@@ -63,6 +63,8 @@ Foam::massTransferModels::Frossling::~Frossling()
 Foam::tmp<Foam::volScalarField>
 Foam::massTransferModels::Frossling::K() const
 {
+    Info<<min(pair_.continuous().mu())<<endl;
+    Info<<min(pair_.continuous().rho())<<endl;
     volScalarField Sh(2 + 0.552*sqrt(pair_.Re())*cbrt(Le_*pair_.Pr()));
 
     return 6*pair_.dispersed()*Sh/sqr(pair_.dispersed().d());

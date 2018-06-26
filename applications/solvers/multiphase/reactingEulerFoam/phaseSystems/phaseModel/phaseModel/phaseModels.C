@@ -31,7 +31,6 @@ License
 #include "solidReactionThermo.H"
 
 #include "CombustionModel.H"
-#include "solidChemistryModel.H"
 
 #include "phaseModel.H"
 #include "ThermoPhaseModel.H"

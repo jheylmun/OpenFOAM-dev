@@ -1,0 +1,78 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  dev                                   |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      fvSchemes;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+compressible.air
+{
+    fluxScheme      HLLC;
+}
+compressible.particles
+{
+    fluxScheme      AUSMPlus;
+    alphaMax        0.65;
+    alphaMinFriction 0.5;
+}
+
+ddtSchemes
+{
+    default         Euler;
+    fluxIntegrator  RK4SSP;
+}
+
+gradSchemes
+{
+    default         Gauss linear;
+}
+
+divSchemes
+{
+    default             none;
+}
+
+laplacianSchemes
+{
+    default         Gauss linear corrected;
+}
+
+scalarLimiter vanAlbada;
+vectorLimiter vanAlbadaV;
+
+interpolationSchemes
+{
+    default                 cubic;
+
+    reconstruct(alpha.particles) $scalarLimiter;
+    reconstruct(alpha.air)       $scalarLimiter;
+    reconstruct(thermo:rho.air)  $scalarLimiter;
+    reconstruct(thermo:rho.particles)  $scalarLimiter;
+    reconstruct(U.air)           $vectorLimiter;
+    reconstruct(U.particles)     $vectorLimiter;
+    reconstruct(H.air)           $scalarLimiter;
+    reconstruct(E.particles)     $scalarLimiter;
+    reconstruct(Theta.particles) $scalarLimiter;
+    reconstruct(p.air)           $scalarLimiter;
+    reconstruct(Ptot.particles)  $scalarLimiter;
+    reconstruct(a.air)           $scalarLimiter;
+    reconstruct(a.particles)     $scalarLimiter;
+}
+
+snGradSchemes
+{
+    default         corrected;
+}
+
+
+// ************************************************************************* //

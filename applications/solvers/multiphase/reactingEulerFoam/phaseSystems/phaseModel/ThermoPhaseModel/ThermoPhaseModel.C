@@ -45,7 +45,7 @@ Foam::ThermoPhaseModel<BasePhaseModel, ThermoType>::ThermoPhaseModel
 )
 :
     BasePhaseModel(fluid, phaseName, index),
-    thermo_(ThermoType::New(fluid.mesh(), this->name()))
+    thermo_(ThermoType::New(fluid.mesh(), phaseName))
 {
     thermo_->validate
     (

@@ -129,7 +129,7 @@ Foam::AnisothermalPhaseModel<BasePhaseModel>::heEqn()
     );
 
     // Add the appropriate pressure-work term
-    if (he.name() == this->thermo_->phasePropertyName("e"))
+    if (he.name() == this->thermo_->phasePropertyName("e", this->name()))
     {
         tEEqn.ref() += filterPressureWork
         (

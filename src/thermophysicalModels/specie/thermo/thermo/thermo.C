@@ -28,10 +28,10 @@ License
 /* * * * * * * * * * * * * * * private static data * * * * * * * * * * * * * */
 
 template<class Thermo, template<class> class Type>
-const Foam::scalar Foam::species::thermo<Thermo, Type>::tol_ = 1.0e-10;
+const Foam::scalar Foam::species::thermo<Thermo, Type>::tol_ = 1.0e-4;
 
 template<class Thermo, template<class> class Type>
-const int Foam::species::thermo<Thermo, Type>::maxIter_ = 10000;
+const int Foam::species::thermo<Thermo, Type>::maxIter_ = 1000;
 
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //

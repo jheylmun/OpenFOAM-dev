@@ -24,15 +24,30 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "makeReactionThermo.H"
+#include "makeSolidThermo.H"
+#include "makeReactingSolidThermo.H"
 #include "makeThermo.H"
+#include "makeChemistryModel.H"
+#include "makeChemistrySolverTypes.H"
+#include "makeChemistryTabulationMethods.H"
+#include "makeChemistryReductionMethods.H"
 
 #include "rhoReactionThermo.H"
+#include "solidReactionThermo.H"
 #include "heRhoThermo.H"
+#include "heSolidThermo.H"
+#include "thermo.H"
+#include "solidChemistryModel.H"
 
 #include "specie.H"
 #include "perfectGas.H"
 #include "perfectFluid.H"
 #include "rhoConst.H"
+#include "hConstThermo.H"
+#include "hPowerThermo.H"
+#include "constIsoSolidTransport.H"
+#include "constAnIsoSolidTransport.H"
+#include "exponentialSolidTransport.H"
 
 #include "sensibleEnthalpy.H"
 
@@ -42,7 +57,13 @@ License
 
 #include "pureMixture.H"
 #include "multiComponentMixture.H"
+#include "reactingMixture.H"
 
+#include "thermoPhysicsTypes.H"
+#include "solidThermoPhysicsTypes.H"
+
+#include "StandardChemistryModel.H"
+#include "TDACChemistryModel.H"
 #include "thermoPhysicsTypes.H"
 
 
@@ -132,7 +153,6 @@ constTransport
         sensibleEnthalpy
     >
 > constRefRhoConstHThermoPhysics;
-
 
 // pureMixture, sensibleEnthalpy:
 
@@ -271,6 +291,129 @@ makeThermoPhysicsReactionThermos
     constRefGasHThermoPhysics
 );
 
+
+// Solid thermos
+makeSolidThermoPhysicsType
+(
+    solidThermo,
+    heSolidThermo,
+    pureMixture,
+    hConstSolidThermoPhysics
+);
+
+makeSolidThermoPhysicsType
+(
+    solidThermo,
+    heSolidThermo,
+    pureMixture,
+    hPowerSolidThermoPhysics
+);
+
+makeSolidThermoPhysicsType
+(
+    solidThermo,
+    heSolidThermo,
+    pureMixture,
+    hTransportThermoPoly8SolidThermoPhysics
+);
+
+makeSolidThermoPhysicsType
+(
+    solidThermo,
+    heSolidThermo,
+    pureMixture,
+    hExpKappaConstSolidThermoPhysics
+);
+
+// Solid reaction thermo
+makeReactingSolidThermo
+(
+    solidReactionThermo,
+    heSolidThermo,
+    reactingMixture,
+    constIsoSolidTransport,
+    sensibleEnthalpy,
+    hConstThermo,
+    rhoConst,
+    specie
+);
+
+makeReactingSolidThermo
+(
+    solidReactionThermo,
+    heSolidThermo,
+    reactingMixture,
+    constIsoSolidTransport,
+    sensibleEnthalpy,
+    hPowerThermo,
+    rhoConst,
+    specie
+);
+
+makeReactingSolidThermo
+(
+    solidThermo,
+    heSolidThermo,
+    multiComponentMixture,
+    constIsoSolidTransport,
+    sensibleEnthalpy,
+    hConstThermo,
+    rhoConst,
+    specie
+);
+
+// Solid chemisty models
+makeChemistryModel(solidReactionThermo);
+
+makeChemistryModelType
+(
+    StandardChemistryModel,
+    solidReactionThermo,
+    hConstSolidThermoPhysics
+);
+
+makeChemistryModelType
+(
+    StandardChemistryModel,
+    solidReactionThermo,
+    hPowerSolidThermoPhysics
+);
+
+makeChemistryModelType
+(
+    StandardChemistryModel,
+    solidReactionThermo,
+    hTransportThermoPoly8SolidThermoPhysics
+);
+
+makeChemistryModelType
+(
+    StandardChemistryModel,
+    solidReactionThermo,
+    hExpKappaConstSolidThermoPhysics
+);
+
+// Solid chemistry solvers
+makeStandardChemistrySolverTypes
+(
+    solidReactionThermo,
+    hConstSolidThermoPhysics
+);
+makeStandardChemistrySolverTypes
+(
+    solidReactionThermo,
+    hPowerSolidThermoPhysics
+);
+makeStandardChemistrySolverTypes
+(
+    solidReactionThermo,
+    hTransportThermoPoly8SolidThermoPhysics
+);
+makeStandardChemistrySolverTypes
+(
+    solidReactionThermo,
+    hExpKappaConstSolidThermoPhysics
+);
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

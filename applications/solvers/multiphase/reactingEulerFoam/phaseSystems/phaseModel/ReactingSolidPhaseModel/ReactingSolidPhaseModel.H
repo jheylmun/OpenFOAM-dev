@@ -37,7 +37,7 @@ SourceFiles
 #define ReactingSolidPhaseModel_H
 
 #include "phaseModel.H"
-#include "basicSolidChemistryModel.H"
+#include "BasicChemistryModel.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -57,20 +57,14 @@ protected:
 
     // Protected data
 
-        //- Chemistry dictionary
-        IOdictionary dict_;
-
-        //- Dictionary of the model
-        dictionary coeffs_;
+        //- Reaction model
+        autoPtr<BasicChemistryModel<ReactionType>> chemistryPtr_;
 
         //- Is Chemistry active?
         Switch active_;
 
         //- Are reaction rates finite
         Switch integrateReactionRate_;
-
-        //- Reaction model
-        autoPtr<basicSolidChemistryModel> chemistryPtr_;
 
 
 public:
