@@ -32,6 +32,7 @@ air
 
     residualAlpha   0;
 }
+
 particles1
 {
     type          purePhaseModel;
@@ -39,7 +40,7 @@ particles1
     diameterModel constant;
     constantCoeffs
     {
-        d               125e-6;
+        d               .0005;
     }
 
     alphaMax        0.63;
@@ -53,7 +54,7 @@ particles2
     diameterModel constant;
     constantCoeffs
     {
-        d               9e-4;
+        d               .00052;
     }
 
     alphaMax        0.63;
@@ -85,13 +86,10 @@ interfaceComposition
 (
 //     (particles2 in air)
 //     {
-//         type saturated;
-//         species (gas);
+//         type Henry;
+//         species (CO CO2 CH4 H2 H2O);
 //         Le 1.0;
-//         saturationPressure
-//         {
-//             type ArdenBuck;
-//         }
+//         k 5 ( 1.0 1.0 1.0 1.0 1.0);
 //     }
 );
 

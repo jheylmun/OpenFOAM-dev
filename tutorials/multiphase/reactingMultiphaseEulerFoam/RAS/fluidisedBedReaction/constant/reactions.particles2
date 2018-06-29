@@ -2,12 +2,19 @@ species
 (
     wood
     char
-    gas
+    CO
+    CO2
+    CH4
+    H2
+    H2O
 );
-
 gaseousSpecies
 (
-    gas
+    CO
+    CO2
+    CH4
+    H2
+    H2O
 );
 
 
@@ -16,9 +23,9 @@ reactions
     charReaction
     {
         type        irreversibleArrheniusSolidReaction;
-        reaction    "wood^4.86 = char + gas";
-        A           7.83e10;
-        Ta          15274.57;
+        reaction    "wood^4.86 = char + CO + CO2 + CH4 + H2 + H2O";
+        A           2.66e10;
+        Ta          637.5;
         Tcrit       200;
     }
 }

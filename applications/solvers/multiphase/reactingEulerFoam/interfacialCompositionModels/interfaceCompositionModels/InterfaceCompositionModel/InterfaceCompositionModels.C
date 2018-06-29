@@ -200,7 +200,7 @@ namespace Foam
     // multi-component gas in the presence of a multi-component solid
     makeSpecieInterfaceCompositionType
     (
-        Saturated,
+        Raoult,
         heSolidThermo,
         solidReactionThermo,
         reactingMixture,
@@ -214,7 +214,7 @@ namespace Foam
     // multi-component gas in the presence of a multi-component solid
     makeSpecieInterfaceCompositionType
     (
-        Saturated,
+        Raoult,
         heSolidThermo,
         solidReactionThermo,
         reactingMixture,

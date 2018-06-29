@@ -72,7 +72,7 @@ Foam::basicSolidChemistryModel::New(solidReactionThermo& thermo)
     (
         IOobject
         (
-            basicThermo::dictName,
+            thermo.phasePropertyName(basicThermo::dictName),
             thermo.db().time().constant(),
             thermo.db(),
             IOobject::MUST_READ_IF_MODIFIED,

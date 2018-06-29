@@ -24,6 +24,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "Henry.H"
+#include "basicThermo.H"
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
@@ -96,8 +97,8 @@ Foam::interfaceCompositionModels::Henry<Thermo, OtherThermo>::Yf
         return
             k_[index]
            *this->otherThermo_.composition().Y(speciesName)
-           *this->otherThermo_.rhoThermo::rho()
-           /this->thermo_.rhoThermo::rho();
+           *refCast<const basicThermo>(this->otherThermo_).rho()
+           /refCast<const basicThermo>(this->thermo_).rho();
     }
     else
     {

@@ -23,7 +23,7 @@ boundaryField
     inlet
     {
         type               fixedValue;
-        value              uniform 550;
+        value              uniform 300;
     }
 
     outlet

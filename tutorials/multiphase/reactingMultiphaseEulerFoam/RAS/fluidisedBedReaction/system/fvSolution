@@ -88,8 +88,8 @@ PIMPLE
     nOuterCorrectors 1;
     nCorrectors      1;
     nNonOrthogonalCorrectors 0;
-    nEnergyCorrectors   3;
-    faceMomentum        yes;
+    nEnergyCorrectors   5;
+    faceMomentum        no;
 }
 
 relaxationFactors
@@ -103,6 +103,8 @@ relaxationFactors
     {
         ".*"            1;
         "(h|e).*"       0.2;
+        "iDmt.*"        0.2;
+        "Yi.*"          0.2;
         "k.*"           0.5;
         "epsilon.*"     0.5;
     }
