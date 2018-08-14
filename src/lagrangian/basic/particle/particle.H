@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -59,6 +59,7 @@ class polyPatch;
 class cyclicPolyPatch;
 class cyclicAMIPolyPatch;
 class cyclicACMIPolyPatch;
+class cyclicRepeatAMIPolyPatch;
 class processorPolyPatch;
 class symmetryPlanePolyPatch;
 class symmetryPolyPatch;
@@ -273,8 +274,7 @@ private:
             void locate
             (
                 const vector& position,
-                const vector* direction,
-                const label celli,
+                label celli,
                 const bool boundaryFail,
                 const string boundaryMsg
             );
@@ -308,12 +308,35 @@ protected:
 
         //- Overridable function to handle the particle hitting a cyclicAMIPatch
         template<class TrackCloudType>
-        void hitCyclicAMIPatch(TrackCloudType&, trackingData&, const vector&);
+        void hitCyclicAMIPatch
+        (
+            const vector& displacement,
+            const scalar fraction,
+            TrackCloudType& cloud,
+            trackingData& td
+        );
 
         //- Overridable function to handle the particle hitting a
         //  cyclicACMIPatch
         template<class TrackCloudType>
-        void hitCyclicACMIPatch(TrackCloudType&, trackingData&, const vector&);
+        void hitCyclicACMIPatch
+        (
+            const vector& displacement,
+            const scalar fraction,
+            TrackCloudType& cloud,
+            trackingData& td
+        );
+
+        //- Overridable function to handle the particle hitting an
+        //  cyclicRepeatAMIPolyPatch
+        template<class TrackCloudType>
+        void hitCyclicRepeatAMIPatch
+        (
+            const vector& displacement,
+            const scalar fraction,
+            TrackCloudType& cloud,
+            trackingData& td
+        );
 
         //- Overridable function to handle the particle hitting a processorPatch
         template<class TrackCloudType>
@@ -338,7 +361,7 @@ public:
             "celli tetFacei tetPti facei stepFraction origProc origId"
         );
 
-        //- Cumulative particle counter - used to provode unique ID
+        //- Cumulative particle counter - used to provide unique ID
         static label particleCount_;
 
 
@@ -502,16 +525,23 @@ public:
             const scalar fraction
         );
 
-        //- As particle::track, but also stops on internal faces.
+        //- As particle::track, but stops when a new cell is reached.
+        scalar trackToCell
+        (
+            const vector& displacement,
+            const scalar fraction
+        );
+
+        //- As particle::track, but stops when a face is hit.
         scalar trackToFace
         (
             const vector& displacement,
             const scalar fraction
         );
 
-        //- As particle::trackToFace, but also stops on tet triangles. On
-        //  exit, tetTriI is set to the index of the tet triangle that was
-        //  hit, or -1 if the end position was reached.
+        //- As particle::trackToFace, but stops when a tet triangle is hit. On
+        //  exit, tetTriI is set to the index of the tet triangle that was hit,
+        //  or -1 if the end position was reached.
         scalar trackToTri
         (
             const vector& displacement,
@@ -541,16 +571,17 @@ public:
         template<class TrackCloudType>
         void hitFace
         (
-            const vector& direction,
+            const vector& displacement,
+            const scalar fraction,
             TrackCloudType& cloud,
             trackingData& td
         );
 
-        //- Convenience function. Cobines trackToFace and hitFace
+        //- Convenience function. Combines trackToFace and hitFace
         template<class TrackCloudType>
-        void trackToAndHitFace
+        scalar trackToAndHitFace
         (
-            const vector& direction,
+            const vector& displacement,
             const scalar fraction,
             TrackCloudType& cloud,
             trackingData& td
@@ -564,8 +595,8 @@ public:
 
     // Patch data
 
-        //- Get the normal and velocity of the current patch location
-        inline void patchData(vector& n, vector& U) const;
+        //- Get the normal and displacement of the current patch location
+        inline void patchData(vector& normal, vector& displacement) const;
 
 
     // Transformations

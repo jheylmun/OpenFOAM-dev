@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -1356,7 +1356,7 @@ bool Foam::cyclicPolyPatch::order
                 << endl;
 
             // Recalculate untransformed face centres
-            //pointField rawHalf0Ctrs =
+            // pointField rawHalf0Ctrs =
             //    calcFaceCentres(half0Faces, pp.points());
             label vertI = 0;
 

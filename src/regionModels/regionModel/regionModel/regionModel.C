@@ -1,8 +1,8 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2017 OpenFOAM Foundation
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -186,7 +186,7 @@ bool Foam::regionModels::regionModel::read(const dictionary& dict)
 }
 
 
-const Foam::AMIPatchToPatchInterpolation&
+const Foam::AMIInterpolation&
 Foam::regionModels::regionModel::interRegionAMI
 (
     const regionModel& nbrRegion,
@@ -212,13 +212,13 @@ Foam::regionModels::regionModel::interRegionAMI
             interRegionAMI_[nbrRegionID].set
             (
                 regionPatchi,
-                new AMIPatchToPatchInterpolation
+                new AMIInterpolation
                 (
                     p,
                     nbrP,
                     faceAreaIntersect::tmMesh,
                     true,
-                    AMIPatchToPatchInterpolation::imFaceAreaWeight,
+                    AMIInterpolation::imFaceAreaWeight,
                     -1,
                     flip
                 )
@@ -246,7 +246,7 @@ Foam::regionModels::regionModel::interRegionAMI
         interRegionAMI_.set
         (
             nbrRegionID,
-            new PtrList<AMIPatchToPatchInterpolation>(nPatch)
+            new PtrList<AMIInterpolation>(nPatch)
         );
 
         int oldTag = UPstream::msgType();
@@ -255,13 +255,13 @@ Foam::regionModels::regionModel::interRegionAMI
         interRegionAMI_[nbrRegionID].set
         (
             regionPatchi,
-            new AMIPatchToPatchInterpolation
+            new AMIInterpolation
             (
                 p,
                 nbrP,
                 faceAreaIntersect::tmMesh,
                 true,
-                AMIPatchToPatchInterpolation::imFaceAreaWeight,
+                AMIInterpolation::imFaceAreaWeight,
                 -1,
                 flip
             )
@@ -486,7 +486,7 @@ void Foam::regionModels::regionModel::evolve()
         Info<< "\nEvolving " << modelName_ << " for region "
             << regionMesh().name() << endl;
 
-        //read();
+        // read();
 
         preEvolveRegion();
 

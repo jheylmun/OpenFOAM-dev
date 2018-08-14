@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2015-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -100,6 +100,8 @@ void Foam::phaseSystem::generatePairsAndSubModels
     (
         blendingMethods_.found(modelName)
       ? blendingMethods_[modelName]
+      : blendingMethods_.found(member(modelName))
+      ? blendingMethods_[member(modelName)]
       : blendingMethods_["default"]
     );
 

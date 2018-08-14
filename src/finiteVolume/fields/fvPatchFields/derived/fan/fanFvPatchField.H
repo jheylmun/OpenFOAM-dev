@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -24,15 +24,12 @@ License
 Class
     Foam::fanFvPatchField
 
-Group
-    grpCoupledBoundaryConditions
-
 Description
     This boundary condition provides a jump condition, using the \c cyclic
     condition as a base.
 
     The jump is specified as a \c Function1 type, to enable the use of, e.g.
-    contant, polynomial, table values.
+    constant, polynomial, table values.
 
 Usage
     \table
@@ -56,7 +53,7 @@ Usage
             refColumn       0;
             componentColumns 1(1);
             separator       ",";
-            fileName        "$FOAM_CASE/constant/pressureVsU";
+            file           "$FOAM_CASE/constant/pressureVsU";
         }
         value           uniform 0;
     }

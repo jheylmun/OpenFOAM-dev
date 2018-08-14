@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -223,7 +223,7 @@ Foam::dynamicRefineFvMesh::refine
     meshCutter_.setRefinement(cellsToRefine, meshMod);
 
     // Create mesh (with inflation), return map from old to new mesh.
-    //autoPtr<mapPolyMesh> map = meshMod.changeMesh(*this, true);
+    // autoPtr<mapPolyMesh> map = meshMod.changeMesh(*this, true);
     autoPtr<mapPolyMesh> map = meshMod.changeMesh(*this, false);
 
     Info<< "Refined from "
@@ -504,7 +504,7 @@ Foam::dynamicRefineFvMesh::unrefine
 
 
     // Change mesh and generate map.
-    //autoPtr<mapPolyMesh> map = meshMod.changeMesh(*this, true);
+    // autoPtr<mapPolyMesh> map = meshMod.changeMesh(*this, true);
     autoPtr<mapPolyMesh> map = meshMod.changeMesh(*this, false);
 
     Info<< "Unrefined from "

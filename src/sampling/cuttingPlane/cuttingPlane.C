@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -184,7 +184,7 @@ bool Foam::cuttingPlane::walkCell
 
         label nextEdgeI = -1;
 
-        //Note: here is where we should check for whether there are more
+        // Note: here is where we should check for whether there are more
         // than 2 intersections with the face (warped/non-convex face).
         // If so should e.g. decompose the cells on both faces and redo
         // the calculation.

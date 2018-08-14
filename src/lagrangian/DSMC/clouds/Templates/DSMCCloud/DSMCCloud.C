@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -273,7 +273,7 @@ void Foam::DSMCCloud<ParcelType>::collisions()
                 // subCell candidate selection procedure
 
                 // Select the first collision candidate
-                label candidateP = rndGen_.integer(0, nC - 1);
+                label candidateP = rndGen_.sampleAB<label>(0, nC);
 
                 // Declare the second collision candidate
                 label candidateQ = -1;
@@ -289,7 +289,7 @@ void Foam::DSMCCloud<ParcelType>::collisions()
 
                     do
                     {
-                        candidateQ = subCellPs[rndGen_.integer(0, nSC - 1)];
+                        candidateQ = subCellPs[rndGen_.sampleAB<label>(0, nSC)];
                     } while (candidateP == candidateQ);
                 }
                 else
@@ -300,7 +300,7 @@ void Foam::DSMCCloud<ParcelType>::collisions()
 
                     do
                     {
-                        candidateQ = rndGen_.integer(0, nC - 1);
+                        candidateQ = rndGen_.sampleAB<label>(0, nC);
                     } while (candidateP == candidateQ);
                 }
 
@@ -308,15 +308,15 @@ void Foam::DSMCCloud<ParcelType>::collisions()
                 // uniform candidate selection procedure
 
                 // // Select the first collision candidate
-                // label candidateP = rndGen_.integer(0, nC-1);
+                // label candidateP = rndGen_.sampleAB<label>(0, nC);
 
                 // // Select a possible second collision candidate
-                // label candidateQ = rndGen_.integer(0, nC-1);
+                // label candidateQ = rndGen_.sampleAB<label>(0, nC);
 
                 // // If the same candidate is chosen, choose again
                 // while (candidateP == candidateQ)
                 // {
-                //     candidateQ = rndGen_.integer(0, nC-1);
+                //     candidateQ = rndGen_.sampleAB<label>(0, nC);
                 // }
 
                 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1016,12 +1016,7 @@ Foam::vector Foam::DSMCCloud<ParcelType>::equipartitionLinearVelocity
 {
     return
         sqrt(physicoChemical::k.value()*temperature/mass)
-       *vector
-        (
-            rndGen_.GaussNormal(),
-            rndGen_.GaussNormal(),
-            rndGen_.GaussNormal()
-        );
+       *rndGen_.sampleNormal<vector>();
 }
 
 

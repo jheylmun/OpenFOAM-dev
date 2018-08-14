@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -58,7 +58,7 @@ displacementInterpolationMotionSolver
     const IOdictionary& dict
 )
 :
-    displacementMotionSolver(mesh, dict, typeName)
+    points0MotionSolver(mesh, dict, typeName)
 {
     // Get zones and their interpolation tables for displacement
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -347,11 +347,11 @@ Foam::displacementInterpolationMotionSolver::curPoints() const
 
             // Get the two zones bounding the range
             label minZoneI = rangeZone[rangeI];
-            //vector minDisp =
+            // vector minDisp =
             //    (minZoneI == -1 ? vector::zero : zoneDisp[minZoneI]);
             scalar minDisp = (minZoneI == -1 ? 0.0 : zoneDisp[minZoneI][dir]);
             label maxZoneI = rangeZone[rangeI+1];
-            //vector maxDisp =
+            // vector maxDisp =
             //    (maxZoneI == -1 ? vector::zero : zoneDisp[maxZoneI]);
             scalar maxDisp = (maxZoneI == -1 ? 0.0 : zoneDisp[maxZoneI][dir]);
 
@@ -359,7 +359,7 @@ Foam::displacementInterpolationMotionSolver::curPoints() const
             {
                 label pointi = rPoints[i];
                 scalar w = rWeights[i];
-                //curPoints[pointi] += (1.0-w)*minDisp+w*maxDisp;
+                // curPoints[pointi] += (1.0-w)*minDisp+w*maxDisp;
                 curPoints[pointi][dir] += (1.0-w)*minDisp+w*maxDisp;
             }
         }

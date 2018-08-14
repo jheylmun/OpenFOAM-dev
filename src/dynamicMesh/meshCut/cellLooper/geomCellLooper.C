@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -165,7 +165,7 @@ void Foam::geomCellLooper::getBase(const vector& n, vector& e0, vector& e1)
 
     e1 = n ^ e0;
 
-    //Pout<< "Coord system:" << endl
+    // Pout<< "Coord system:" << endl
     //    << "    n  : " << n << ' ' << mag(n) << endl
     //    << "    e0 : " << e0 << ' ' << mag(e0) << endl
     //    << "    e1 : " << e1 << ' ' << mag(e1) << endl

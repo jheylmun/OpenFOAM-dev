@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -23,9 +23,6 @@ License
 
 Class
     Foam::functionObjects::streamLine
-
-Group
-    grpFieldFunctionObjects
 
 Description
     Generates streamline data by sampling a set of user-specified fields along a
@@ -58,7 +55,7 @@ Description
         seedSampleSet
         {
             type        uniform;
-            axis        x;  //distance;
+            axis        x;  // distance;
             start       (-0.0205 0.0001 0.00001);
             end         (-0.0205 0.0005 0.00001);
             nPoints     100;

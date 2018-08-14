@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2017-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -154,6 +154,7 @@ SourceFiles
 #include "sizeGroup.H"
 #include "phasePair.H"
 #include "pimpleControl.H"
+#include "phaseCompressibleTurbulenceModelFwd.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -275,9 +276,6 @@ class populationBalanceModel
         //- Average velocity
         volVectorField U_;
 
-        //- Mean Sauter diameter
-        autoPtr<volScalarField> d_;
-
 
     // Private member functions
 
@@ -287,7 +285,7 @@ class populationBalanceModel
 
         void createPhasePairs();
 
-        void preSolve();
+        void correct();
 
         void birthByCoalescence(const label j, const label k);
 
@@ -314,8 +312,6 @@ class populationBalanceModel
         void calcAlphas();
 
         void calcVelocity();
-
-        tmp<volScalarField> dsm() const;
 
 
 public:
@@ -416,6 +412,16 @@ public:
             const label i,
             const dimensionedScalar& v
         ) const;
+
+        //- Return the surface tension coefficient between a given dispersed
+        //  and the continuous phase
+        const tmp<volScalarField> sigmaWithContinuousPhase
+        (
+            const phaseModel& dispersedPhase
+        ) const;
+
+        //- Return reference to turbulence model of the continuous phase
+        const phaseCompressibleTurbulenceModel& continuousTurbulence() const;
 
         //- Solve the population balance equation
         void solve();

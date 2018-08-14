@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -124,8 +124,8 @@ Foam::fv::cellMDLimitedGrad<Foam::scalar>::calcGrad
         maxVsf += maxMinVsf;
         minVsf -= maxMinVsf;
 
-        //maxVsf *= 1.0/k_;
-        //minVsf *= 1.0/k_;
+        // maxVsf *= 1.0/k_;
+        // minVsf *= 1.0/k_;
     }
 
 
@@ -266,8 +266,8 @@ Foam::fv::cellMDLimitedGrad<Foam::vector>::calcGrad
         maxVsf += maxMinVsf;
         minVsf -= maxMinVsf;
 
-        //maxVsf *= 1.0/k_;
-        //minVsf *= 1.0/k_;
+        // maxVsf *= 1.0/k_;
+        // minVsf *= 1.0/k_;
     }
 
 

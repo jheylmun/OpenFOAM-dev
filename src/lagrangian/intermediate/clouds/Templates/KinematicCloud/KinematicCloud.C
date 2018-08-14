@@ -1,8 +1,8 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2017 OpenFOAM Foundation
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -322,13 +322,7 @@ Foam::KinematicCloud<CloudType>::KinematicCloud
     (
         particleProperties_.subOrEmptyDict("subModels", solution_.active())
     ),
-    rndGen_
-    (
-        label(0),
-        solution_.steadyState() ?
-        particleProperties_.lookupOrDefault<label>("randomSampleSize", 100000)
-      : -1
-    ),
+    rndGen_(0),
     cellOccupancyPtr_(),
     cellLengthScale_(mag(cbrt(mesh_.V()))),
     rho_(rho),
@@ -430,7 +424,7 @@ Foam::KinematicCloud<CloudType>::KinematicCloud
     solution_(c.solution_),
     constProps_(c.constProps_),
     subModelProperties_(c.subModelProperties_),
-    rndGen_(c.rndGen_, true),
+    rndGen_(c.rndGen_),
     cellOccupancyPtr_(nullptr),
     cellLengthScale_(c.cellLengthScale_),
     rho_(c.rho_),
@@ -521,7 +515,7 @@ Foam::KinematicCloud<CloudType>::KinematicCloud
     solution_(mesh),
     constProps_(),
     subModelProperties_(dictionary::null),
-    rndGen_(0, 0),
+    rndGen_(0),
     cellOccupancyPtr_(nullptr),
     cellLengthScale_(c.cellLengthScale_),
     rho_(c.rho_),
@@ -658,7 +652,7 @@ void Foam::KinematicCloud<CloudType>::scaleSources()
 template<class CloudType>
 void Foam::KinematicCloud<CloudType>::preEvolve()
 {
-    // force calculaion of mesh dimensions - needed for parallel runs
+    // force calculation of mesh dimensions - needed for parallel runs
     // with topology change due to lazy evaluation of valid mesh dimensions
     label nGeometricD = mesh_.nGeometricD();
 
@@ -712,17 +706,18 @@ void Foam::KinematicCloud<CloudType>::patchData
 ) const
 {
     p.patchData(nw, Up);
+    Up /= p.mesh().time().deltaTValue();
 
     // If this is a wall patch, then there may be a non-zero tangential velocity
     // component; the lid velocity in a lid-driven cavity case, for example. We
     // want the particle to interact with this velocity, so we look it up in the
     // velocity field and use it to set the wall-tangential component.
-    if (isA<wallPolyPatch>(pp))
+    if (!mesh_.moving() && isA<wallPolyPatch>(pp))
     {
         const label patchi = pp.index();
         const label patchFacei = pp.whichFace(p.face());
 
-        // We only want to use the boundary condition value  onlyif it is set
+        // We only want to use the boundary condition value only if it is set
         // by the boundary condition. If the boundary values are extrapolated
         // (e.g., slip conditions) then they represent the motion of the fluid
         // just inside the domain rather than that of the wall itself.

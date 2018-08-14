@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -239,16 +239,6 @@ inline Foam::tensor Foam::triangle<Point, PointRef>::inertia
 
 template<class Point, class PointRef>
 inline Point Foam::triangle<Point, PointRef>::randomPoint(Random& rndGen) const
-{
-    return barycentricToPoint(barycentric2D01(rndGen));
-}
-
-
-template<class Point, class PointRef>
-inline Point Foam::triangle<Point, PointRef>::randomPoint
-(
-    cachedRandom& rndGen
-) const
 {
     return barycentricToPoint(barycentric2D01(rndGen));
 }
@@ -745,7 +735,7 @@ inline Foam::pointHit Foam::triangle<Point, PointRef>::nearestPoint
 
         point nearestEdgePoint;
         point nearestLinePoint;
-        //label minEdgeIndex = 0;
+        // label minEdgeIndex = 0;
         scalar minDist = ln.nearestDist
         (
             linePointRef(a_, b_),
@@ -767,7 +757,7 @@ inline Foam::pointHit Foam::triangle<Point, PointRef>::nearestPoint
                 minDist = dist;
                 nearestEdgePoint = triEdgePoint;
                 nearestLinePoint = linePoint;
-                //minEdgeIndex = 1;
+                // minEdgeIndex = 1;
             }
         }
 
@@ -785,7 +775,7 @@ inline Foam::pointHit Foam::triangle<Point, PointRef>::nearestPoint
                 minDist = dist;
                 nearestEdgePoint = triEdgePoint;
                 nearestLinePoint = linePoint;
-                //minEdgeIndex = 2;
+                // minEdgeIndex = 2;
             }
         }
 

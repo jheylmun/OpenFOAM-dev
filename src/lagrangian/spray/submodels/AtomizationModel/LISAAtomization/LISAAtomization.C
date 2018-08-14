@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -118,7 +118,7 @@ void Foam::LISAAtomization<CloudType>::update
     const vector& injectionPos,
     const scalar pAmbient,
     const scalar chi,
-    cachedRandom& rndGen
+    Random& rndGen
 ) const
 {
     if (volFlowRate < small)

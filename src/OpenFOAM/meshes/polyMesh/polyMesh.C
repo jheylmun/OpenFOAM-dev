@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -876,14 +876,6 @@ Foam::polyMesh::cellTree() const
 {
     if (cellTreePtr_.empty())
     {
-        treeBoundBox overallBb(points());
-
-        static Random rndGen(261782);
-
-        overallBb = overallBb.extend(rndGen, 1e-4);
-        overallBb.min() -= point(rootVSmall, rootVSmall, rootVSmall);
-        overallBb.max() += point(rootVSmall, rootVSmall, rootVSmall);
-
         cellTreePtr_.reset
         (
             new indexedOctree<treeDataCell>
@@ -894,7 +886,7 @@ Foam::polyMesh::cellTree() const
                     *this,
                     CELL_TETS   // use tet-decomposition for any inside test
                 ),
-                overallBb,
+                treeBoundBox(points()).extend(1e-4),
                 8,              // maxLevel
                 10,             // leafsize
                 5.0             // duplicity

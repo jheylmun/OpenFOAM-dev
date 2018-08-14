@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -1271,7 +1271,7 @@ void Foam::cellCuts::calcCellLoops(const labelList& cutCells)
         }
         else
         {
-            //Pout<< "calcCellLoops(const labelList&) : did not find valid"
+            // Pout<< "calcCellLoops(const labelList&) : did not find valid"
             //    << " loop for cell " << celli << " since not enough cut faces"
             //    << endl;
             cellLoops_[celli].setSize(0);
@@ -1689,7 +1689,7 @@ bool Foam::cellCuts::calcAnchors
     // Check which one of point sets to use.
     bool loopOk = loopAnchorConsistent(celli, loopPts, connectedPoints);
 
-    //if (debug)
+    // if (debug)
     {
         // Additional check: are non-anchor points on other side?
         bool otherLoopOk = loopAnchorConsistent(celli, loopPts, otherPoints);
@@ -2017,7 +2017,7 @@ bool Foam::cellCuts::validLoop
 
                     if (meshFacei == -1)
                     {
-                        // Can't find face. Ilegal.
+                        // Can't find face. Illegal.
                         return false;
                     }
                 }
@@ -2097,7 +2097,7 @@ bool Foam::cellCuts::validLoop
             << "Found loop on cell " << celli << " with all points"
             << " on face " << faceContainingLoop << endl;
 
-        //writeOBJ(".", celli, loopPoints(loop, loopWeights), labelList(0));
+        // writeOBJ(".", celli, loopPoints(loop, loopWeights), labelList(0));
 
         return false;
     }
@@ -2146,7 +2146,7 @@ void Foam::cellCuts::setFromCellLoops()
                 )
             )
             {
-                //writeOBJ(".", celli, loopPoints(celli), anchorPoints);
+                // writeOBJ(".", celli, loopPoints(celli), anchorPoints);
 
                 WarningInFunction
                     << "Illegal loop " << loop

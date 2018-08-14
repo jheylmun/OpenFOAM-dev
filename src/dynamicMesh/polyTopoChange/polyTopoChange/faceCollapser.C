@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -146,7 +146,7 @@ void Foam::faceCollapser::filterFace
     }
     face newF(newFace.shrink());
 
-    //Pout<< "Modifying face:" << facei << " from " << f << " to " << newFace
+    // Pout<< "Modifying face:" << facei << " from " << f << " to " << newFace
     //    << endl;
 
     if (newF != f)

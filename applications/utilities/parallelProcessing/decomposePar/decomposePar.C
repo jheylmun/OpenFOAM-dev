@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -104,7 +104,6 @@ Usage
 #include "pointFieldDecomposer.H"
 #include "lagrangianFieldDecomposer.H"
 #include "decompositionModel.H"
-#include "collatedFileOperation.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -218,11 +217,7 @@ int main(int argc, char *argv[])
 
     argList::noParallel();
     #include "addRegionOption.H"
-    argList::addBoolOption
-    (
-        "allRegions",
-        "operate on all regions in regionProperties"
-    );
+    #include "addAllRegionsOption.H"
     argList::addBoolOption
     (
         "cellDist",
@@ -273,7 +268,6 @@ int main(int argc, char *argv[])
     #include "setRootCase.H"
 
     bool region                  = args.optionFound("region");
-    bool allRegions              = args.optionFound("allRegions");
     bool writeCellDist           = args.optionFound("cellDist");
     bool copyZero                = args.optionFound("copyZero");
     bool copyUniform             = args.optionFound("copyUniform");
@@ -310,40 +304,7 @@ int main(int argc, char *argv[])
     // Allow override of time
     instantList times = timeSelector::selectIfPresent(runTime, args);
 
-    wordList regionNames;
-    wordList regionDirs;
-    if (allRegions)
-    {
-        Info<< "Decomposing all regions in regionProperties" << nl << endl;
-        regionProperties rp(runTime);
-        forAllConstIter(HashTable<wordList>, rp, iter)
-        {
-            const wordList& regions = iter();
-            forAll(regions, i)
-            {
-                if (findIndex(regionNames, regions[i]) == -1)
-                {
-                    regionNames.append(regions[i]);
-                }
-            }
-        }
-        regionDirs = regionNames;
-    }
-    else
-    {
-        word regionName;
-        if (args.optionReadIfPresent("region", regionName))
-        {
-            regionNames = wordList(1, regionName);
-            regionDirs = regionNames;
-        }
-        else
-        {
-            regionNames = wordList(1, fvMesh::defaultRegion);
-            regionDirs = wordList(1, word::null);
-        }
-    }
-
+    const wordList regionNames(selectRegionNames(args, runTime));
 
     {
         // Determine the existing processor count directly
@@ -416,7 +377,7 @@ int main(int argc, char *argv[])
     forAll(regionNames, regioni)
     {
         const word& regionName = regionNames[regioni];
-        const word& regionDir = regionDirs[regioni];
+        const word& regionDir = Foam::regionDir(regionName);
 
         Info<< "\n\nDecomposing mesh " << regionName << nl << endl;
 
@@ -497,12 +458,6 @@ int main(int argc, char *argv[])
         // Decompose the mesh
         if (!decomposeFieldsOnly)
         {
-            // Disable buffering when writing mesh since we need to read
-            // it later on when decomposing the fields
-            float bufSz =
-                fileOperations::collatedFileOperation::maxThreadFileBufferSize;
-            fileOperations::collatedFileOperation::maxThreadFileBufferSize = 0;
-
             mesh.decomposeMesh(dictIO.objectPath());
 
             mesh.writeDecomposition(decomposeSets);
@@ -559,8 +514,7 @@ int main(int argc, char *argv[])
                     << endl;
             }
 
-            fileOperations::collatedFileOperation::maxThreadFileBufferSize =
-                bufSz;
+            fileHandler().flush();
         }
 
 

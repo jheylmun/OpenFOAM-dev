@@ -1,8 +1,8 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2017 OpenFOAM Foundation
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Copyright (C) 2017-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -24,9 +24,6 @@ License
 Class
     Foam::semiPermeableBaffleMassFractionFvPatchScalarField
 
-Group
-    grpGenericBoundaryConditions
-
 Description
     This is a mass-fraction boundary condition for a semi-permeable baffle.
 
@@ -36,33 +33,36 @@ Description
     semiPermeableBaffleVelocityFvPatchVectorField.
 
     The mass flux of a species is calculated as a coefficient multiplied by the
-    difference in mass fraction across the baffle.
+    difference in an input variable across the baffle.
         \f[
-            \phi_{Yi} = c A (Y_i - Y_{i,n})
+            \phi_{Yi} = c A (\psi_i - \psi_{i,n})
         \f]
         where
         \vartable
-            \phi_{Yi} | flux of the permeable species [kg/s]
-            c         | transfer coefficient [kg/m2/s]
-            A         | patch face area [m2]
-            Y_i       | mass fraction on the patch []
-            Y_{i,n}   | mass fraction on the neighbour patch []
+            \phi_{Yi}  | flux of the permeable species [kg/s]
+            c          | transfer coefficient [kg/m2/s/<input-dimensions>]
+            A          | patch face area [m2]
+            \psi_i     | input variable on the patch []
+            \psi_{i,n} | input variable on the neighbour patch []
         \endvartable
 
-    A species that the baffle is permable to will, therefore, have a
+    A species that the baffle is permeable to will, therefore, have a
     coefficient greater than zero, whilst a species that does not transfer will
     have a coefficient equal to zero.
 
     This condition calculates the species flux. The fluxes are summed up by the
-    velocity consition to generate the net mass transfer across the baffle.
+    velocity condition to generate the net mass transfer across the baffle.
     This mass-fraction condition then generates a corrective diffusive flux to
     ensure that the correct amounts of the permeable species are transferred.
 
 Usage
     \table
-        Property | Description            | Req'd? | Default
-        c        | Transfer coefficient   | no     | 0
-        phi      | Name of the flux field | no     | phi
+        Property | Description                | Req'd? | Default
+        c        | Transfer coefficient       | no     | 0
+        input    | Input variable used to drive the transfer; massFraction, \\
+        moleFraction or partialPressure | if c is non-zero | none
+        phi      | Name of the flux field     | no     | phi
+        p        | Name of the pressure field | no     | p
     \endtable
 
 See also
@@ -84,6 +84,8 @@ SourceFiles
 namespace Foam
 {
 
+class basicSpecieMixture;
+
 /*---------------------------------------------------------------------------*\
       Class semiPermeableBaffleMassFractionFvPatchScalarField Declaration
 \*---------------------------------------------------------------------------*/
@@ -93,19 +95,48 @@ class semiPermeableBaffleMassFractionFvPatchScalarField
     public mappedPatchBase,
     public mixedFvPatchScalarField
 {
+public:
+
+        //- Enumeration for the input variable driving the transfer
+        enum input
+        {
+            none,
+            massFraction,
+            moleFraction,
+            partialPressure,
+        };
+
+        //- Input variable type names
+        static const NamedEnum<input, 4> inputNames_;
+
+
+private:
+
     // Private data
 
         //- Transfer coefficient
         const scalar c_;
 
+        //- Input variable driving the transfer
+        const input input_;
+
         //- Name of the flux field
         const word phiName_;
+
+        //- Name of the pressure field. Only needed if mode is pressure.
+        const word pName_;
 
 
 public:
 
     //- Runtime type information
     TypeName("semiPermeableBaffleMassFraction");
+
+
+    // Static member functions
+
+        //- Access the composition for the given database
+        static const basicSpecieMixture& composition(const objectRegistry& db);
 
 
     // Constructors

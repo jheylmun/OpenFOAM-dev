@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2015-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -90,23 +90,28 @@ public:
         //- Correct the thermodynamics
         virtual void correctThermo();
 
-        //- Return whether the phase is pure (i.e., not multi-component)
-        virtual bool pure() const;
+        // Species
 
-        //- Return the species fraction equation
-        virtual tmp<fvScalarMatrix> YiEqn(volScalarField& Yi);
+            //- Return whether the phase is pure (i.e., not multi-component)
+            virtual bool pure() const;
 
-        //- Return the species mass fractions
-        virtual const PtrList<volScalarField>& Y() const;
+            //- Return the species fraction equation
+            virtual tmp<fvScalarMatrix> YiEqn(volScalarField& Yi);
 
-        //- Access the species mass fractions
-        virtual PtrList<volScalarField>& YRef();
+            //- Return the species mass fractions
+            virtual const PtrList<volScalarField>& Y() const;
 
-        //- Return the active species mass fractions
-        virtual const UPtrList<volScalarField>& YActive() const;
+            //- Return a species mass fraction by name
+            virtual const volScalarField& Y(const word& name) const;
 
-        //- Access the active species mass fractions
-        virtual UPtrList<volScalarField>& YActiveRef();
+            //- Access the species mass fractions
+            virtual PtrList<volScalarField>& YRef();
+
+            //- Return the active species mass fractions
+            virtual const UPtrList<volScalarField>& YActive() const;
+
+            //- Access the active species mass fractions
+            virtual UPtrList<volScalarField>& YActiveRef();
 };
 
 

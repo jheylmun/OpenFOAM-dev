@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -281,7 +281,7 @@ bool Foam::functionObjectList::readFunctionObject
     }
 
     // Read the functionObject dictionary
-    //IFstream fileStream(path);
+    // IFstream fileStream(path);
     autoPtr<ISstream> fileStreamPtr(fileHandler().NewIFstream(path));
     ISstream& fileStream = fileStreamPtr();
 
@@ -335,9 +335,11 @@ bool Foam::functionObjectList::readFunctionObject
     }
 
     // Merge this functionObject dictionary into functionsDict
+    const word funcNameArgsWord = string::validate<word>(funcNameArgs);
     dictionary funcArgsDict;
-    funcArgsDict.add(string::validate<word>(funcNameArgs), funcDict);
+    funcArgsDict.add(funcNameArgsWord, funcDict);
     functionsDict.merge(funcArgsDict);
+    functionsDict.subDict(funcNameArgsWord).name() = funcDict.name();
 
     return true;
 }

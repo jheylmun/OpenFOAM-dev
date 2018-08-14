@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -105,7 +105,7 @@ Foam::label Foam::patchDataWave<TransferType>::getValues
 
             distance_[celli] = mag(dist);
 
-            //cellData_[celli] = point::max;
+            // cellData_[celli] = point::max;
             cellData_[celli] = cellInfo[celli].data();
 
             nIllegal++;
@@ -152,7 +152,7 @@ Foam::label Foam::patchDataWave<TransferType>::getValues
 
                 patchField[patchFacei] = mag(dist);
 
-                //patchDataField[patchFacei] = point::max;
+                // patchDataField[patchFacei] = point::max;
                 patchDataField[patchFacei] = faceInfo[meshFacei].data();
 
                 nIllegal++;

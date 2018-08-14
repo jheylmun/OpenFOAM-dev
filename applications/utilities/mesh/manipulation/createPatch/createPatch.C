@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -461,7 +461,7 @@ void syncPoints
 
     //- Note: hasTransformation is only used for warning messages so
     //  reduction not strictly necessary.
-    //reduce(hasTransformation, orOp<bool>());
+    // reduce(hasTransformation, orOp<bool>());
 
     // Synchronize multiple shared points.
     const globalMeshData& pd = mesh.globalData();

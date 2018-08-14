@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -140,12 +140,7 @@ void Foam::uniformDensityHydrostaticPressureFvPatchScalarField::updateCoeffs()
         const uniformDimensionedScalarField& hRef =
             db().lookupObject<uniformDimensionedScalarField>("hRef");
 
-        ghRef =
-        (
-            mag(g.value()) > small
-          ? (g & (cmptMag(g.value())/mag(g.value()))*hRef).value()
-          : 0
-        );
+        ghRef = - mag(g.value())*hRef.value();
     }
 
     operator==

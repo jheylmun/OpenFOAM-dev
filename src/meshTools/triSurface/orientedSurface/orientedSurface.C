@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -276,7 +276,7 @@ void Foam::orientedSurface::findZoneSide
             {
                 pointField end(1, fc + d);
 
-                //Info<< "Zone " << zoneI << " : Shooting ray"
+                // Info<< "Zone " << zoneI << " : Shooting ray"
                 //    << " from " << outsidePoint
                 //    << " to " << end
                 //    << " to pierce triangle " << facei

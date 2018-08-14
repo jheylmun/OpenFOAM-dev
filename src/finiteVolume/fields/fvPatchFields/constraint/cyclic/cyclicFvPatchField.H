@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -23,9 +23,6 @@ License
 
 Class
     Foam::cyclicFvPatchField
-
-Group
-    grpCoupledBoundaryConditions
 
 Description
     This boundary condition enforces a cyclic condition between a pair of
@@ -76,16 +73,6 @@ class cyclicFvPatchField
 
         //- Local reference cast into the cyclic patch
         const cyclicFvPatch& cyclicPatch_;
-
-
-    // Private Member Functions
-
-        //- Return neighbour side field given internal fields
-        template<class Type2>
-        tmp<Field<Type2>> neighbourSideField
-        (
-            const Field<Type2>&
-        ) const;
 
 
 public:

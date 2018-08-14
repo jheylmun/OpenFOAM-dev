@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -100,7 +100,7 @@ void Foam::adjointOutletVelocityFvPatchVectorField::updateCoeffs()
     vectorField Uan(patch().nf()*(patch().nf() & patchInternalField()));
 
     vectorField::operator=(phiap*patch().Sf()/sqr(patch().magSf()) + UtHat);
-    //vectorField::operator=(Uan + UtHat);
+    // vectorField::operator=(Uan + UtHat);
 
     fixedValueFvPatchVectorField::updateCoeffs();
 }

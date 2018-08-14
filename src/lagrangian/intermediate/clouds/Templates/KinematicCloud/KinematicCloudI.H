@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -356,7 +356,7 @@ inline Foam::scalar Foam::KinematicCloud<CloudType>::Dmax() const
 
 
 template<class CloudType>
-inline Foam::cachedRandom& Foam::KinematicCloud<CloudType>::rndGen() const
+inline Foam::Random& Foam::KinematicCloud<CloudType>::rndGen() const
 {
     return rndGen_;
 }

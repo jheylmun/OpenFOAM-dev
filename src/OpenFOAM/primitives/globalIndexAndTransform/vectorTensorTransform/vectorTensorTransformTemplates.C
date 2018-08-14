@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -26,6 +26,20 @@ License
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 template<class Type>
+Type Foam::vectorTensorTransform::transform(const Type& x) const
+{
+    if (hasR_)
+    {
+        return Foam::transform(R(), x);
+    }
+    else
+    {
+        return x;
+    }
+}
+
+
+template<class Type>
 Foam::tmp<Foam::Field<Type>> Foam::vectorTensorTransform::transform
 (
     const Field<Type>& fld
@@ -38,6 +52,20 @@ Foam::tmp<Foam::Field<Type>> Foam::vectorTensorTransform::transform
     else
     {
         return fld;
+    }
+}
+
+
+template<class Type>
+Type Foam::vectorTensorTransform::invTransform(const Type& x) const
+{
+    if (hasR_)
+    {
+        return Foam::transform(R().T(), x);
+    }
+    else
+    {
+        return x;
     }
 }
 

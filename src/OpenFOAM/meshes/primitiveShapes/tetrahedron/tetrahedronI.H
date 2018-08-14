@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -243,16 +243,6 @@ template<class Point, class PointRef>
 inline Point Foam::tetrahedron<Point, PointRef>::randomPoint
 (
     Random& rndGen
-) const
-{
-    return barycentricToPoint(barycentric01(rndGen));
-}
-
-
-template<class Point, class PointRef>
-inline Point Foam::tetrahedron<Point, PointRef>::randomPoint
-(
-    cachedRandom& rndGen
 ) const
 {
     return barycentricToPoint(barycentric01(rndGen));

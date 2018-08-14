@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -556,7 +556,14 @@ bool Foam::Time::writeObject
             // Does the writeTime trigger purging?
             if (writeTime_ && purgeWrite_)
             {
-                previousWriteTimes_.push(timeName());
+                if
+                (
+                    previousWriteTimes_.size() == 0
+                 || previousWriteTimes_.top() != timeName()
+                )
+                {
+                    previousWriteTimes_.push(timeName());
+                }
 
                 while (previousWriteTimes_.size() > purgeWrite_)
                 {

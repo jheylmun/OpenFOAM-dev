@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -520,7 +520,11 @@ public:
         // Write
 
             //- Write all components of the extendedEdgeMesh as obj files
-            void writeObj(const fileName& prefix) const;
+            void writeObj
+            (
+                const fileName& prefix,
+                const bool verbose = true
+            ) const;
 
             //- Dump some information
             virtual void writeStats(Ostream& os) const;

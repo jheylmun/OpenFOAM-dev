@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2014-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -24,6 +24,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "phasePair.H"
+#include "phaseSystem.H"
 #include "surfaceTensionModel.H"
 
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
@@ -166,13 +167,9 @@ Foam::tmp<Foam::volScalarField> Foam::phasePair::EoH2() const
 Foam::tmp<Foam::volScalarField> Foam::phasePair::sigma() const
 {
     return
-        phase1().mesh().lookupObject<surfaceTensionModel>
+        phase1().fluid().lookupSubModel<surfaceTensionModel>
         (
-            IOobject::groupName
-            (
-                surfaceTensionModel::typeName,
-                phasePair::name()
-            )
+            phasePair(phase1(), phase2())
         ).sigma();
 }
 

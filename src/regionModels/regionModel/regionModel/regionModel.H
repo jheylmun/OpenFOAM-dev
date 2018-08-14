@@ -1,8 +1,8 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2017 OpenFOAM Foundation
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -22,7 +22,7 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::regionModel
+    Foam::regionModels::regionModel
 
 Description
     Base class for region models
@@ -128,8 +128,7 @@ protected:
             mutable wordList interRegionAMINames_;
 
             //- List of AMI objects per coupled region
-            mutable PtrList<PtrList<AMIPatchToPatchInterpolation>>
-                interRegionAMI_;
+            mutable PtrList<PtrList<AMIInterpolation>> interRegionAMI_;
 
 
     // Protected member functions
@@ -141,7 +140,7 @@ protected:
         virtual bool read(const dictionary& dict);
 
         //- Create or return a new inter-region AMI object
-        virtual const AMIPatchToPatchInterpolation& interRegionAMI
+        virtual const AMIInterpolation& interRegionAMI
         (
             const regionModel& nbrRegion,
             const label regionPatchi,

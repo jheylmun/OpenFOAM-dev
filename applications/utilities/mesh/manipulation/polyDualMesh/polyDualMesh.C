@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -156,7 +156,7 @@ void simpleMarkFeatures
         {
             const edge& e = allBoundary.edges()[edgeI];
 
-            //Info<< "Detected non-manifold boundary edge:" << edgeI
+            // Info<< "Detected non-manifold boundary edge:" << edgeI
             //    << " coords:"
             //    << allBoundary.points()[meshPoints[e[0]]]
             //    << allBoundary.points()[meshPoints[e[1]]] << endl;

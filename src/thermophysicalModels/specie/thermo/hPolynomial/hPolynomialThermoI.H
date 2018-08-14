@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -123,6 +123,36 @@ inline Foam::scalar Foam::hPolynomialThermo<EquationOfState, PolySize>::S
 ) const
 {
     return sCoeffs_.value(T) + EquationOfState::S(p, T);
+}
+
+
+template<class EquationOfState, int PolySize>
+inline Foam::scalar Foam::hPolynomialThermo<EquationOfState, PolySize>::dGdT
+(
+    const scalar p,
+    const scalar T
+) const
+{
+    return
+    (
+        hCoeffs_.derivative(T)
+      - T*sCoeffs_.derivative(T)
+      - sCoeffs_.value(T)
+    );
+}
+
+
+template<class EquationOfState, int PolySize>
+inline Foam::scalar Foam::hPolynomialThermo<EquationOfState, PolySize>::dCpdT
+(
+    const scalar p,
+    const scalar T
+) const
+{
+    return
+    (
+        CpCoeffs_.derivative(T)
+    );
 }
 
 

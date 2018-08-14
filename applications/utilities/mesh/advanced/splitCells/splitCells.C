@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -662,7 +662,7 @@ int main(int argc, char *argv[])
         {
             if (cuts.cellLoops()[celli].size())
             {
-                //Info<< "Removing cut cell " << celli << " from wishlist"
+                // Info<< "Removing cut cell " << celli << " from wishlist"
                 //    << endl;
                 cellsToCut.erase(celli);
             }

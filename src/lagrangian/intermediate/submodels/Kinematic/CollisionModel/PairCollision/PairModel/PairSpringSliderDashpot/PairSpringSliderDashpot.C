@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -193,7 +193,7 @@ void Foam::PairSpringSliderDashpot<CloudType>::evaluatePair
 
     if (normalOverlapMag > 0)
     {
-        //Particles in collision
+        // Particles in collision
 
         vector rHat_AB = r_AB/(r_AB_mag + vSmall);
 

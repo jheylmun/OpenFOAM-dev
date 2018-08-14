@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -189,7 +189,7 @@ bool Foam::ReitzKHRT<CloudType>::update
             // reduce the diameter according to the rate-equation
             d = (fraction*dc + d)/(1.0 + fraction);
 
-            //scalar ms0 = rho*pow3(dc)*mathematicalConstant::pi/6.0;
+            // scalar ms0 = rho*pow3(dc)*mathematicalConstant::pi/6.0;
             scalar ms0 = mass0*(1.0 - pow3(d/d0));
             ms += ms0;
 

@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -113,8 +113,8 @@ void Foam::MaxwellianThermal<CloudType>::correct
     U =
         sqrt(physicoChemical::k.value()*T/mass)
        *(
-            rndGen.GaussNormal()*tw1
-          + rndGen.GaussNormal()*tw2
+            rndGen.scalarNormal()*tw1
+          + rndGen.scalarNormal()*tw2
           - sqrt(-2.0*log(max(1 - rndGen.scalar01(), vSmall)))*nw
         );
 

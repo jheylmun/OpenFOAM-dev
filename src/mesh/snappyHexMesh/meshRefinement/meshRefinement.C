@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -657,7 +657,7 @@ Foam::autoPtr<Foam::mapPolyMesh> Foam::meshRefinement::doRemoveCells
         exposedFaces
     );
 
-    //Pout<< "removeCells : updating intersections for "
+    // Pout<< "removeCells : updating intersections for "
     //    << newExposedFaces.size() << " newly exposed faces." << endl;
 
     updateMesh(map, newExposedFaces);
@@ -1545,7 +1545,7 @@ Foam::autoPtr<Foam::mapDistributePolyMesh> Foam::meshRefinement::balance
                     << endl;
             }
 
-            //if (nUnblocked > 0 || nCouples > 0)
+            // if (nUnblocked > 0 || nCouples > 0)
             //{
             //    Info<< "Applying special decomposition to keep baffles"
             //        << " and zoned faces together." << endl;
@@ -1570,7 +1570,7 @@ Foam::autoPtr<Foam::mapDistributePolyMesh> Foam::meshRefinement::balance
             //    }
             //    Info<< endl;
             //}
-            //else
+            // else
             //{
             //    // Normal decomposition
             //    distribution = decomposer.decompose
@@ -1581,7 +1581,7 @@ Foam::autoPtr<Foam::mapDistributePolyMesh> Foam::meshRefinement::balance
             //    );
             //}
         }
-        //else
+        // else
         //{
         //    // Normal decomposition
         //    distribution = decomposer.decompose
@@ -1691,8 +1691,8 @@ Foam::labelList Foam::meshRefinement::intersectedPoints() const
     }
 
     //// Insert all meshed patches.
-    //labelList adaptPatchIDs(meshedPatches());
-    //forAll(adaptPatchIDs, i)
+    // labelList adaptPatchIDs(meshedPatches());
+    // forAll(adaptPatchIDs, i)
     //{
     //    label patchi = adaptPatchIDs[i];
     //
@@ -2353,7 +2353,7 @@ Foam::autoPtr<Foam::mapPolyMesh> Foam::meshRefinement::splitMeshRegions
     label nExposedFaces = returnReduce(exposedFaces.size(), sumOp<label>());
     if (nExposedFaces)
     {
-        //FatalErrorInFunction
+        // FatalErrorInFunction
         //    << "Removing non-reachable cells should only expose"
         //    << " boundary faces" << nl
         //    << "ExposedFaces:" << exposedFaces << abort(FatalError);
@@ -2402,13 +2402,10 @@ void Foam::meshRefinement::distribute(const mapDistributePolyMesh& map)
 
     // Redistribute surface and any fields on it.
     {
-        Random rndGen(653213);
-
         // Get local mesh bounding box. Single box for now.
         List<treeBoundBox> meshBb(1);
         treeBoundBox& bb = meshBb[0];
-        bb = treeBoundBox(mesh_.points());
-        bb = bb.extend(rndGen, 1e-4);
+        bb = treeBoundBox(mesh_.points()).extend(1e-4);
 
         // Distribute all geometry (so refinementSurfaces and shellSurfaces)
         searchableSurfaces& geometry =
@@ -2715,7 +2712,7 @@ const
     }
 
 
-    //if (debug)
+    // if (debug)
     {
         const labelList& cellLevel = meshCutter_.cellLevel();
 

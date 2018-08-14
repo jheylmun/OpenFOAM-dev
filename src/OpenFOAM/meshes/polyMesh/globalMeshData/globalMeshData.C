@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -853,14 +853,14 @@ Foam::label Foam::globalMeshData::findTransform
         if (proci == Pstream::myProcNo() && pointi == localPoint)
         {
             localTransformI = transformI;
-            //Pout<< "For local :" << localPoint
+            // Pout<< "For local :" << localPoint
             //    << " found transform:" << localTransformI
             //    << endl;
         }
         if (proci == remoteProci && pointi == remoteIndex)
         {
             remoteTransformI = transformI;
-            //Pout<< "For remote:" << remotePoint
+            // Pout<< "For remote:" << remotePoint
             //    << " found transform:" << remoteTransformI
             //    << " at index:" << i
             //    << endl;
@@ -2469,7 +2469,7 @@ Foam::autoPtr<Foam::globalIndex> Foam::globalMeshData::mergePoints
 
     label myUniquePoints = mesh_.nPoints() - cpp.nPoints() + nMaster;
 
-    //Pout<< "Points :" << nl
+    // Pout<< "Points :" << nl
     //    << "    mesh             : " << mesh_.nPoints() << nl
     //    << "    of which coupled : " << cpp.nPoints() << nl
     //    << "    of which master  : " << nMaster << nl
@@ -2585,7 +2585,7 @@ Foam::autoPtr<Foam::globalIndex> Foam::globalMeshData::mergePoints
         }
     }
 
-    //Pout<< "Patch:" << nl
+    // Pout<< "Patch:" << nl
     //    << "    points:" << meshPoints.size() << nl
     //    << "    of which on coupled patch:" << nCoupled << endl;
 
@@ -2669,7 +2669,7 @@ Foam::autoPtr<Foam::globalIndex> Foam::globalMeshData::mergePoints
 
     autoPtr<globalIndex> globalPointsPtr(new globalIndex(nMasters));
 
-    //Pout<< "Patch:" << nl
+    // Pout<< "Patch:" << nl
     //    << "    points:" << meshPoints.size() << nl
     //    << "    of which on coupled patch:" << nCoupled << nl
     //    << "    of which master:" << nMasters << endl;

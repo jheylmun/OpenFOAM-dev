@@ -1,7 +1,7 @@
 #---------------------------------*- sh -*-------------------------------------
 # =========                 |
 # \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-#  \\    /   O peration     |
+#  \\    /   O peration     | Website:  https://openfoam.org
 #   \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
 #    \\/     M anipulation  |
 #------------------------------------------------------------------------------
@@ -41,12 +41,12 @@ isTest()
 
 getNumberOfProcessors()
 {
-    foamDictionary -entry numberOfSubdomains -value system/decomposeParDict
+    foamDictionary -disableFunctionEntries -entry numberOfSubdomains -value system/decomposeParDict
 }
 
 getApplication()
 {
-    foamDictionary -entry application -value system/controlDict
+    foamDictionary -disableFunctionEntries -entry application -value system/controlDict
 }
 
 runApplication()

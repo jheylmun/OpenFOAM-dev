@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -188,7 +188,7 @@ template<class Thermo, template<class> class Type>
 inline Foam::word
 Foam::species::thermo<Thermo, Type>::heName()
 {
-    return Type<thermo<Thermo, Type>>::name();
+    return Type<thermo<Thermo, Type>>::energyName();
 }
 
 
@@ -583,6 +583,26 @@ inline Foam::scalar Foam::species::thermo<Thermo, Type>::THErho
     return Type<thermo<Thermo, Type>>::THErho(*this, he, rho, T0);
 }
 
+template<class Thermo, template<class> class Type>
+inline Foam::scalar
+Foam::species::thermo<Thermo, Type>::dKcdTbyKc
+(
+    const scalar p,
+    const scalar T
+) const
+{
+    const scalar nm = this->Y()/this->W();
+
+    if (equal(nm, small))
+    {
+        return -this->dGdT(Pstd, T)*this->Y()/RR;
+    }
+    else
+    {
+        return -(nm/T + this->dGdT(Pstd, T)*this->Y()/RR);
+    }
+}
+
 
 template<class Thermo, template<class> class Type>
 inline Foam::scalar Foam::species::thermo<Thermo, Type>::THsrho
@@ -661,6 +681,13 @@ inline Foam::scalar Foam::species::thermo<Thermo, Type>::TEarho
         &thermo<Thermo, Type>::Cv,
         &thermo<Thermo, Type>::limit
     );
+}
+
+template<class Thermo, template<class> class Type>
+inline Foam::scalar
+Foam::species::thermo<Thermo, Type>::dcpdT(const scalar p, const scalar T) const
+{
+    return this->dCpdT(p, T)*this->W();
 }
 
 

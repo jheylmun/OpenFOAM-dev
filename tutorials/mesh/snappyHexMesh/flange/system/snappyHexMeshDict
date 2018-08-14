@@ -1,9 +1,9 @@
 /*--------------------------------*- C++ -*----------------------------------*\
-| =========                 |                                                 |
-| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  dev                                   |
-|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
-|    \\/     M anipulation  |                                                 |
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  dev
+     \\/     M anipulation  |
 \*---------------------------------------------------------------------------*/
 FoamFile
 {
@@ -290,13 +290,6 @@ meshQualityControls
         //- Maximum non-orthogonality allowed. Set to 180 to disable.
         maxNonOrtho 75;
     }
-
-    // Advanced
-
-    //- Number of error distribution iterations
-    nSmoothScale 4;
-    //- Amount to scale back displacement at error points
-    errorReduction 0.75;
 }
 
 

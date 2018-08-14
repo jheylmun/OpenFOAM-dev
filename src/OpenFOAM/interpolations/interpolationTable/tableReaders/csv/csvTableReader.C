@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -108,7 +108,7 @@ void Foam::csvTableReader<Type>::operator()
     List<Tuple2<scalar, Type>>& data
 )
 {
-    //IFstream in(fName);
+    // IFstream in(fName);
     autoPtr<ISstream> inPtr(fileHandler().NewIFstream(fName));
     ISstream& in = inPtr();
 

@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -185,7 +185,7 @@ void Foam::shellSurfaces::orient()
     {
         const point outsidePt = overallBb.max() + overallBb.span();
 
-        //Info<< "Using point " << outsidePt << " to orient shells" << endl;
+        // Info<< "Using point " << outsidePt << " to orient shells" << endl;
 
         forAll(shells_, shellI)
         {

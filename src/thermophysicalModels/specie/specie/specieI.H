@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -96,7 +96,7 @@ inline scalar specie::R() const
 
 inline void specie::operator=(const specie& st)
 {
-    //name_ = st.name_;
+    // name_ = st.name_;
     Y_ = st.Y_;
     molWeight_ = st.molWeight_;
 }
