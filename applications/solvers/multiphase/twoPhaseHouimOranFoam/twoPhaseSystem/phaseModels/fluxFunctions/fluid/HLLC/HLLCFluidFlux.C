@@ -23,7 +23,7 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "HLLCPhaseFlux.H"
+#include "HLLCFluidFlux.H"
 #include "surfaceInterpolate.H"
 #include "fvc.H"
 #include "addToRunTimeSelectionTable.H"
@@ -33,36 +33,36 @@ License
 
 namespace Foam
 {
-namespace phaseFluxFunctions
+namespace fluidFluxFunctions
 {
-    defineTypeNameAndDebug(HLLCPhase, 0);
-    addToRunTimeSelectionTable(phaseFluxFunction, HLLCPhase, dictionary);
+    defineTypeNameAndDebug(HLLCFlux, 0);
+    addToRunTimeSelectionTable(fluidFluxFunction, HLLCFlux, dictionary);
 }
 }
 
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::phaseFluxFunctions::HLLCPhase::HLLCPhase
+Foam::fluidFluxFunctions::HLLCFlux::HLLCFlux
 (
     const fvMesh& mesh,
     const word& phaseName
 )
 :
-    phaseFluxFunction(mesh, phaseName),
+    fluidFluxFunction(mesh, phaseName),
     residualU_("small", dimVelocity, epsilon_)
 {}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-Foam::phaseFluxFunctions::HLLCPhase::~HLLCPhase()
+Foam::fluidFluxFunctions::HLLCFlux::~HLLCFlux()
 {}
 
 
 // * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * * //
 
-void Foam::phaseFluxFunctions::HLLCPhase::updateFluxes
+void Foam::fluidFluxFunctions::HLLCFlux::updateFluxes
 (
     surfaceScalarField& massFlux,
     surfaceVectorField& momentumFlux,
@@ -226,7 +226,7 @@ void Foam::phaseFluxFunctions::HLLCPhase::updateFluxes
 }
 
 
-void Foam::phaseFluxFunctions::HLLCPhase::updateFluxes
+void Foam::fluidFluxFunctions::HLLCFlux::updateFluxes
 (
     surfaceScalarField& massFlux,
     surfaceVectorField& momentumFlux,

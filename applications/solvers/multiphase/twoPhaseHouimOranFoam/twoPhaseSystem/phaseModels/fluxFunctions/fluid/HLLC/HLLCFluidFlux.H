@@ -22,20 +22,20 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::RoeFlux
+    Foam::fluidFluxFunctions::HLLCPhaseFlux
 
 Description
     Interpolates conservative and primative variables and updates fluxes
 
 SourceFiles
-    RoeFlux.C
+    HLLCPhaseFlux.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef AUSMPhaseFlux_H
-#define AUSMPhaseFlux_H
+#ifndef HLLCFluidFlux_H
+#define HLLCFluidFlux_H
 
-#include "phaseFluxFunction.H"
+#include "fluidFluxFunction.H"
 #include "volFields.H"
 #include "surfaceFields.H"
 
@@ -43,37 +43,39 @@ SourceFiles
 
 namespace Foam
 {
-namespace phaseFluxFunctions
+namespace fluidFluxFunctions
 {
 
 /*---------------------------------------------------------------------------*\
-                  Class fluxFunction Declaration
+                  Class HLLCFunction Declaration
 \*---------------------------------------------------------------------------*/
 
-class AUSMPhase
+class HLLCFlux
 :
-    public phaseFluxFunction
+    public fluidFluxFunction
 {
     // Private Data
 
-        //- Minimum velocity
+        //- Cut off mach Number
         dimensionedScalar residualU_;
+
 
 public:
 
     //- Runtime type information
-    TypeName("AUSM");
+    TypeName("HLLC");
 
     // Costructor
-    AUSMPhase(const fvMesh& mesh, const word& phaseName);
+    HLLCFlux(const fvMesh& mesh, const word& phaseName);
 
 
     //- Destructor
-    virtual ~AUSMPhase();
+    virtual ~HLLCFlux();
 
 
     // Public Functions
 
+        //- Update phase fluxes
         virtual void updateFluxes
         (
             surfaceScalarField& massFlux,
@@ -108,8 +110,8 @@ public:
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
+} // End namespace fluidFluxFunctions
 } // End namespace Foam
-} // End namespace phaseFluxFunctions
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

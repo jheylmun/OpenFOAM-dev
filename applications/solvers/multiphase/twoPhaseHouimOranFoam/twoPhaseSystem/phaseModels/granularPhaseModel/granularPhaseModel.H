@@ -39,6 +39,7 @@ SourceFiles
 #include "radialModel.H"
 #include "granularPressureModel.H"
 #include "frictionalStressModel.H"
+#include "granularFluxFunction.H"
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -130,6 +131,9 @@ protected:
         //- Phase psudo thermal energy flux
         surfaceScalarField PTEFlux_;
 
+        //- Model to calculate hyperbolic phase flux
+        autoPtr<granularFluxFunction> fluxFunction_;
+
 
 public:
 
@@ -209,6 +213,36 @@ public:
         virtual surfaceScalarField& thermalEnergyFlux()
         {
             return PTEFlux_;
+        }
+
+        //- Return the phase volumentric flux
+        virtual const surfaceScalarField& phi() const
+        {
+            return fluxFunction_->phi();
+        }
+
+        //- Return the phase volumentric flux
+        virtual tmp<surfaceScalarField> alphaPhi() const
+        {
+            return fluxFunction_->alphaPhi();
+        }
+
+        //- Return the gradient of pressure
+        virtual const surfaceScalarField& alphaf() const
+        {
+            return fluxFunction_->alphaf();
+        }
+
+        //- Return the gradient of velocity
+        virtual tmp<volTensorField> gradU() const
+        {
+            return fluxFunction_->gradU();
+        }
+
+        //- Return the gradient of pressure
+        virtual tmp<volVectorField> gradp() const
+        {
+            return fluxFunction_->gradp();
         }
 
         //- Return the turbulence kinetic energy

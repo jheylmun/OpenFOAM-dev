@@ -249,8 +249,14 @@ Foam::granularPhaseModel::granularPhaseModel
             fluid.mesh()
         ),
         1.5*massFlux_*fvc::interpolate(Theta_)
+    ),
+    fluxFunction_
+    (
+        granularFluxFunction::New(fluid.mesh(), phaseName)
     )
 {
+    setTurbulenceModel();
+
     // Kinetic energy is not included in E
     E_ = he_;
 }

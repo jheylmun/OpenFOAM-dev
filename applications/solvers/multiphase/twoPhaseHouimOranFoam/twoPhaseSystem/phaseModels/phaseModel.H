@@ -38,7 +38,6 @@ SourceFiles
 #include "surfaceFields.H"
 #include "rhoThermo.H"
 #include "fvMatrix.H"
-#include "phaseFluxFunction.H"
 #include "runTimeSelectionTables.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -156,8 +155,9 @@ protected:
         //- Turbulence model
         autoPtr<PhaseCompressibleTurbulenceModel<phaseModel>> turbulence_;
 
-        //- Model to calculate hyperbolic phase flux
-        autoPtr<phaseFluxFunction> fluxFunction_;
+protected:
+
+    void setTurbulenceModel();
 
 public:
 
@@ -265,10 +265,10 @@ public:
         inline volVectorField& U();
 
         //- Return the phase volumentric flux
-        inline const surfaceScalarField& phi() const;
+        virtual const surfaceScalarField& phi() const = 0;
 
         //- Return the phase volumentric flux
-        inline tmp<surfaceScalarField> alphaPhi() const;
+        virtual tmp<surfaceScalarField> alphaPhi() const = 0;
 
         //- Const access to the phase total energy
         inline const volScalarField& E() const;
@@ -322,6 +322,12 @@ public:
 
         //- Return the thermal conductivity
         inline tmp<volScalarField> kappa() const;
+
+        //- Thermal diffusivity for energy of mixture [kg/m/s]
+        inline tmp<volScalarField> alphahe() const;
+
+        //- Thermal diffusivity for energy of mixture for patch [kg/m/s]
+        inline tmp<scalarField> alphahe(const label patchi) const;
 
         //- Return the laminar thermal conductivity
         inline tmp<volScalarField> kappaEff(const volScalarField& alphat) const;
@@ -453,7 +459,7 @@ public:
         }
 
         //- Return the gradient of pressure
-        inline const surfaceScalarField& alphaf() const;
+        virtual const surfaceScalarField& alphaf() const = 0;
 
         //- Return the gradient of volume fraction
         inline const volVectorField& gradAlpha() const;
@@ -462,10 +468,10 @@ public:
         inline volVectorField& gradAlpha();
 
         //- Return the gradient of velocity
-        inline tmp<volTensorField> gradU() const;
+        virtual tmp<volTensorField> gradU() const = 0;
 
         //- Return the gradient of pressure
-        inline tmp<volVectorField> gradp() const;
+        virtual tmp<volVectorField> gradp() const = 0;
 
         //- Ensure that the flux at inflow/outflow BCs is preserved
         void correctInflowOutflow(surfaceScalarField& alphaPhi) const;

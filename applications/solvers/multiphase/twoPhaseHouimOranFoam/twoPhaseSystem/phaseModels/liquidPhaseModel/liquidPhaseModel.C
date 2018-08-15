@@ -56,8 +56,14 @@ Foam::liquidPhaseModel::liquidPhaseModel
 )
 :
     phaseModel(fluid, phaseProperties, phaseName),
-    p_(thermoPtr_->p())
-{}
+    p_(thermoPtr_->p()),
+    fluxFunction_
+    (
+        fluidFluxFunction::New(fluid.mesh(), phaseName)
+    )
+{
+    setTurbulenceModel();
+}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //

@@ -4,6 +4,17 @@ phaseModels/fluidPhaseModel/fluidPhaseModel.C
 phaseModels/liquidPhaseModel/liquidPhaseModel.C
 phaseModels/granularPhaseModel/granularPhaseModel.C
 
+phaseModels/fluxFunctions/fluid/fluxFunction/fluidFluxFunction.C
+phaseModels/fluxFunctions/fluid/fluxFunction/newFluidFluxFunction.C
+phaseModels/fluxFunctions/fluid/AUSM/AUSMFluidFlux.C
+phaseModels/fluxFunctions/fluid/AUSMPlus/AUSMPlusFluidFlux.C
+phaseModels/fluxFunctions/fluid/HLL/HLLFluidFlux.C
+phaseModels/fluxFunctions/fluid/HLLC/HLLCFluidFlux.C
+
+phaseModels/fluxFunctions/granular/fluxFunction/granularFluxFunction.C
+phaseModels/fluxFunctions/granular/fluxFunction/newGranularFluxFunction.C
+phaseModels/fluxFunctions/granular/AUSMPlus/AUSMPlusGranularFlux.C
+
 diameterModels/diameterModel/diameterModel.C
 diameterModels/diameterModel/newDiameterModel.C
 diameterModels/constantDiameter/constantDiameter.C
@@ -18,13 +29,6 @@ BlendedInterfacialModel/blendingMethods/hyperbolic/hyperbolicBlending.C
 phasePair/phasePairKey/phasePairKey.C
 phasePair/phasePair/phasePair.C
 phasePair/orderedPhasePair/orderedPhasePair.C
-
-phaseFluxFunctions/phaseFluxFunction/phaseFluxFunction.C
-phaseFluxFunctions/phaseFluxFunction/newPhaseFluxFunction.C
-phaseFluxFunctions/AUSM/AUSMPhaseFlux.C
-phaseFluxFunctions/AUSMPlus/AUSMPlusPhaseFlux.C
-phaseFluxFunctions/HLL/HLLPhaseFlux.C
-phaseFluxFunctions/HLLC/HLLCPhaseFlux.C
 
 phaseFluxIntegrators/phaseFluxIntegrator/phaseFluxIntegrator.C
 phaseFluxIntegrators/phaseFluxIntegrator/newPhaseFluxIntegrator.C

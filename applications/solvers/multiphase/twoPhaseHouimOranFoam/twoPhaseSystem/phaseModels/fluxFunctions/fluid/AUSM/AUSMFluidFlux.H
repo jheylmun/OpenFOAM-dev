@@ -22,20 +22,20 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::phaseFluxFunctions::AUSMPlusPhase
+    Foam::fluidFluxFunctions::AUSMFlux
 
 Description
     Interpolates conservative and primative variables and updates fluxes
 
 SourceFiles
-    AUSMPlusPhase.C
+    AUSMFluidFlux.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef AUSMPlusPhaseFlux_H
-#define AUSMPlusPhaseFlux_H
+#ifndef AUSMFluidFlux_H
+#define AUSMFluidFlux_H
 
-#include "phaseFluxFunction.H"
+#include "fluidFluxFunction.H"
 #include "volFields.H"
 #include "surfaceFields.H"
 
@@ -43,75 +43,37 @@ SourceFiles
 
 namespace Foam
 {
-namespace phaseFluxFunctions
+namespace fluidFluxFunctions
 {
 
 /*---------------------------------------------------------------------------*\
-                  Class fluxFunction Declaration
+                  Class fluidFluxFunction Declaration
 \*---------------------------------------------------------------------------*/
 
-class AUSMPlusPhase
+class AUSMFlux
 :
-    public phaseFluxFunction
+    public fluidFluxFunction
 {
     // Private Data
-
-        //- Coefficients
-        scalar beta_ = 0.125;
-        scalar fa_;
-
-        //- Dispersion coefficient
-        scalar D_;
-
-        //- Max volume fraction
-        scalar alphaMax_;
-
-        //- Minimum volume fraction where frictional pressure is present
-        scalar alphaMinFriction_;
-
-        //- Cut off mach Number
-        dimensionedScalar cutOffMa_;
-
-        //- Residual density
-        dimensionedScalar residualRho_;
 
         //- Minimum velocity
         dimensionedScalar residualU_;
 
-
-        // Private functions
-
-            //- First polynomial
-            tmp<surfaceScalarField> M1
-            (
-                const surfaceScalarField& M,
-                const label sign
-            );
-
-            //- Second polynomial
-            tmp<surfaceScalarField> M2
-            (
-                const surfaceScalarField& M,
-                const label sign
-            );
-
-
 public:
 
     //- Runtime type information
-    TypeName("AUSMPlus");
+    TypeName("AUSM");
 
     // Costructor
-    AUSMPlusPhase(const fvMesh& mesh, const word& phaseName);
+    AUSMFlux(const fvMesh& mesh, const word& phaseName);
 
 
     //- Destructor
-    virtual ~AUSMPlusPhase();
+    virtual ~AUSMFlux();
 
 
     // Public Functions
 
-        //- Update fluxes
         virtual void updateFluxes
         (
             surfaceScalarField& massFlux,
@@ -142,30 +104,12 @@ public:
             const volVectorField& Ui,
             const volScalarField& pi
         );
-
-        //- Update fluxes for a granular phase
-        virtual void updateFluxes
-        (
-            surfaceScalarField& massFlux,
-            surfaceVectorField& momentumFlux,
-            surfaceScalarField& energyFlux,
-            surfaceScalarField& PTEFlux,
-            const volScalarField& alpha,
-            const volScalarField& rho,
-            const volVectorField& U,
-            const volScalarField& E,
-            const volScalarField& Theta,
-            const volScalarField& p,
-            const volScalarField& a,
-            const volScalarField& pi
-        );
-
 };
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 } // End namespace Foam
-} // End namespace phaseFluxFunctions
+} // End namespace fluidFluxFunctions
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

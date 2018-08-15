@@ -36,6 +36,7 @@ SourceFiles
 #define fluidPhaseModel_H
 
 #include "phaseModel.H"
+#include "fluidFluxFunction.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -54,6 +55,9 @@ class fluidPhaseModel
 
         //- Phase specific thermodynamic pressure
         volScalarField p_;
+
+        //- Model to calculate hyperbolic phase flux
+        autoPtr<fluidFluxFunction> fluxFunction_;
 
 
 public:
@@ -93,6 +97,36 @@ public:
         virtual volScalarField& p()
         {
             return p_;
+        }
+
+        //- Return the phase volumentric flux
+        virtual const surfaceScalarField& phi() const
+        {
+            return fluxFunction_->phi();
+        }
+
+        //- Return the phase volumentric flux
+        virtual tmp<surfaceScalarField> alphaPhi() const
+        {
+            return fluxFunction_->alphaPhi();
+        }
+
+        //- Return the gradient of pressure
+        virtual const surfaceScalarField& alphaf() const
+        {
+            return fluxFunction_->alphaf();
+        }
+
+        //- Return the gradient of velocity
+        virtual tmp<volTensorField> gradU() const
+        {
+            return fluxFunction_->gradU();
+        }
+
+        //- Return the gradient of pressure
+        virtual tmp<volVectorField> gradp() const
+        {
+            return fluxFunction_->gradp();
         }
 
         //- Advect with conservative fluxes

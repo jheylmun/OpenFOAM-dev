@@ -23,7 +23,7 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "AUSMPhaseFlux.H"
+#include "AUSMFluidFlux.H"
 #include "surfaceInterpolate.H"
 #include "fvc.H"
 #include "addToRunTimeSelectionTable.H"
@@ -32,36 +32,36 @@ License
 
 namespace Foam
 {
-namespace phaseFluxFunctions
+namespace fluidFluxFunctions
 {
-    defineTypeNameAndDebug(AUSMPhase, 0);
-    addToRunTimeSelectionTable(phaseFluxFunction, AUSMPhase, dictionary);
+    defineTypeNameAndDebug(AUSMFlux, 0);
+    addToRunTimeSelectionTable(fluidFluxFunction, AUSMFlux, dictionary);
 }
 }
 
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::phaseFluxFunctions::AUSMPhase::AUSMPhase
+Foam::fluidFluxFunctions::AUSMFlux::AUSMFlux
 (
     const fvMesh& mesh,
     const word& phaseName
 )
 :
-    phaseFluxFunction(mesh, phaseName),
+    fluidFluxFunction(mesh, phaseName),
     residualU_("small", dimVelocity, epsilon_)
 {}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-Foam::phaseFluxFunctions::AUSMPhase::~AUSMPhase()
+Foam::fluidFluxFunctions::AUSMFlux::~AUSMFlux()
 {}
 
 
 // * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * * //
 
-void Foam::phaseFluxFunctions::AUSMPhase::updateFluxes
+void Foam::fluidFluxFunctions::AUSMFlux::updateFluxes
 (
     surfaceScalarField& massFlux,
     surfaceVectorField& momentumFlux,
@@ -184,7 +184,7 @@ void Foam::phaseFluxFunctions::AUSMPhase::updateFluxes
 }
 
 
-void Foam::phaseFluxFunctions::AUSMPhase::updateFluxes
+void Foam::fluidFluxFunctions::AUSMFlux::updateFluxes
 (
     surfaceScalarField& massFlux,
     surfaceVectorField& momentumFlux,

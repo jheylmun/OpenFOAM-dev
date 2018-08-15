@@ -22,20 +22,22 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::phaseFluxFunctions::HLLCPhaseFlux
+    Foam::fluidFluxFunction
 
 Description
     Interpolates conservative and primative variables and updates fluxes
 
 SourceFiles
-    HLLCPhaseFlux.C
+    fluidFluxFunction.C
+    newFluidFluxFunction.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef HLLCPhaseFlux_H
-#define HLLCPhaseFlux_H
+#ifndef fluidPhaseFluxFunction_H
+#define fluidPhaseFluxFunction_H
 
-#include "phaseFluxFunction.H"
+#include "rhoThermo.H"
+#include "turbulentFluidThermoModel.H"
 #include "volFields.H"
 #include "surfaceFields.H"
 
@@ -43,39 +45,110 @@ SourceFiles
 
 namespace Foam
 {
-namespace phaseFluxFunctions
-{
 
 /*---------------------------------------------------------------------------*\
-                  Class HLLCFunction Declaration
+                  Class fluidFluxFunction Declaration
 \*---------------------------------------------------------------------------*/
 
-class HLLCPhase
-:
-    public phaseFluxFunction
+class fluidFluxFunction
 {
-    // Private Data
+protected:
+    // Protected Data
 
-        //- Cut off mach Number
-        dimensionedScalar residualU_;
+        //- Refrence to mesh
+        const fvMesh& mesh_;
 
+        const dictionary& dict_;
+
+        //- Owner interpolation
+        surfaceScalarField own_;
+
+        //- Neighbour interpolation
+        surfaceScalarField nei_;
+
+        //- Residual alpha
+        dimensionedScalar residualAlpha_;
+
+        //- Cutoff Mach number
+        scalar epsilon_;
+
+        //- Face interpolated volume fraction
+        surfaceScalarField alphaf_;
+
+        //- Volumetric flux
+        surfaceScalarField phi_;
+
+        //- Interpolated velocity
+        surfaceVectorField Uf_;
+
+        //- Face interpolated pressure
+        surfaceScalarField pf_;
+
+
+    //- Protected functions
+
+        //- Return interpolation scheme name
+        word interpScheme(const word& fieldName) const
+        {
+            return "reconstruct(" + fieldName + ")";
+        }
 
 public:
 
     //- Runtime type information
-    TypeName("HLLC");
+    TypeName("fluidFluxFunction");
 
-    // Costructor
-    HLLCPhase(const fvMesh& mesh, const word& phaseName);
 
+    // Declare runtime construction
+
+        declareRunTimeSelectionTable
+        (
+            autoPtr,
+            fluidFluxFunction,
+            dictionary,
+            (
+                const fvMesh& mesh,
+                const word& phaseName
+            ),
+            (mesh, phaseName)
+        );
+
+
+    // Constructor
+    fluidFluxFunction(const fvMesh& mesh, const word& phaseName);
+
+    // Selector
+    static autoPtr<fluidFluxFunction>
+    New(const fvMesh& mesh, const word& phaseName);
 
     //- Destructor
-    virtual ~HLLCPhase();
+    virtual ~fluidFluxFunction();
 
 
     // Public Functions
 
-        //- Update phase fluxes
+        //- Return the initerpolated volume fraction
+        const surfaceScalarField& alphaf() const
+        {
+            return alphaf_;
+        }
+
+        //- Return volumetric flux
+        const surfaceScalarField& phi() const;
+
+        //- Return the volume flux of volume fraction
+        tmp<surfaceScalarField> alphaPhi() const;
+
+        //- Return the volume fraction gradient
+        tmp<volVectorField> gradAlpha() const;
+
+        //- Return the velocity gradient
+        tmp<volTensorField> gradU() const;
+
+        //- Return the pressure gradient
+        tmp<volVectorField> gradp() const;
+
+        //- Update fluxes
         virtual void updateFluxes
         (
             surfaceScalarField& massFlux,
@@ -89,7 +162,7 @@ public:
             const volScalarField& a,
             const volVectorField& Ui,
             const volScalarField& pi
-        );
+        ) = 0;
 
         //- Update phase fluxes with a predefined alpha
         virtual void updateFluxes
@@ -105,13 +178,12 @@ public:
             const volScalarField& a,
             const volVectorField& Ui,
             const volScalarField& pi
-        );
+        ) = 0;
 };
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 } // End namespace Foam
-} // End namespace phaseFluxFunctions
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

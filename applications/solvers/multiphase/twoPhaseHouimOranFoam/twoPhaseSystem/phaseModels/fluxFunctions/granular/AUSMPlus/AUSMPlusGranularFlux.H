@@ -22,20 +22,20 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::HLLPhaseFlux
+    Foam::granularFluxFunctions::AUSMPlusFlux
 
 Description
     Interpolates conservative and primative variables and updates fluxes
 
 SourceFiles
-    HLLPhaseFlux.C
+    AUSMPlusGranularFlux.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef HLLPhaseFlux_H
-#define HLLPhaseFlux_H
+#ifndef AUSMPlusGranularFlux_H
+#define AUSMPlusGranularFlux_H
 
-#include "phaseFluxFunction.H"
+#include "granularFluxFunction.H"
 #include "volFields.H"
 #include "surfaceFields.H"
 
@@ -43,63 +43,88 @@ SourceFiles
 
 namespace Foam
 {
-namespace phaseFluxFunctions
+namespace granularFluxFunctions
 {
 
 /*---------------------------------------------------------------------------*\
-                  Class HLLFunction Declaration
+                  Class fluxFunction Declaration
 \*---------------------------------------------------------------------------*/
 
-class HLLPhase
+class AUSMPlusFlux
 :
-    public phaseFluxFunction
+    public granularFluxFunction
 {
     // Private Data
+
+        //- Coefficients
+        scalar beta_ = 0.125;
+        scalar fa_;
+
+        //- Dispersion coefficient
+        scalar D_;
+
+        //- Max volume fraction
+        scalar alphaMax_;
+
+        //- Minimum volume fraction where frictional pressure is present
+        scalar alphaMinFriction_;
+
+        //- Cut off mach Number
+        dimensionedScalar cutOffMa_;
+
+        //- Residual density
+        dimensionedScalar residualRho_;
+
+        //- Minimum velocity
+        dimensionedScalar residualU_;
+
+
+        // Private functions
+
+            //- First polynomial
+            tmp<surfaceScalarField> M1
+            (
+                const surfaceScalarField& M,
+                const label sign
+            );
+
+            //- Second polynomial
+            tmp<surfaceScalarField> M2
+            (
+                const surfaceScalarField& M,
+                const label sign
+            );
+
 
 public:
 
     //- Runtime type information
-    TypeName("HLL");
+    TypeName("AUSMPlus");
 
     // Costructor
-    HLLPhase(const fvMesh& mesh, const word& phaseName);
+    AUSMPlusFlux(const fvMesh& mesh, const word& phaseName);
 
 
     //- Destructor
-    virtual ~HLLPhase();
+    virtual ~AUSMPlusFlux();
 
 
     // Public Functions
 
-        //- Update phase fluxes
+        //- Update fluxes for a granular phase
         virtual void updateFluxes
         (
             surfaceScalarField& massFlux,
             surfaceVectorField& momentumFlux,
             surfaceScalarField& energyFlux,
+            surfaceScalarField& PTEFlux,
             const volScalarField& alpha,
             const volScalarField& rho,
             const volVectorField& U,
-            const volScalarField& H,
+            const volScalarField& E,
+            const volScalarField& Theta,
             const volScalarField& p,
             const volScalarField& a,
-            const volVectorField& Ui,
-            const volScalarField& pi
-        );
-
-        //- Update phase fluxes with a predefined alpha
-        virtual void updateFluxes
-        (
-            surfaceScalarField& massFlux,
-            surfaceVectorField& momentumFlux,
-            surfaceScalarField& energyFlux,
-            const surfaceScalarField& alphaf,
-            const volScalarField& rho,
-            const volVectorField& U,
-            const volScalarField& H,
-            const volScalarField& p,
-            const volScalarField& a,
-            const volVectorField& Ui,
             const volScalarField& pi
         );
 
@@ -107,8 +132,8 @@ public:
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
+} // End namespace granularFluxFunction
 } // End namespace Foam
-} // End namespace phaseFluxFunctions
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

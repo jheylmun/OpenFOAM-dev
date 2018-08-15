@@ -23,7 +23,7 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "phaseFluxFunction.H"
+#include "granularFluxFunction.H"
 #include "surfaceInterpolate.H"
 #include "fvMatrix.H"
 #include "subCycle.H"
@@ -34,14 +34,14 @@ License
 
 namespace Foam
 {
-    defineTypeNameAndDebug(phaseFluxFunction, 0);
-    defineRunTimeSelectionTable(phaseFluxFunction, dictionary);
+    defineTypeNameAndDebug(granularFluxFunction, 0);
+    defineRunTimeSelectionTable(granularFluxFunction, dictionary);
 }
 
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::phaseFluxFunction::phaseFluxFunction
+Foam::granularFluxFunction::granularFluxFunction
 (
     const fvMesh& mesh,
     const word& phaseName
@@ -128,33 +128,33 @@ Foam::phaseFluxFunction::phaseFluxFunction
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-Foam::phaseFluxFunction::~phaseFluxFunction()
+Foam::granularFluxFunction::~granularFluxFunction()
 {}
 
 
 // * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * * //
 
-const Foam::surfaceScalarField& Foam::phaseFluxFunction::phi() const
+const Foam::surfaceScalarField& Foam::granularFluxFunction::phi() const
 {
     return phi_;
 }
 
-Foam::tmp<Foam::surfaceScalarField> Foam::phaseFluxFunction::alphaPhi() const
+Foam::tmp<Foam::surfaceScalarField> Foam::granularFluxFunction::alphaPhi() const
 {
     return phi_*alphaf_;
 }
 
-Foam::tmp<Foam::volVectorField> Foam::phaseFluxFunction::gradAlpha() const
+Foam::tmp<Foam::volVectorField> Foam::granularFluxFunction::gradAlpha() const
 {
     return fvc::surfaceIntegrate(mesh_.Sf()*alphaf_);
 }
 
-Foam::tmp<Foam::volTensorField> Foam::phaseFluxFunction::gradU() const
+Foam::tmp<Foam::volTensorField> Foam::granularFluxFunction::gradU() const
 {
     return fvc::surfaceIntegrate(mesh_.Sf()*Uf_);
 }
 
-Foam::tmp<Foam::volVectorField> Foam::phaseFluxFunction::gradp() const
+Foam::tmp<Foam::volVectorField> Foam::granularFluxFunction::gradp() const
 {
     return fvc::surfaceIntegrate(mesh_.Sf()*pf_);
 }

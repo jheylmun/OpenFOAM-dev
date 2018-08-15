@@ -19,11 +19,12 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 \*---------------------------------------------------------------------------*/
 
-#include "phaseFluxFunction.H"
+#include "fluidFluxFunction.H"
 
 // * * * * * * * * * * * * * * * * Selector  * * * * * * * * * * * * * * * * //
 
-Foam::autoPtr<Foam::phaseFluxFunction> Foam::phaseFluxFunction::New
+Foam::autoPtr<Foam::fluidFluxFunction>
+Foam::fluidFluxFunction::New
 (
     const fvMesh& mesh,
     const word& phaseName

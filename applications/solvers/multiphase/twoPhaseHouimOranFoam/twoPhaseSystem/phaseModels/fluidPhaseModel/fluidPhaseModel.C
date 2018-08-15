@@ -68,8 +68,14 @@ Foam::fluidPhaseModel::fluidPhaseModel
         ),
         this->thermoPtr_->p(),
         this->thermoPtr_->p().boundaryField().types()
+    ),
+    fluxFunction_
+    (
+        fluidFluxFunction::New(fluid.mesh(), phaseName)
     )
-{}
+{
+    setTurbulenceModel();
+}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //

@@ -22,19 +22,19 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::fluxFunction
+    Foam::granularFluxFunction
 
 Description
     Interpolates conservative and primative variables and updates fluxes
 
 SourceFiles
-    fluxFunction.C
-    newFluxFunction.C
+    granularFluxFunction.C
+    newGranularFluxFunction.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef fluxFunction_H
-#define fluxFunction_H
+#ifndef granularFluxFunction_H
+#define granularFluxFunction_H
 
 #include "rhoThermo.H"
 #include "turbulentFluidThermoModel.H"
@@ -47,10 +47,10 @@ namespace Foam
 {
 
 /*---------------------------------------------------------------------------*\
-                  Class fluxFunction Declaration
+                  Class granularFluxFunction Declaration
 \*---------------------------------------------------------------------------*/
 
-class phaseFluxFunction
+class granularFluxFunction
 {
 protected:
     // Protected Data
@@ -96,7 +96,7 @@ protected:
 public:
 
     //- Runtime type information
-    TypeName("phaseFluxFunction");
+    TypeName("granularFluxFunction");
 
 
     // Declare runtime construction
@@ -104,7 +104,7 @@ public:
         declareRunTimeSelectionTable
         (
             autoPtr,
-            phaseFluxFunction,
+            granularFluxFunction,
             dictionary,
             (
                 const fvMesh& mesh,
@@ -115,14 +115,14 @@ public:
 
 
     // Constructor
-    phaseFluxFunction(const fvMesh& mesh, const word& phaseName);
+    granularFluxFunction(const fvMesh& mesh, const word& phaseName);
 
     // Selector
-    static autoPtr<phaseFluxFunction>
+    static autoPtr<granularFluxFunction>
     New(const fvMesh& mesh, const word& phaseName);
 
     //- Destructor
-    virtual ~phaseFluxFunction();
+    virtual ~granularFluxFunction();
 
 
     // Public Functions
@@ -148,38 +148,6 @@ public:
         //- Return the pressure gradient
         tmp<volVectorField> gradp() const;
 
-        //- Update fluxes
-        virtual void updateFluxes
-        (
-            surfaceScalarField& massFlux,
-            surfaceVectorField& momentumFlux,
-            surfaceScalarField& energyFlux,
-            const volScalarField& alpha,
-            const volScalarField& rho,
-            const volVectorField& U,
-            const volScalarField& E,
-            const volScalarField& p,
-            const volScalarField& a,
-            const volVectorField& Ui,
-            const volScalarField& pi
-        ) = 0;
-
-        //- Update phase fluxes with a predefined alpha
-        virtual void updateFluxes
-        (
-            surfaceScalarField& massFlux,
-            surfaceVectorField& momentumFlux,
-            surfaceScalarField& energyFlux,
-            const surfaceScalarField& alphaf,
-            const volScalarField& rho,
-            const volVectorField& U,
-            const volScalarField& E,
-            const volScalarField& p,
-            const volScalarField& a,
-            const volVectorField& Ui,
-            const volScalarField& pi
-        ) = 0;
-
         virtual void updateFluxes
         (
             surfaceScalarField& massFlux,
@@ -194,11 +162,7 @@ public:
             const volScalarField& p,
             const volScalarField& a,
             const volScalarField& pi
-        )
-        {
-            NotImplemented;
-            return;
-        }
+        ) = 0;
 };
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

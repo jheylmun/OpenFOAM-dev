@@ -22,20 +22,20 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::RoePhaseFlux
+    Foam::fluidFluxFunctions::HLLFluidFlux
 
 Description
     Interpolates conservative and primative variables and updates fluxes
 
 SourceFiles
-    RoePhaseFlux.C
+    HLLFluidFlux.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef RoePhaseFlux_H
-#define RoePhaseFlux_H
+#ifndef HLLFluidFlux_H
+#define HLLFluidFlux_H
 
-#include "phaseFluxFunction.H"
+#include "fluidFluxFunction.H"
 #include "volFields.H"
 #include "surfaceFields.H"
 
@@ -43,42 +43,57 @@ SourceFiles
 
 namespace Foam
 {
-namespace phaseFluxFunctions
+namespace fluidFluxFunctions
 {
 
 /*---------------------------------------------------------------------------*\
-                  Class RhoPhase Declaration
+                  Class HLLFunction Declaration
 \*---------------------------------------------------------------------------*/
 
-class RoePhase
+class HLLFlux
 :
-    public phaseFluxFunction
+    public fluidFluxFunction
 {
     // Private Data
 
 public:
 
     //- Runtime type information
-    TypeName("Roe");
+    TypeName("HLL");
 
     // Costructor
-    RoePhase(const fvMesh& mesh, const word& phaseName);
+    HLLFlux(const fvMesh& mesh, const word& phaseName);
 
 
     //- Destructor
-    virtual ~RoePhase();
+    virtual ~HLLFlux();
 
 
     // Public Functions
 
-        //- Update fluxes
+        //- Update phase fluxes
         virtual void updateFluxes
         (
-            volVectorField& gradAlpha,
             surfaceScalarField& massFlux,
             surfaceVectorField& momentumFlux,
             surfaceScalarField& energyFlux,
             const volScalarField& alpha,
+            const volScalarField& rho,
+            const volVectorField& U,
+            const volScalarField& H,
+            const volScalarField& p,
+            const volScalarField& a,
+            const volVectorField& Ui,
+            const volScalarField& pi
+        );
+
+        //- Update phase fluxes with a predefined alpha
+        virtual void updateFluxes
+        (
+            surfaceScalarField& massFlux,
+            surfaceVectorField& momentumFlux,
+            surfaceScalarField& energyFlux,
+            const surfaceScalarField& alphaf,
             const volScalarField& rho,
             const volVectorField& U,
             const volScalarField& H,
@@ -93,7 +108,7 @@ public:
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 } // End namespace Foam
-} // End namespace phaseFluxFunctions
+} // End namespace fluidFluxFunctions
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

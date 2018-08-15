@@ -189,10 +189,6 @@ Foam::phaseModel::phaseModel
             fluid.mesh()
         ),
         fvc::grad(*this)
-    ),
-    fluxFunction_
-    (
-        phaseFluxFunction::New(fluid.mesh(), phaseName)
     )
 {
     thermoPtr_->validate("phaseModel " + name_, "h", "e");
@@ -213,7 +209,10 @@ Foam::phaseModel::phaseModel
         phaseDict_,
         *this
     );
+}
 
+void Foam::phaseModel::setTurbulenceModel()
+{
     turbulence_ =
         PhaseCompressibleTurbulenceModel<phaseModel>::New
         (
@@ -221,11 +220,10 @@ Foam::phaseModel::phaseModel
             this->rho_,
             this->U_,
             this->massFlux_,
-            phi(),
+            this->phi(),
             *this
         );
 }
-
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 

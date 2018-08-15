@@ -78,16 +78,6 @@ inline Foam::volVectorField& Foam::phaseModel::U()
     return U_;
 }
 
-inline const Foam::surfaceScalarField& Foam::phaseModel::phi() const
-{
-    return fluxFunction_->phi();
-}
-
-inline Foam::tmp<Foam::surfaceScalarField> Foam::phaseModel::alphaPhi() const
-{
-    return fluxFunction_->alphaPhi();
-}
-
 inline const Foam::volScalarField& Foam::phaseModel::E() const
 {
     return E_;
@@ -136,6 +126,21 @@ inline Foam::tmp<Foam::volScalarField> Foam::phaseModel::kappa() const
 {
     return thermoPtr_->kappa();
 }
+
+inline Foam::tmp<Foam::volScalarField> Foam::phaseModel::alphahe() const
+{
+    return thermoPtr_->alphahe();
+}
+
+
+inline Foam::tmp<Foam::scalarField> Foam::phaseModel::alphahe
+(
+    const label patchi
+) const
+{
+    return thermoPtr_->alphahe(patchi);
+}
+
 
 inline Foam::tmp<Foam::volScalarField> Foam::phaseModel::kappaEff
 (
@@ -259,11 +264,6 @@ inline Foam::surfaceScalarField& Foam::phaseModel::energyFlux()
     return energyFlux_;
 }
 
-inline const Foam::surfaceScalarField& Foam::phaseModel::alphaf() const
-{
-    return fluxFunction_->alphaf();
-}
-
 inline const Foam::volVectorField& Foam::phaseModel::gradAlpha() const
 {
     return gradAlpha_;
@@ -274,13 +274,4 @@ inline Foam::volVectorField& Foam::phaseModel::gradAlpha()
     return gradAlpha_;
 }
 
-inline Foam::tmp<Foam::volTensorField> Foam::phaseModel::gradU() const
-{
-    return fluxFunction_->gradU();
-}
-
-inline Foam::tmp<Foam::volVectorField> Foam::phaseModel::gradp() const
-{
-    return fluxFunction_->gradp();
-}
 // ************************************************************************* //
