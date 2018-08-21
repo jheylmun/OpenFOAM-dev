@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -87,6 +87,17 @@ Foam::argList::initValidTables::initValidTables()
      );
 
     Pstream::addValidParOptions(validParOptions);
+}
+
+
+void Foam::argList::initValidTables::clear()
+{
+    argList::removeOption("case");
+    argList::removeOption("parallel");
+    argList::removeOption("roots");
+    argList::removeOption("hostRoots");
+    argList::removeOption("noFunctionObjects");
+    argList::removeOption("fileHandler");
 }
 
 
@@ -1247,7 +1258,7 @@ void Foam::argList::printUsage() const
 
     Info<< nl
         <<"Using: OpenFOAM-" << Foam::FOAMversion
-        << " (see www.OpenFOAM.org)" << nl
+        << " (see https://openfoam.org)" << nl
         <<"Build: " << Foam::FOAMbuild << nl
         << endl;
 }

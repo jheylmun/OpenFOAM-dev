@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -333,7 +333,7 @@ Foam::topoSet::topoSet
             (
                 mesh.dbDir()/polyMesh::meshSubDir/"sets",
                 word::null,
-                r,  //IOobject::MUST_READ,
+                r,  // IOobject::MUST_READ,
                 mesh.facesInstance()
             ),
             polyMesh::meshSubDir/"sets",

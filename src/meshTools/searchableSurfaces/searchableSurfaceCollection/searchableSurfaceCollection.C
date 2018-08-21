@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -208,7 +208,7 @@ Foam::searchableSurfaceCollection::searchableSurfaceCollection
             );
 
             const word subGeomName(subDict.lookup("surface"));
-            //Pout<< "Trying to find " << subGeomName << endl;
+            // Pout<< "Trying to find " << subGeomName << endl;
 
             const searchableSurface& s =
                 io.db().lookupObject<searchableSurface>(subGeomName);

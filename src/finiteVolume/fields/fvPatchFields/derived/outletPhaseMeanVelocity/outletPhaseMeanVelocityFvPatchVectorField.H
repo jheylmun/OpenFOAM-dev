@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2013-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -23,9 +23,6 @@ License
 
 Class
     Foam::outletPhaseMeanVelocityFvPatchVectorField
-
-Group
-    grpOutletBoundaryConditions
 
 Description
     This boundary condition adjusts the velocity for the given phase to achieve

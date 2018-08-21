@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -57,7 +57,7 @@ drippingInjection::drippingInjection
     injectionModel(type(), film, dict),
     deltaStable_(readScalar(coeffDict_.lookup("deltaStable"))),
     particlesPerParcel_(readScalar(coeffDict_.lookup("particlesPerParcel"))),
-    rndGen_(label(0), -1),
+    rndGen_(label(0)),
     parcelDistribution_
     (
         distributionModel::New

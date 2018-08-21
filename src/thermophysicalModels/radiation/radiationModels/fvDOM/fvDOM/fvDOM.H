@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -42,7 +42,7 @@ Description
                                     //(from Y to X)
             nTheta      0;          // polar angles in PI (from Z to X-Y plane)
             convergence 1e-3;       // convergence criteria for radiation
-                                    //iteration
+                                    // iteration
             maxIter     4;          // maximum number of iterations
         }
 
@@ -63,8 +63,8 @@ SourceFiles
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef radiationModelfvDOM_H
-#define radiationModelfvDOM_H
+#ifndef radiation_fvDOM_H
+#define radiation_fvDOM_H
 
 #include "radiativeIntensityRay.H"
 #include "radiationModel.H"

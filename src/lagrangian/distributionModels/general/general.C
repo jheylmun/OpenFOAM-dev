@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -42,7 +42,7 @@ namespace distributionModels
 Foam::distributionModels::general::general
 (
     const dictionary& dict,
-    cachedRandom& rndGen
+    Random& rndGen
 )
 :
     distributionModel(typeName, dict, rndGen),

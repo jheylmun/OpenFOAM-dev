@@ -184,6 +184,19 @@ inline Foam::tmp<Foam::scalarField> Foam::phaseModel::alphaEff
     return thermoPtr_->alphaEff(alphat, patchi);
 }
 
+inline Foam::tmp<Foam::volScalarField> Foam::phaseModel::alphahe() const
+{
+    return thermoPtr_->alphahe();
+}
+
+inline Foam::tmp<Foam::scalarField> Foam::phaseModel::alphahe
+(
+    const label patchi
+) const
+{
+    return thermoPtr_->alphahe(patchi);
+}
+
 inline Foam::tmp<Foam::volScalarField> Foam::phaseModel::Cp() const
 {
     return thermoPtr_->Cp();

@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -191,7 +191,7 @@ class hexRef8
         ) const;
 
         ////- Print levels of list of points.
-        //void printLevels(Ostream&, const labelList&) const;
+        // void printLevels(Ostream&, const labelList&) const;
 
         //- debug:check orientation of added internal face
         static void checkInternalOrientation

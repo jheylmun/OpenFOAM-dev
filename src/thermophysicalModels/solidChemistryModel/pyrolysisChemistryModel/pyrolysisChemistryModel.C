@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2013-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -24,7 +24,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "pyrolysisChemistryModel.H"
-#include "solidReaction.H"
+#include "SolidReaction.H"
 #include "basicThermo.H"
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
@@ -37,7 +37,13 @@ pyrolysisChemistryModel
 )
 :
     solidChemistryModel<CompType, SolidThermo>(thermo),
-    pyrolisisGases_(this->reactions_[0].gasSpecies()),
+    pyrolisisGases_
+    (
+        dynamic_cast<const SolidReaction<SolidThermo>&>
+        (
+            this->reactions_[0]
+        ).gasSpecies()
+    ),
     gasThermo_(pyrolisisGases_.size()),
     nGases_(pyrolisisGases_.size()),
     nSpecie_(this->Ys_.size() + nGases_),
@@ -164,7 +170,7 @@ pyrolysisChemistryModel
     Info<< indent << "Number of gases = " << nGases_ << nl;
     forAll(this->reactions_, i)
     {
-        Info<< dynamic_cast<const solidReaction<SolidThermo>& >
+        Info<< dynamic_cast<const SolidReaction<SolidThermo>&>
         (
             this->reactions_[i]
         ) << nl;
@@ -201,7 +207,11 @@ pyrolysisChemistryModel<CompType, SolidThermo, GasThermo>::omega
 
     forAll(this->reactions_, i)
     {
-        const Reaction<SolidThermo>& R = this->reactions_[i];
+        const SolidReaction<SolidThermo>& R =
+            dynamic_cast<const SolidReaction<SolidThermo>&>
+            (
+                this->reactions_[i]
+            );
 
         scalar omegai = omega
         (
@@ -320,7 +330,7 @@ derivatives
 
     dcdt = omega(c, T, p);
 
-    //Total mass concentration
+    // Total mass concentration
     scalar cTot = 0.0;
     for (label i=0; i<this->nSolids_; i++)
     {

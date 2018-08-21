@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2017-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -206,8 +206,12 @@ public:
             IOstream::streamFormat,
             IOstream::versionNumber,
             IOstream::compressionType,
-            const bool append
+            const bool append,
+            const bool useThread = true
         );
+
+        //- Wait for all thread actions to have finished
+        void waitAll();
 };
 
 

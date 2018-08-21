@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -185,7 +185,7 @@ void Foam::edgeCollapser::collapseToEdge
     // Negative half
 
     Foam::point collapseToPtA(great, great, great);
-        //collapseAxis*(sum(dNeg)/dNeg.size() - dShift) + fC;
+        // collapseAxis*(sum(dNeg)/dNeg.size() - dShift) + fC;
 
     label maxPriority = labelMin;
     DynamicList<label> maxPriorityPts(max(dNeg.size(), dPos.size()));

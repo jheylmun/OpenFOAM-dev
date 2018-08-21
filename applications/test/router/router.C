@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -309,7 +309,7 @@ bool Foam::router::route(const labelList& path, const label pathValue)
     {
         if (weights_[path[leafI]] == labelMax)
         {
-            //Info<< "Cannot route leaf from " << path[0]
+            // Info<< "Cannot route leaf from " << path[0]
             //    << " to " << path[leafI] << " of path " << path
             //    << " since there is no valid route between them" << endl;
 

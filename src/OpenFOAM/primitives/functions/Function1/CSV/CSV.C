@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -92,7 +92,7 @@ template<class Type>
 void Foam::Function1Types::CSV<Type>::read()
 {
     fileName expandedFile(fName_);
-    //IFstream is(expandedFile.expand());
+    // IFstream is(expandedFile.expand());
     autoPtr<ISstream> isPtr(fileHandler().NewIFstream(expandedFile.expand()));
     ISstream& is = isPtr();
 
@@ -273,21 +273,10 @@ void Foam::Function1Types::CSV<Type>::writeData(Ostream& os) const
 
     os.writeKeyword("nHeaderLine") << nHeaderLine_ << token::END_STATEMENT
         << nl;
+
     os.writeKeyword("refColumn") << refColumn_ << token::END_STATEMENT << nl;
 
-    // Force writing labelList in ascii
-    os.writeKeyword("componentColumns");
-    if (os.format() == IOstream::BINARY)
-    {
-        os.format(IOstream::ASCII);
-        os  << componentColumns_;
-        os.format(IOstream::BINARY);
-    }
-    else
-    {
-        os  << componentColumns_;
-    }
-    os  << token::END_STATEMENT << nl;
+    componentColumns_.writeEntry("componentColumns", os);
 
     os.writeKeyword("separator") << string(separator_)
         << token::END_STATEMENT << nl;

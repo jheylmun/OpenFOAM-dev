@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2017-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -49,7 +49,7 @@ Description
 
     The surface is, in general, not flat. Any deviation between the two end
     normals generates expansion, contraction, and twist in the surface. The
-    surface connects with surfaces eminating from connected edges along the end
+    surface connects with surfaces emanating from connected edges along the end
     normals. This is what makes the projection fill space and generate
     consistent overlaps between neighbouring faces.
 
@@ -103,10 +103,9 @@ namespace Foam
                     Class sweptFaceAreaWeightAMI Declaration
 \*---------------------------------------------------------------------------*/
 
-template<class SourcePatch, class TargetPatch>
 class sweptFaceAreaWeightAMI
 :
-    public faceAreaWeightAMI<SourcePatch, TargetPatch>
+    public faceAreaWeightAMI
 {
 private:
 
@@ -248,7 +247,7 @@ public:
     // Constructors
 
         //- Use parent constructors
-        using faceAreaWeightAMI<SourcePatch, TargetPatch>::faceAreaWeightAMI;
+        using faceAreaWeightAMI::faceAreaWeightAMI;
 
 
     //- Destructor
@@ -259,12 +258,6 @@ public:
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 } // End namespace Foam
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-#ifdef NoRepository
-    #include "sweptFaceAreaWeightAMI.C"
-#endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

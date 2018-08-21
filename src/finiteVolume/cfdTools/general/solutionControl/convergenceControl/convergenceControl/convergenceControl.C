@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -93,6 +93,29 @@ bool Foam::convergenceControl::converged()
     }
 
     return false;
+}
+
+
+bool Foam::convergenceControl::endIfConverged(Time& time)
+{
+    if (converged())
+    {
+        if (time.writeTime())
+        {
+            time.stopAt(Time::saNoWriteNow);
+            time.setEndTime(time);
+        }
+        else
+        {
+            time.writeAndEnd();
+        }
+
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 

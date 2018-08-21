@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -63,7 +63,7 @@ void surfaceDisplacementPointPatchVectorField::calcProjection
     const pointField& localPoints = patch().localPoints();
     const labelList& meshPoints = patch().meshPoints();
 
-    //const scalar deltaT = mesh.time().deltaTValue();
+    // const scalar deltaT = mesh.time().deltaTValue();
 
     // Construct large enough vector in direction of projectDir so
     // we're guaranteed to hit something.

@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -339,7 +339,7 @@ void Foam::topoCellLooper::walkAcrossFace
     }
     else
     {
-        //Should choose acc. to geometry!
+        // Should choose acc. to geometry!
         label index = sz/2;
 
         if (debug)

@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -100,17 +100,27 @@ bool mkDir(const fileName&, mode_t=0777);
 bool chMod(const fileName&, const mode_t);
 
 //- Return the file mode
-mode_t mode(const fileName&, const bool followLink = true);
+mode_t mode
+(
+    const fileName&,
+    const bool checkVariants = true,
+    const bool followLink = true
+);
 
 //- Return the file type: DIRECTORY or FILE
-fileName::Type type(const fileName&, const bool followLink = true);
+fileName::Type type
+(
+    const fileName&,
+    const bool checkVariants = true,
+    const bool followLink = true
+);
 
 //- Does the name exist (as DIRECTORY or FILE) in the file system?
-//  Optionally enable/disable check for gzip file.
+//  Optionally enable/disable check for variant files.
 bool exists
 (
     const fileName&,
-    const bool checkGzip=true,
+    const bool checkVariants = true,
     const bool followLink = true
 );
 
@@ -118,29 +128,44 @@ bool exists
 bool isDir(const fileName&, const bool followLink = true);
 
 //- Does the name exist as a FILE in the file system?
-//  Optionally enable/disable check for gzip file.
+//  Optionally enable/disable check for variant files.
 bool isFile
 (
     const fileName&,
-    const bool checkGzip=true,
+    const bool checkVariants = true,
     const bool followLink = true
 );
 
 //- Return size of file
-off_t fileSize(const fileName&, const bool followLink = true);
+off_t fileSize
+(
+    const fileName&,
+    const bool checkVariants = true,
+    const bool followLink = true
+);
 
 //- Return time of last file modification
-time_t lastModified(const fileName&, const bool followLink = true);
+time_t lastModified
+(
+    const fileName&,
+    const bool checkVariants = true,
+    const bool followLink = true
+);
 
 //- Return time of last file modification
-double highResLastModified(const fileName&, const bool followLink = true);
+double highResLastModified
+(
+    const fileName&,
+    const bool checkVariants = true,
+    const bool followLink = true
+);
 
 //- Read a directory and return the entries as a string list
 fileNameList readDir
 (
     const fileName&,
     const fileName::Type=fileName::FILE,
-    const bool filtergz=true,
+    const bool filterVariants = true,
     const bool followLink = true
 );
 
@@ -198,19 +223,6 @@ bool dlSymFound(void* handle, const std::string& symbol);
 
 //- Return all loaded libraries
 fileNameList dlLoaded();
-
-
-// Low level random numbers. Use Random class instead.
-
-//- Seed random number generator.
-void osRandomSeed(const label seed);
-
-//- Return random integer (uniform distribution between 0 and 2^31)
-label osRandomInteger();
-
-//- Return random double precision (uniform distribution between 0 and 1)
-scalar osRandomDouble();
-
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

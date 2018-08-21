@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -187,7 +187,7 @@ class triSurfaceTools
 
             ////- Checks if edge collapse creates triangles on top of each
             ////  other
-            //static bool collapseCreatesDuplicates
+            // static bool collapseCreatesDuplicates
             //(
             //    const triSurface& surf,
             //    const label edgeI,
@@ -279,7 +279,7 @@ public:
         );
 
         ////- Order vertices consistent with face
-        //static void orderVertices
+        // static void orderVertices
         //(
         //    const labelledTri& f,
         //    const label v1,

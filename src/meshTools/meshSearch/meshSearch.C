@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -552,17 +552,15 @@ Foam::meshSearch::boundaryTree() const
 
         if (!overallBbPtr_.valid())
         {
-            Random rndGen(261782);
             overallBbPtr_.reset
             (
                 new treeBoundBox(mesh_.points())
             );
 
             treeBoundBox& overallBb = overallBbPtr_();
+
             // Extend slightly and make 3D
-            overallBb = overallBb.extend(rndGen, 1e-4);
-            overallBb.min() -= point(rootVSmall, rootVSmall, rootVSmall);
-            overallBb.max() += point(rootVSmall, rootVSmall, rootVSmall);
+            overallBb = overallBb.extend(1e-4);
         }
 
         // all boundary faces (not just walls)
@@ -605,17 +603,15 @@ Foam::meshSearch::cellTree() const
 
         if (!overallBbPtr_.valid())
         {
-            Random rndGen(261782);
             overallBbPtr_.reset
             (
                 new treeBoundBox(mesh_.points())
             );
 
             treeBoundBox& overallBb = overallBbPtr_();
+
             // Extend slightly and make 3D
-            overallBb = overallBb.extend(rndGen, 1e-4);
-            overallBb.min() -= point(rootVSmall, rootVSmall, rootVSmall);
-            overallBb.max() += point(rootVSmall, rootVSmall, rootVSmall);
+            overallBb = overallBb.extend(1e-4);
         }
 
         cellTreePtr_.reset

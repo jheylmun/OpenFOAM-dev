@@ -1,9 +1,9 @@
 /*---------------------------------------------------------------------------*\
- =========                   |
- \\      /   F ield          | OpenFOAM: The Open Source CFD Toolbox
-  \\    /    O peration      |
-   \\  /     A nd            | Copyright (C) 2012-2018 OpenFOAM Foundation
-    \\/      M anipulation   |
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Copyright (C) 2012-2018 OpenFOAM Foundation
+     \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
     This file is part of OpenFOAM.
@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
     (
         "Re-sample surfaces used in foamyHexMesh operation"
     );
-    //argList::validArgs.append("inputFile");
+    // argList::validArgs.append("inputFile");
     argList::validArgs.append("(nx ny nz)");
     argList::validArgs.append("outputName");
 

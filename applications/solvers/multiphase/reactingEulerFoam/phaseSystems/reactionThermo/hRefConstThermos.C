@@ -1,8 +1,8 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2015-2017 OpenFOAM Foundation
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Copyright (C) 2015-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -289,77 +289,6 @@ makeThermoPhysicsReactionThermos
     heRhoThermo,
     multiComponentMixture,
     constRefGasHThermoPhysics
-);
-
-
-// Solid thermos
-makeSolidThermoPhysicsType
-(
-    solidThermo,
-    heSolidThermo,
-    pureMixture,
-    hConstSolidThermoPhysics
-);
-
-makeSolidThermoPhysicsType
-(
-    solidThermo,
-    heSolidThermo,
-    pureMixture,
-    hPowerSolidThermoPhysics
-);
-
-makeSolidThermoPhysicsType
-(
-    solidThermo,
-    heSolidThermo,
-    pureMixture,
-    hTransportThermoPoly8SolidThermoPhysics
-);
-
-makeSolidThermoPhysicsType
-(
-    solidThermo,
-    heSolidThermo,
-    pureMixture,
-    hExpKappaConstSolidThermoPhysics
-);
-
-// Solid reaction thermo
-makeReactingSolidThermo
-(
-    solidReactionThermo,
-    heSolidThermo,
-    reactingMixture,
-    constIsoSolidTransport,
-    sensibleEnthalpy,
-    hConstThermo,
-    rhoConst,
-    specie
-);
-
-makeReactingSolidThermo
-(
-    solidReactionThermo,
-    heSolidThermo,
-    reactingMixture,
-    constIsoSolidTransport,
-    sensibleEnthalpy,
-    hPowerThermo,
-    rhoConst,
-    specie
-);
-
-makeReactingSolidThermo
-(
-    solidThermo,
-    heSolidThermo,
-    multiComponentMixture,
-    constIsoSolidTransport,
-    sensibleEnthalpy,
-    hConstThermo,
-    rhoConst,
-    specie
 );
 
 // Solid chemisty models

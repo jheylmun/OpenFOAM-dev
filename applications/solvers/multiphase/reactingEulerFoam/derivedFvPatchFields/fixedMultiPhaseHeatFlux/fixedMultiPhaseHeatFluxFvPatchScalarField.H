@@ -1,8 +1,8 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2015-2017 OpenFOAM Foundation
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Copyright (C) 2015-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -23,9 +23,6 @@ License
 
 Class
     Foam::fixedMultiPhaseHeatFluxFvPatchScalarField
-
-Group
-    grpCmpWallFunctions
 
 Description
     Calculates a wall temperature that produces the specified overall wall heat

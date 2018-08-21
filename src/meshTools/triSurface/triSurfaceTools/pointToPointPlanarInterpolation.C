@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2012-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -216,7 +216,7 @@ void Foam::pointToPointPlanarInterpolation::calcWeights
         {
             localVertices[i] +=
                 perturb_
-               *(rndGen.position(bb.min(), bb.max())-bbMid);
+               *(rndGen.sampleAB<vector>(bb.min(), bb.max()) - bbMid);
         }
 
         // Determine triangulation
@@ -384,7 +384,7 @@ bool Foam::pointToPointPlanarInterpolation::findTime
 
     if (lo == -1)
     {
-        //FatalErrorInFunction
+        // FatalErrorInFunction
         //    << "Cannot find starting sampling values for current time "
         //    << timeVal << nl
         //    << "Have sampling values for times "

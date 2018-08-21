@@ -1,8 +1,8 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2016 OpenFOAM Foundation
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -32,6 +32,7 @@ Description
 \*---------------------------------------------------------------------------*/
 
 #include "fvCFD.H"
+#include "dynamicFvMesh.H"
 #include "psiThermo.H"
 #include "turbulentFluidThermoModel.H"
 #include "basicKinematicCloud.H"
@@ -50,9 +51,9 @@ int main(int argc, char *argv[])
     #define NO_CONTROL
     #include "postProcess.H"
 
-    #include "setRootCase.H"
+    #include "setRootCaseLists.H"
     #include "createTime.H"
-    #include "createMesh.H"
+    #include "createDynamicFvMesh.H"
     #include "createFields.H"
     #include "compressibleCourantNo.H"
 
@@ -63,6 +64,15 @@ int main(int argc, char *argv[])
     while (runTime.loop())
     {
         Info<< "Time = " << runTime.timeName() << nl << endl;
+
+        kinematicCloud.storeGlobalPositions();
+
+        mesh.update();
+
+        if (mesh.changing())
+        {
+            U.correctBoundaryConditions();
+        }
 
         Info<< "Evolving " << kinematicCloud.name() << endl;
         kinematicCloud.evolve();

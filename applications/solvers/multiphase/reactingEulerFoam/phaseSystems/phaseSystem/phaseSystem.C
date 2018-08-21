@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2015-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -220,9 +220,10 @@ Foam::phaseSystem::phaseSystem
     {
         blendingMethods_.insert
         (
-            iter().dict().dictName(),
+            iter().keyword(),
             blendingMethod::New
             (
+                iter().keyword(),
                 iter().dict(),
                 phaseModels_.toc()
             )

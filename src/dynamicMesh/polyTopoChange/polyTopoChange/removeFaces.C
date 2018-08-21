@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -354,7 +354,7 @@ void Foam::removeFaces::mergeFaces
 
         if (pointsToRemove.found(pointi))
         {
-            //Pout<< "**Removing point " << pointi << " from "
+            // Pout<< "**Removing point " << pointi << " from "
             //    << edgeLoop << endl;
         }
         else
@@ -403,7 +403,7 @@ void Foam::removeFaces::mergeFaces
     {
         if (patchFacei != masterIndex)
         {
-            //Pout<< "Removing face " << faceLabels[patchFacei] << endl;
+            // Pout<< "Removing face " << faceLabels[patchFacei] << endl;
 
             meshMod.setAction(polyRemoveFace(faceLabels[patchFacei], facei));
         }
@@ -1229,7 +1229,7 @@ void Foam::removeFaces::setRefinement
         }
     }
 
-    //if (debug)
+    // if (debug)
     //{
     //    labelListList regionToFaces(invertOneToMany(nRegions, faceRegion));
     //

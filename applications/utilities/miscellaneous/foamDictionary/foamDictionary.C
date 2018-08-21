@@ -1,8 +1,8 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2016-2017 OpenFOAM Foundation
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Copyright (C) 2016-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -238,6 +238,8 @@ void remove(dictionary& dict, const dictionary& removeDict)
 
 int main(int argc, char *argv[])
 {
+    #include "removeCaseOptions.H"
+
     writeInfoHeader = false;
 
     argList::addNote("manipulates dictionaries");
@@ -298,11 +300,8 @@ int main(int argc, char *argv[])
         Foam::functionEntries::includeEntry::log = true;
     }
 
-    const bool disableEntries = args.optionFound("disableFunctionEntries");
-    if (disableEntries)
+    if (args.optionFound("disableFunctionEntries"))
     {
-        Info<< "Not expanding variables or dictionary directives"
-            << endl;
         entry::disableFunctionEntries = true;
     }
 
@@ -369,7 +368,7 @@ int main(int argc, char *argv[])
          || args.optionReadIfPresent("add", newValue)
         )
         {
-            bool overwrite = args.optionFound("set");
+            const bool overwrite = args.optionFound("set");
 
             Pair<word> dAk(dictAndKeyword(scopedName));
 
@@ -388,16 +387,16 @@ int main(int argc, char *argv[])
             changed = true;
 
             // Print the changed entry
-            const entry* entPtr = dict.lookupScopedEntryPtr
-            (
-                scopedName,
-                false,
-                true            // Support wildcards
-            );
-            if (entPtr)
-            {
-                Info<< *entPtr;
-            }
+            // const entry* entPtr = dict.lookupScopedEntryPtr
+            // (
+            //     scopedName,
+            //     false,
+            //     true            // Support wildcards
+            // );
+            // if (entPtr)
+            // {
+            //     Info<< *entPtr;
+            // }
         }
         else if (args.optionFound("remove"))
         {

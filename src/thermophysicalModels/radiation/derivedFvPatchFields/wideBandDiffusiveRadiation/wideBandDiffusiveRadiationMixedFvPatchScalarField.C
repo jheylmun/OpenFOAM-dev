@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -230,7 +230,7 @@ updateCoeffs()
             // direction into the wall
             valueFraction()[facei] = 0.0;
             refGrad()[facei] = 0.0;
-            refValue()[facei] = 0.0; //not used
+            refValue()[facei] = 0.0; // not used
 
             // Incident heat flux on this ray direction
             qin[facei] = Iw[facei]*nAve[facei];

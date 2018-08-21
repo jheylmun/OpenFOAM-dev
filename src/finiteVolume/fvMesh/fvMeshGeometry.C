@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -140,8 +140,8 @@ void Foam::fvMesh::makeC() const
         dimLength,
         cellCentres(),
         faceCentres(),
-        true,               //preserveCouples
-        true                //preserveProcOnly
+        true,               // preserveCouples
+        true                // preserveProcOnly
     );
 }
 

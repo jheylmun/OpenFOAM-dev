@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2012-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -180,7 +180,7 @@ void Foam::ParticleCollector<CloudType>::initConcentricCircles()
         Random rnd(1234);
         while (magTangent < small)
         {
-            vector v = rnd.vector01();
+            vector v = rnd.sample01<vector>();
 
             tangent = v - (v & normal_[0])*normal_[0];
             magTangent = mag(tangent);

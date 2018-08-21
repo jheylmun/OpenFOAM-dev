@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -692,8 +692,6 @@ void Foam::backgroundMeshDecomposition::buildPatchAndTree()
     // Overall bb
     treeBoundBox overallBb(boundaryFacesPtr_().localPoints());
 
-    Random& rnd = rndGen_;
-
     bFTreePtr_.reset
     (
         new indexedOctree<treeDataBPatch>
@@ -704,7 +702,7 @@ void Foam::backgroundMeshDecomposition::buildPatchAndTree()
                 boundaryFacesPtr_(),
                 indexedOctree<treeDataBPatch>::perturbTol()
             ),
-            overallBb.extend(rnd, 1e-4),
+            overallBb.extend(1e-4),
             10, // maxLevel
             10, // leafSize
             3.0 // duplicity
@@ -1074,7 +1072,7 @@ bool Foam::backgroundMeshDecomposition::overlapsThisProcessor
     const scalar radiusSqr
 ) const
 {
-    //return bFTreePtr_().findAnyOverlap(centre, radiusSqr);
+    // return bFTreePtr_().findAnyOverlap(centre, radiusSqr);
 
     return bFTreePtr_().findNearest(centre, radiusSqr).hit();
 }
@@ -1448,7 +1446,7 @@ Foam::labelList Foam::backgroundMeshDecomposition::overlapProcessors
 ////
 ////        if (flagOverlap)
 ////        {
-////            //if (vertexOctree.findAnyOverlap(c, rSqr))
+////            // if (vertexOctree.findAnyOverlap(c, rSqr))
 //////            if (vertexOctree.findNearest(c, rSqr*1.001).hit())
 //////            {
 //////                sphereOverlapsCandidate[sI] = true;
@@ -1565,7 +1563,7 @@ Foam::labelList Foam::backgroundMeshDecomposition::overlapProcessors
 //
 //        if (flagOverlap)
 //        {
-//            //if (vertexOctree.findAnyOverlap(c, rSqr))
+//            // if (vertexOctree.findAnyOverlap(c, rSqr))
 ////            if (vertexOctree.findNearest(c, rSqr*1.001).hit())
 ////            {
 ////                sphereOverlapsCandidate[sI] = true;

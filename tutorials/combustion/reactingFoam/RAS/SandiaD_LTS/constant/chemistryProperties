@@ -1,9 +1,9 @@
 /*--------------------------------*- C++ -*----------------------------------*\
-| =========                 |                                                 |
-| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  dev                                   |
-|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
-|    \\/     M anipulation  |                                                 |
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  dev
+     \\/     M anipulation  |
 \*---------------------------------------------------------------------------*/
 FoamFile
 {
@@ -20,7 +20,7 @@ chemistryType
     method          TDAC;
 }
 
-chemistry       off;
+chemistry       on;
 
 importantSpecies
 {
@@ -35,8 +35,8 @@ initialChemicalTimeStep 1e-07;
 odeCoeffs
 {
     solver          seulex;
-    absTol          1e-12;
-    relTol          1e-07;
+    absTol          1e-08;
+    relTol          0.1;
 }
 
 reduction

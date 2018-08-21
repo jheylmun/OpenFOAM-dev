@@ -1,8 +1,8 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2017 OpenFOAM Foundation
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -624,6 +624,15 @@ class vtkPVFoam
             (
                 IOobjectList&,
                 const wordHashSet&
+            );
+
+            //- Get the list of selected objects
+            IOobjectList getObjects
+            (
+                const wordHashSet& selected,
+                const fvMesh& mesh,
+                const fileName& instance,
+                const fileName& local = ""
             );
 
             //- Retrieve the current selections

@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2017-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -114,7 +114,10 @@ inline Foam::scalar Foam::cubicEqn::derivative(const scalar x) const
 
 inline Foam::scalar Foam::cubicEqn::error(const scalar x) const
 {
-    return mag(small*x*(x*(x*3*a() + 2*b()) + c()));
+    return
+        small*magSqr(x)*(mag(x*a()) + mag(b()))
+      + small*mag(x)*(mag(x*(x*a() + b())) + mag(c()))
+      + small*(mag(x*(x*(x*a() + b()) + c())) + mag(d()));
 }
 
 

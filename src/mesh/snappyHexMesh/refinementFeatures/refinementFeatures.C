@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -123,8 +123,8 @@ void Foam::refinementFeatures::read
                     oldToNew[pointi] = newPoints.size();
                     newPoints.append(eMesh.points()[pointi]);
                 }
-                //else if (pointEdges[pointi].size() == 2)
-                //MEJ: do something based on a feature angle?
+                // else if (pointEdges[pointi].size() == 2)
+                // MEJ: do something based on a feature angle?
             }
             label nFeatures = newPoints.size();
             forAll(oldToNew, pointi)
@@ -174,10 +174,10 @@ void Foam::refinementFeatures::read
                 identity(newEdges.size())   // regionEdges
             );
 
-            //Info<< "Constructed extendedFeatureEdgeMesh " << featObj.name()
+            // Info<< "Constructed extendedFeatureEdgeMesh " << featObj.name()
             //    << nl << incrIndent;
-            //eeMesh.writeStats(Info);
-            //Info<< decrIndent << endl;
+            // eeMesh.writeStats(Info);
+            // Info<< decrIndent << endl;
 
             set(featI, new extendedFeatureEdgeMesh(featObj, eeMesh));
         }
@@ -253,14 +253,9 @@ void Foam::refinementFeatures::buildTrees(const label featI)
     // Calculate bb of all points
     treeBoundBox bb(points);
 
-    // Random number generator. Bit dodgy since not exactly random ;-)
-    Random rndGen(65431);
-
     // Slightly extended bb. Slightly off-centred just so on symmetric
     // geometry there are less face/edge aligned items.
-    bb = bb.extend(rndGen, 1e-4);
-    bb.min() -= point(rootVSmall, rootVSmall, rootVSmall);
-    bb.max() += point(rootVSmall, rootVSmall, rootVSmall);
+    bb = bb.extend(1e-4);
 
     edgeTrees_.set
     (
@@ -394,14 +389,9 @@ Foam::refinementFeatures::regionEdgeTrees() const
             // Calculate bb of all points
             treeBoundBox bb(points);
 
-            // Random number generator. Bit dodgy since not exactly random ;-)
-            Random rndGen(65431);
-
             // Slightly extended bb. Slightly off-centred just so on symmetric
             // geometry there are less face/edge aligned items.
-            bb = bb.extend(rndGen, 1e-4);
-            bb.min() -= point(rootVSmall, rootVSmall, rootVSmall);
-            bb.max() += point(rootVSmall, rootVSmall, rootVSmall);
+            bb = bb.extend(1e-4);
 
             trees.set
             (
@@ -514,7 +504,7 @@ Foam::refinementFeatures::refinementFeatures
 //
 //        Info<< "Detected " << featurePoints.size()
 //            << " featurePoints out of " << points.size()
-//            << " points on feature " << i   //eMesh.name()
+//            << " points on feature " << i   // eMesh.name()
 //            << " when using feature cos " << minCos << endl;
 //
 //        buildTrees(i, featurePoints);

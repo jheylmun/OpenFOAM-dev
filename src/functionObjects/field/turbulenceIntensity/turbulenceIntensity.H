@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -23,9 +23,6 @@ License
 
 Class
     Foam::functionObjects::turbulenceIntensity
-
-Group
-    grpFieldFunctionObjects
 
 Description
     Evaluates and writes the turbulence intensity field 'I'.

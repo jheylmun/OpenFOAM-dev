@@ -14,9 +14,9 @@ runParallel snappyHexMesh -overwrite
 find . -type f -iname "*level*" -exec rm {} \;
 
 runParallel topoSet
-runParallel `getApplication`
+runParallel $(getApplication)
 
 runApplication reconstructParMesh -constant
-runApplication reconstructPar
+runApplication reconstructPar -constant
 
 #------------------------------------------------------------------------------

@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2014-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -137,7 +137,7 @@ Foam::searchableDisk::searchableDisk
     radius_(radius)
 {
     // Rough approximation of bounding box
-    //vector span(radius_, radius_, radius_);
+    // vector span(radius_, radius_, radius_);
 
     // See searchableCylinder
     vector span
@@ -167,7 +167,7 @@ Foam::searchableDisk::searchableDisk
     normal_ /= mag(normal_);
 
     // Rough approximation of bounding box
-    //vector span(radius_, radius_, radius_);
+    // vector span(radius_, radius_, radius_);
 
     // See searchableCylinder
     vector span

@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2016-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -23,9 +23,6 @@ License
 
 Class
     Foam::functionObjects::histogram
-
-Group
-    grpFieldFunctionObjects
 
 Description
     Write the volume-weighted histogram of a volScalarField.

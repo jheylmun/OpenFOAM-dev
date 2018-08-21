@@ -1,8 +1,8 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2017 OpenFOAM Foundation
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -41,8 +41,8 @@ Description
 
 SourceFiles
     AMIInterpolation.C
-    AMIInterpolationName.C
     AMIInterpolationParallelOps.C
+    AMIInterpolationTemplates.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -64,20 +64,10 @@ namespace Foam
 {
 
 /*---------------------------------------------------------------------------*\
-                    Class AMIInterpolationName Declaration
+                  Class AMIInterpolation Declaration
 \*---------------------------------------------------------------------------*/
 
-TemplateName(AMIInterpolation);
-
-
-/*---------------------------------------------------------------------------*\
-                      Class AMIInterpolation Declaration
-\*---------------------------------------------------------------------------*/
-
-template<class SourcePatch, class TargetPatch>
 class AMIInterpolation
-:
-    public AMIInterpolationName
 {
 public:
 
@@ -106,10 +96,9 @@ public:
         );
 
         //- Calculate the patch face magnitudes for the given tri-mode
-        template<class Patch>
         static tmp<scalarField> patchMagSf
         (
-            const Patch& patch,
+            const primitivePatch& patch,
             const faceAreaIntersect::triangulationMode triMode
         );
 
@@ -191,8 +180,8 @@ private:
             //- Calculate if patches are on multiple processors
             label calcDistribution
             (
-                const SourcePatch& srcPatch,
-                const TargetPatch& tgtPatch
+                const primitivePatch& srcPatch,
+                const primitivePatch& tgtPatch
             ) const;
 
             label calcOverlappingProcs
@@ -205,7 +194,7 @@ private:
             void distributePatches
             (
                 const mapDistribute& map,
-                const TargetPatch& pp,
+                const primitivePatch& pp,
                 const globalIndex& gi,
                 List<faceList>& faces,
                 List<pointField>& points,
@@ -215,7 +204,7 @@ private:
             void distributeAndMergePatches
             (
                 const mapDistribute& map,
-                const TargetPatch& tgtPatch,
+                const primitivePatch& tgtPatch,
                 const globalIndex& gi,
                 faceList& tgtFaces,
                 pointField& tgtPoints,
@@ -224,8 +213,8 @@ private:
 
             autoPtr<mapDistribute> calcProcMap
             (
-                const SourcePatch& srcPatch,
-                const TargetPatch& tgtPatch
+                const primitivePatch& srcPatch,
+                const primitivePatch& tgtPatch
             ) const;
 
 
@@ -239,23 +228,46 @@ private:
             ) const;
 
 
-        // Evaluation
+        // Manipulation
 
-            //- Normalise the (area) weights - suppresses numerical error in
-            //  weights calculation
-            //  NOTE: if area weights are incorrect by 'a significant amount'
-            //     normalisation may stabilise the solution, but will introduce
-            //     numerical error!
-            static void normaliseWeights
+            //- Sum the weights for each face
+            static void sumWeights
+            (
+                const scalarListList& wght,
+                scalarField& wghtSum
+            );
+
+            //- As above, but for multiple sets of weights
+            static void sumWeights
+            (
+                const UPtrList<scalarListList>& wghts,
+                scalarField& wghtSum
+            );
+
+            //- Print out information relating to the weights sum. Values close
+            //  to one are ideal. This information acts as a measure of the
+            //  quality of the AMI.
+            static void reportSumWeights
             (
                 const scalarField& patchAreas,
                 const word& patchName,
-                const labelListList& addr,
-                scalarListList& wght,
-                scalarField& wghtSum,
-                const bool conformal,
-                const bool output,
+                const scalarField& wghtSum,
                 const scalar lowWeightTol
+            );
+
+            //- Normalise the weights so that they sum to one for each face.
+            //  This may stabilise the solution at the expense of accuracy.
+            static void normaliseWeights
+            (
+                scalarListList& wght,
+                const scalarField& wghtSum
+            );
+
+            //- As above but for multiple sets of weights
+            static void normaliseWeights
+            (
+                UPtrList<scalarListList>& wghts,
+                const scalarField& wghtSum
             );
 
 
@@ -280,85 +292,90 @@ private:
 
             void constructFromSurface
             (
-                const SourcePatch& srcPatch,
-                const TargetPatch& tgtPatch,
-                const autoPtr<searchableSurface>& surfPtr
+                const primitivePatch& srcPatch,
+                const primitivePatch& tgtPatch,
+                const autoPtr<searchableSurface>& surfPtr,
+                const bool report
             );
 
 public:
+
+    //- Runtime type information
+    TypeName("cyclicAMI");
+
 
     // Constructors
 
         //- Construct from components
         AMIInterpolation
         (
-            const SourcePatch& srcPatch,
-            const TargetPatch& tgtPatch,
+            const primitivePatch& srcPatch,
+            const primitivePatch& tgtPatch,
             const faceAreaIntersect::triangulationMode& triMode,
             const bool requireMatch = true,
             const interpolationMethod& method = imFaceAreaWeight,
             const scalar lowWeightCorrection = -1,
-            const bool reverseTarget = false
+            const bool reverseTarget = false,
+            const bool report = true
         );
 
         //- Construct from components
         AMIInterpolation
         (
-            const SourcePatch& srcPatch,
-            const TargetPatch& tgtPatch,
+            const primitivePatch& srcPatch,
+            const primitivePatch& tgtPatch,
             const faceAreaIntersect::triangulationMode& triMode,
             const bool requireMatch = true,
             const word& methodName =
                 interpolationMethodToWord(imFaceAreaWeight),
             const scalar lowWeightCorrection = -1,
-            const bool reverseTarget = false
+            const bool reverseTarget = false,
+            const bool report = true
         );
 
         //- Construct from components, with projection surface
         AMIInterpolation
         (
-            const SourcePatch& srcPatch,
-            const TargetPatch& tgtPatch,
+            const primitivePatch& srcPatch,
+            const primitivePatch& tgtPatch,
             const autoPtr<searchableSurface>& surf,
             const faceAreaIntersect::triangulationMode& triMode,
             const bool requireMatch = true,
             const interpolationMethod& method = imFaceAreaWeight,
             const scalar lowWeightCorrection = -1,
-            const bool reverseTarget = false
+            const bool reverseTarget = false,
+            const bool report = true
         );
 
         //- Construct from components, with projection surface
         AMIInterpolation
         (
-            const SourcePatch& srcPatch,
-            const TargetPatch& tgtPatch,
+            const primitivePatch& srcPatch,
+            const primitivePatch& tgtPatch,
             const autoPtr<searchableSurface>& surf,
             const faceAreaIntersect::triangulationMode& triMode,
             const bool requireMatch = true,
             const word& methodName =
                 interpolationMethodToWord(imFaceAreaWeight),
             const scalar lowWeightCorrection = -1,
-            const bool reverseTarget = false
+            const bool reverseTarget = false,
+            const bool report = true
         );
 
-        //- Construct from agglomeration of AMIInterpolation. Agglomeration
-        //  passed in as new coarse size and addressing from fine from coarse
+        //- Construct from agglomeration of AMIInterpolation.
+        //  Agglomeration passed in as new coarse size and addressing from fine
+        //  from coarse
         AMIInterpolation
         (
-            const AMIInterpolation<SourcePatch, TargetPatch>& fineAMI,
+            const AMIInterpolation& fineAMI,
             const labelList& sourceRestrictAddressing,
-            const labelList& neighbourRestrictAddressing
+            const labelList& neighbourRestrictAddressing,
+            const bool report = false
         );
 
 
     //- Destructor
-    ~AMIInterpolation();
-
-    // Typedef to SourcePatch type this AMIInterplation is instantiated on
-    typedef SourcePatch sourcePatchType;
-
-    // Typedef to TargetPatch type this AMIInterplation is instantiated on
-    typedef TargetPatch targetPatchType;
+    virtual ~AMIInterpolation();
 
 
     // Member Functions
@@ -437,9 +454,27 @@ public:
             //- Update addressing and weights
             void update
             (
-                const SourcePatch& srcPatch,
-                const TargetPatch& tgtPatch
+                const primitivePatch& srcPatch,
+                const primitivePatch& tgtPatch,
+                const bool report
             );
+
+            //- Sum the weights on both sides of an AMI
+            static void sumWeights(AMIInterpolation& AMI);
+
+            //- As above, but for multiple AMI-s
+            static void sumWeights(PtrList<AMIInterpolation>& AMIs);
+
+            //- Print out information relating to the weights sum. Values close
+            //  to one are ideal. This information acts as a measure of the
+            //  quality of the AMI.
+            static void reportSumWeights(AMIInterpolation& AMI);
+
+            //- Normalise the weights on both sides of an AMI
+            static void normaliseWeights(AMIInterpolation& AMI);
+
+            //- As above, but for multiple AMI-s
+            static void normaliseWeights(UPtrList<AMIInterpolation>& AMIs);
 
 
         // Evaluation
@@ -543,8 +578,8 @@ public:
             //- Return source patch face index of point on target patch face
             label srcPointFace
             (
-                const SourcePatch& srcPatch,
-                const TargetPatch& tgtPatch,
+                const primitivePatch& srcPatch,
+                const primitivePatch& tgtPatch,
                 const vector& n,
                 const label tgtFacei,
                 point& tgtPoint
@@ -554,8 +589,8 @@ public:
             //- Return target patch face index of point on source patch face
             label tgtPointFace
             (
-                const SourcePatch& srcPatch,
-                const TargetPatch& tgtPatch,
+                const primitivePatch& srcPatch,
+                const primitivePatch& tgtPatch,
                 const vector& n,
                 const label srcFacei,
                 point& srcPoint
@@ -568,8 +603,8 @@ public:
             //- Write face connectivity as OBJ file
             void writeFaceConnectivity
             (
-                const SourcePatch& srcPatch,
-                const TargetPatch& tgtPatch,
+                const primitivePatch& srcPatch,
+                const primitivePatch& tgtPatch,
                 const labelListList& srcAddress
             ) const;
 };
@@ -586,8 +621,7 @@ public:
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #ifdef NoRepository
-    #include "AMIInterpolation.C"
-    #include "AMIInterpolationParallelOps.C"
+    #include "AMIInterpolationTemplates.C"
 #endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

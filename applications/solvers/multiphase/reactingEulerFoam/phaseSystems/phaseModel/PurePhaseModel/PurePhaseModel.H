@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2015-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -88,6 +88,9 @@ public:
 
             //- Return the species mass fractions
             virtual const PtrList<volScalarField>& Y() const;
+
+            //- Return a species mass fraction by name
+            virtual const volScalarField& Y(const word& name) const;
 
             //- Access the species mass fractions
             virtual PtrList<volScalarField>& YRef();

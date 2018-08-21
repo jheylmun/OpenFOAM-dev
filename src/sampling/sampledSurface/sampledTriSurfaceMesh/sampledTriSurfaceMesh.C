@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -109,10 +109,7 @@ Foam::sampledTriSurfaceMesh::nonCoupledboundaryTree() const
 
 
         treeBoundBox overallBb(mesh().points());
-        Random rndGen(123456);
-        overallBb = overallBb.extend(rndGen, 1e-4);
-        overallBb.min() -= point(rootVSmall, rootVSmall, rootVSmall);
-        overallBb.max() += point(rootVSmall, rootVSmall, rootVSmall);
+        overallBb = overallBb.extend(1e-4);
 
         boundaryTreePtr_.reset
         (
@@ -200,11 +197,8 @@ bool Foam::sampledTriSurfaceMesh::update(const meshSearch& meshSearcher)
     }
     else
     {
-        // Search for nearest boundaryFace
+        // Search on all non-coupled boundary faces
 
-        ////- Search on all (including coupled) boundary faces
-        //const indexedOctree<treeDataFace>& bTree = meshSearcher.boundaryTree()
-        //- Search on all non-coupled boundary faces
         const indexedOctree<treeDataFace>& bTree = nonCoupledboundaryTree();
 
         forAll(fc, triI)

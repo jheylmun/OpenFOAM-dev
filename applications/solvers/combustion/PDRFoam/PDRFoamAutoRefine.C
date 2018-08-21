@@ -1,8 +1,8 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2016 OpenFOAM Foundation
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -30,7 +30,7 @@ Description
 
     Combusting RANS code using the b-Xi two-equation model.
     Xi may be obtained by either the solution of the Xi transport
-    equation or from an algebraic exression.  Both approaches are
+    equation or from an algebraic expression.  Both approaches are
     based on Gulder's flame speed correlation which has been shown
     to be appropriate by comparison with the results from the
     spectral model.
@@ -72,7 +72,7 @@ Description
 
 int main(int argc, char *argv[])
 {
-    #include "setRootCase.H"
+    #include "setRootCaseLists.H"
 
     #include "createTime.H"
     #include "createDynamicFvMesh.H"

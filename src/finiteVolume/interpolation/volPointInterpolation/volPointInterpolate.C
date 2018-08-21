@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -424,7 +424,7 @@ Foam::volPointInterpolation::interpolate
                     name
                 );
 
-            if (pf.upToDate(vf))    //TBD: , vf.mesh().points()))
+            if (pf.upToDate(vf))    // TBD: , vf.mesh().points()))
             {
                 solution::cachePrintMessage("Reusing", name, vf);
                 return pf;

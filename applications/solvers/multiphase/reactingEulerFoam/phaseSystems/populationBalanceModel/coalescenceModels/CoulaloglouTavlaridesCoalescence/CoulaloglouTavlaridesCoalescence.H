@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -28,29 +28,29 @@ Description
     Model of Coulaloglou and Tavlarides (1977). The coalescence rate is
     calculated by
 
-        \f[
-            C_1 (v_i^{2/3} + v_j^{2/3}) (v_i^{2/9} + v_j^{2/9})^{1/2}
-            \frac{\epsilon_c^{1/3}}{1 + \alpha_d}
-            \text{exp}
-            \left[
-              - C_2 \frac{\mu_c \rho_c}{\sigma^2}
-                \frac{\epsilon_c}{(1 + \alpha_d)^{3}}
-                \left(
-                    \frac{v_i^{1/3} v_j^{1/3}}{v_i^{1/3} + v_j^{1/3}}
-                \right)^{4}
-            \right]
-        \f]
+    \f[
+        C_1 (v_i^{2/3} + v_j^{2/3}) (v_i^{2/9} + v_j^{2/9})^{1/2}
+        \frac{\epsilon_c^{1/3}}{1 + \alpha_d}
+        \text{exp}
+        \left[
+          - C_2 \frac{\mu_c \rho_c}{\sigma^2}
+            \frac{\epsilon_c}{(1 + \alpha_d)^{3}}
+            \left(
+                \frac{v_i^{1/3} v_j^{1/3}}{v_i^{1/3} + v_j^{1/3}}
+            \right)^{4}
+        \right]
+    \f]
 
     where
 
     \vartable
         \sigma      |  Surface tension [N/m]
-        v_i         |  Volume of bubble i [m3]
-        v_j         |  Volume of bubble j [m3]
+        v_i         |  Volume of droplet i [m3]
+        v_j         |  Volume of droplet j [m3]
         \epsilon_c  |  Turbulent dissipation rate of continuous phase [m2/s3]
         \alpha_d    |  Total void fraction of disperse phase [-]
         \mu_c       |  Molecular dynamic viscosity of liquid phase [Pa s]
-        \rho_c      |  Density of continous phase [kg/m3]
+        \rho_c      |  Density of continuous phase [kg/m3]
     \endvartable
 
     References:

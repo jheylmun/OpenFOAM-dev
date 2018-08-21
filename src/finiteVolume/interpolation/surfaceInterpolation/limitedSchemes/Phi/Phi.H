@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -95,7 +95,7 @@ public:
         scalar phiCD = cdWeight*phiP + (1 - cdWeight)*phiN;
 
         // Calculate the effective limiter for the Phi interpolation
-        //scalar PLimiter =
+        // scalar PLimiter =
         //    (1.0 - k_) + k_*(faceFlux - phiU)/stabilise(phiCD - phiU, small);
 
         scalar PLimiter =

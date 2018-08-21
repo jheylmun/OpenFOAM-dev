@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2015-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -162,6 +162,10 @@ addMassTransferMomentumTransfer(phaseSystem::momentumTransferTable& eqns) const
         {
             continue;
         }
+
+        // Note that the phase UEqn contains a continuity error term, which
+        // implicitly adds a mass transfer term of fvm::Sp(dmdt, U). These
+        // additions do not include this term.
 
         const volScalarField dmdt(this->dmdt(pair));
 

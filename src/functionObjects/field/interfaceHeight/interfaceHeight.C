@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2017-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -28,7 +28,7 @@ License
 #include "interpolation.H"
 #include "IOmanip.H"
 #include "meshSearch.H"
-#include "midPointAndFaceSet.H"
+#include "lineCellFace.H"
 #include "Time.H"
 #include "uniformDimensionedFields.H"
 #include "volFields.H"
@@ -72,7 +72,7 @@ void Foam::functionObjects::interfaceHeight::writePositions()
     forAll(locations_, li)
     {
         // Create a set along a ray projected in the direction of gravity
-        const midPointAndFaceSet set
+        const sampledSets::lineCellFace set
         (
             "",
             mesh_,

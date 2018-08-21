@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -87,7 +87,7 @@ const Foam::label edgesArray[12][2] =
 
 const Foam::edgeList Foam::treeBoundBox::edges
 (
-    //initListList<edge, label, 12, 2>(edgesArray)
+    // initListList<edge, label, 12, 2>(edgesArray)
     calcEdges(edgesArray)
 );
 

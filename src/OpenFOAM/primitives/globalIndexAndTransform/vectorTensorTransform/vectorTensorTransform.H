@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -145,9 +145,17 @@ public:
             //- Inverse transform the given pointField
             inline pointField invTransformPosition(const pointField& pts) const;
 
+            //- Transform the given type
+            template<class Type>
+            Type transform(const Type&) const;
+
             //- Transform the given field
             template<class Type>
             tmp<Field<Type>> transform(const Field<Type>&) const;
+
+            //- Inverse transform the given type
+            template<class Type>
+            Type invTransform(const Type&) const;
 
             //- Inverse transform the given field
             template<class Type>

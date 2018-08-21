@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -154,6 +154,9 @@ public:
 
             //- Flag to indicate whether convergance has been reached
             bool converged();
+
+            //- End the run if convergance has been reached
+            bool endIfConverged(Time& time);
 };
 
 

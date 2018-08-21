@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -66,11 +66,7 @@ bool Foam::simpleControl::run(Time& time)
 {
     read();
 
-    if (converged())
-    {
-        time.writeAndEnd();
-    }
-    else
+    if (!endIfConverged(time))
     {
         storePrevIterFields();
     }
@@ -83,11 +79,7 @@ bool Foam::simpleControl::loop(Time& time)
 {
     read();
 
-    if (converged())
-    {
-        time.writeAndEnd();
-    }
-    else
+    if (!endIfConverged(time))
     {
         storePrevIterFields();
     }

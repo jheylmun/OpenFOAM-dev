@@ -1,8 +1,8 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2017 OpenFOAM Foundation
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Copyright (C) 2017-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -29,7 +29,7 @@ Description
     Temperature dependent contact angle force with a stochastic perturbation
 
     The contact angle in degrees is specified as a Foam::Function1 type, to
-    enable the use of, e.g.  contant, polynomial, table values and the
+    enable the use of, e.g.  constant, polynomial, table values and the
     stochastic perturbation obtained from a
     Foam::distributionModels::distributionModel
 
@@ -51,7 +51,7 @@ SourceFiles
 #include "contactAngleForce.H"
 #include "Function1.H"
 #include "distributionModel.H"
-#include "cachedRandom.H"
+#include "Random.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -76,7 +76,7 @@ class perturbedTemperatureDependentContactAngleForce
         autoPtr<Function1<scalar>> thetaPtr_;
 
         //- Random number generator
-        cachedRandom rndGen_;
+        Random rndGen_;
 
         //- Parcel size PDF model
         const autoPtr<distributionModel> distribution_;

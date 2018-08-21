@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -390,8 +390,8 @@ void Foam::FreeStream<CloudType>::inflow()
                     vector U =
                         sqrt(physicoChemical::k.value()*faceTemperature/mass)
                        *(
-                            rndGen.GaussNormal()*t1
-                          + rndGen.GaussNormal()*t2
+                            rndGen.scalarNormal()*t1
+                          + rndGen.scalarNormal()*t2
                         )
                       + (t1 & faceVelocity)*t1
                       + (t2 & faceVelocity)*t2

@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2017-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -581,8 +581,8 @@ Foam::autoPtr<Foam::ISstream> Foam::decomposedBlockData::readBlocks
     headerIO.rename(name);
     Pstream::scatter(headerIO.headerClassName(), Pstream::msgType(), comm);
     Pstream::scatter(headerIO.note(), Pstream::msgType(), comm);
-    //Pstream::scatter(headerIO.instance(), Pstream::msgType(), comm);
-    //Pstream::scatter(headerIO.local(), Pstream::msgType(), comm);
+    // Pstream::scatter(headerIO.instance(), Pstream::msgType(), comm);
+    // Pstream::scatter(headerIO.local(), Pstream::msgType(), comm);
 
     return realIsPtr;
 }
@@ -859,7 +859,7 @@ bool Foam::decomposedBlockData::writeBlocks
         label startProc = 1;
         label nSendProcs = nProcs-1;
 
-        while (nSendProcs > 0)
+        while (nSendProcs > 0 && startProc < nProcs)
         {
             nSendProcs = calcNumProcs
             (
@@ -873,7 +873,7 @@ bool Foam::decomposedBlockData::writeBlocks
                 startProc
             );
 
-            if (startProc == nProcs || nSendProcs == 0)
+            if (nSendProcs == 0)
             {
                 break;
             }
@@ -987,13 +987,13 @@ bool Foam::decomposedBlockData::writeData(Ostream& os) const
         Pstream::scatter(formatString, Pstream::msgType(), comm_);
     }
 
-    //word masterName(name());
-    //Pstream::scatter(masterName, Pstream::msgType(), comm_);
+    // word masterName(name());
+    // Pstream::scatter(masterName, Pstream::msgType(), comm_);
 
     Pstream::scatter(io.headerClassName(), Pstream::msgType(), comm_);
     Pstream::scatter(io.note(), Pstream::msgType(), comm_);
-    //Pstream::scatter(io.instance(), Pstream::msgType(), comm);
-    //Pstream::scatter(io.local(), Pstream::msgType(), comm);
+    // Pstream::scatter(io.instance(), Pstream::msgType(), comm);
+    // Pstream::scatter(io.local(), Pstream::msgType(), comm);
 
     fileName masterLocation(instance()/db().dbDir()/local());
     Pstream::scatter(masterLocation, Pstream::msgType(), comm_);

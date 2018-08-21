@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2017-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -77,21 +77,6 @@ Foam::diameterModels::binaryBreakupModel::binaryBreakupModel
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
-
-const Foam::phaseCompressibleTurbulenceModel&
-Foam::diameterModels::binaryBreakupModel::continuousTurbulence() const
-{
-    return
-        popBal_.mesh().lookupObject<phaseCompressibleTurbulenceModel>
-        (
-            IOobject::groupName
-            (
-                turbulenceModel::propertiesName,
-                popBal_.continuousPhase().name()
-            )
-        );
-}
-
 
 void Foam::diameterModels::binaryBreakupModel::correct()
 {}

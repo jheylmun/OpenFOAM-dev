@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -81,7 +81,7 @@ public:
 
     // Constructors
 
-        //- Construct from the time, a the name of the algorithm and a registry
+        //- Construct from the time, the name of the algorithm and a registry
         solutionControl
         (
             const objectRegistry& registry,

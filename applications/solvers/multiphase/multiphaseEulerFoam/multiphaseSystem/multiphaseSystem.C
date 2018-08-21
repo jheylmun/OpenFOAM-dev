@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -687,8 +687,8 @@ Foam::multiphaseSystem::dragCoeffs() const
             (
                 max
                 (
-                    //fvc::average(dm.phase1()*dm.phase2()),
-                    //fvc::average(dm.phase1())*fvc::average(dm.phase2()),
+                    // fvc::average(dm.phase1()*dm.phase2()),
+                    // fvc::average(dm.phase1())*fvc::average(dm.phase2()),
                     dm.phase1()*dm.phase2(),
                     dm.residualPhaseFraction()
                 )

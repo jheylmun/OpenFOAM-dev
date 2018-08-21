@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -225,20 +225,9 @@ corrCriteriaSatisfied() const
 
 void Foam::singleRegionCorrectorConvergenceControl::resetCorrSolveIndex()
 {
-    const dictionary& solverDict = mesh_.solverPerformanceDict();
-    forAllConstIter(dictionary, solverDict, iter)
+    forAll(corrResidualControl_, i)
     {
-        const word& variableName = iter().keyword();
-        const label fieldi =
-            convergenceControl::residualControlIndex
-            (
-                variableName,
-                corrResidualControl_
-            );
-        if (fieldi != -1)
-        {
-            corrResidualControl_[fieldi].solveIndex = 0;
-        }
+        corrResidualControl_[i].solveIndex = 0;
     }
 }
 

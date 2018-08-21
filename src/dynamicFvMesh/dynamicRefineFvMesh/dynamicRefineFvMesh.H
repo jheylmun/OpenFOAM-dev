@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -38,7 +38,7 @@ Description
         lowerRefineLevel 0.001;
         upperRefineLevel 0.999;
         // If value < unrefineLevel (default=great) unrefine
-        //unrefineLevel   10;
+        // unrefineLevel   10;
         // Have slower than 2:1 refinement
         nBufferLayers   1;
         // Refine cells only up to maxRefinement levels
@@ -51,10 +51,10 @@ Description
         // NaN to detect use of mapped variable
         correctFluxes
         (
-            (phi none)  //NaN)   //none)
-            (nHatf none)   //none)
-            (rho*phi none)   //none)
-            (ghf none)  //NaN)   //none)
+            (phi none)  // NaN)   // none)
+            (nHatf none)   // none)
+            (rho*phi none)   // none)
+            (ghf none)  // NaN)   // none)
         );
         // Write the refinement level as a volScalarField
         dumpLevel       true;

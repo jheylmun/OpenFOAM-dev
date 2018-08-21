@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
+   \\    /   O peration     | Website:  https://openfoam.org
     \\  /    A nd           | Copyright (C) 2014-2018 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
@@ -174,11 +174,8 @@ void createBoundaryEdgeTrees
         // geometry there are less face/edge aligned items.
         treeBoundBox bb
         (
-            treeBoundBox(UList<point>(surf.localPoints())).extend(rndGen, 1e-4)
+            treeBoundBox(UList<point>(surf.localPoints())).extend(1e-4)
         );
-
-        bb.min() -= point(rootVSmall, rootVSmall, rootVSmall);
-        bb.max() += point(rootVSmall, rootVSmall, rootVSmall);
 
         bEdgeTrees.set
         (
