@@ -74,6 +74,43 @@ Foam::liquidPhaseModel::~liquidPhaseModel()
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
+Foam::tmp<Foam::volScalarField> Foam::liquidPhaseModel::c() const
+{
+    const dictionary& eosDict =
+        fluid_.mesh().lookupObject<dictionary>
+        (
+            IOobject::groupName
+            (
+                "thermophysicalProperties",
+                name()
+            )
+        ).subDict("mixture").subDict("equationOfState");
+    dimensionedScalar pInf
+    (
+        "p0",
+        dimPressure,
+        eosDict
+    );
+    dimensionedScalar gamma
+    (
+        "gamma",
+        dimless,
+        eosDict
+    );
+
+    return tmp<volScalarField>
+    (
+        new volScalarField
+        (
+            IOobject::groupName("a", name()),
+            sqrt
+            (
+                gamma*(p_ + pInf)/rho_
+            )
+        )
+    );
+}
+
 void Foam::liquidPhaseModel::advect
 (
     const label stepi,
@@ -194,7 +231,7 @@ void Foam::liquidPhaseModel::encode()
 void Foam::liquidPhaseModel::correctThermo()
 {
     this->E_ = this->he_ + 0.5*magSqr(U_);
-    thermoPtr_->correct();
+//     thermoPtr_->correct();
 }
 
 void Foam::liquidPhaseModel::store()

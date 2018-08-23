@@ -21,18 +21,18 @@ compressible.air
 }
 compressible.water
 {
-    fluxScheme      HLLC;
+    fluxScheme      AUSMPlus;
 }
 
 ddtSchemes
 {
     default         Euler;
-    fluxIntegrator RK45;
+    fluxIntegrator  RK2SSP;
 }
 
 gradSchemes
 {
-    default         cellLimited leastSquares 0.2;
+    default         faceLimited leastSquares 0.2;
 }
 
 divSchemes

@@ -57,17 +57,8 @@ class AUSMPlusFlux
     // Private Data
 
         //- Coefficients
-        scalar beta_ = 0.125;
-        scalar fa_;
-
-        //- Dispersion coefficient
-        scalar D_;
-
-        //- Max volume fraction
-        scalar alphaMax_;
-
-        //- Minimum volume fraction where frictional pressure is present
-        scalar alphaMinFriction_;
+        scalar ku_;
+        scalar kp_;
 
         //- Cut off mach Number
         dimensionedScalar cutOffMa_;
@@ -82,17 +73,18 @@ class AUSMPlusFlux
         // Private functions
 
             //- First polynomial
-            tmp<surfaceScalarField> M1
+            tmp<surfaceScalarField> f
             (
                 const surfaceScalarField& M,
                 const label sign
             );
 
             //- Second polynomial
-            tmp<surfaceScalarField> M2
+            tmp<surfaceScalarField> beta
             (
                 const surfaceScalarField& M,
-                const label sign
+                const label sign,
+                const surfaceScalarField& fa
             );
 
 

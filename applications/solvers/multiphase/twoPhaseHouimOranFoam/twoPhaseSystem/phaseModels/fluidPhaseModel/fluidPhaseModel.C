@@ -32,6 +32,7 @@ License
 #include "fvcFlux.H"
 #include "surfaceInterpolate.H"
 #include "addToRunTimeSelectionTable.H"
+#include "physicoChemicalConstants.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
@@ -121,12 +122,19 @@ void Foam::fluidPhaseModel::advect
             (F & otherPhase().U())
           - pi*fvc::div(otherPhase().alphaPhi());
     }
+    else
+    {
+        deltaAlphaRhoE_[stepi] += (pi*Ui) & gradAlpha_;
+    }
     tmp<volScalarField> alpha;
     tmp<volScalarField> deltaAlpha;
     if (!otherPhase().granular())
     {
-        alpha.ref() = (*this)*coeffs[stepi];
-        deltaAlpha.ref() = deltaAlpha_[stepi];
+        alpha = (*this)*coeffs[stepi];
+        deltaAlpha = tmp<volScalarField>
+        (
+            new volScalarField(deltaAlpha_[stepi])
+        );
     }
     volScalarField alphaRho(alphaRho_*coeffs[stepi]);
     volVectorField alphaRhoU(alphaRhoU_*coeffs[stepi]);
@@ -247,7 +255,7 @@ void Foam::fluidPhaseModel::decode()
             IOobject::groupName("alpha", otherPhase().name())
         );
         volScalarField& alpha2 = liquid;
-        const rhoThermo& otherThermo = liquid.thermo();
+        rhoThermo& otherThermo = liquid.thermo();
 
         volScalarField A(alphaRho_*(thermoPtr_->gamma() - 1.0)*he_);
         volScalarField B
@@ -258,6 +266,7 @@ void Foam::fluidPhaseModel::decode()
         (
             sqr(otherGamma*pInf - A - B) + 4.0*A*otherGamma*pInf
         );
+        delta.max(0);
         thermoPtr_->p() = 0.5*(A + B - otherGamma*pInf + sqrt(delta));
         thermoPtr_->correct();
 
@@ -267,12 +276,22 @@ void Foam::fluidPhaseModel::decode()
         volScalarField& alpha = *this;
         alpha = A/thermoPtr_->p();
         alpha.max(residualAlpha_);
+        alpha.correctBoundaryConditions();
         rho_ = alphaRho_/alpha;
+        rho_.correctBoundaryConditions();
+
+        thermoPtr_->T() =
+            (thermoPtr_->gamma() - 1.0)
+           /(Foam::constant::physicoChemical::R/thermoPtr_->W())*he_;
+
+        otherThermo.T() =
+            otherGamma*otherThermo.he()
+           /(((otherGamma - 1.0)*pInf/(p_ + pInf) + 1.0)*otherThermo.Cp());
 
         alpha2 = 1.0 - alpha;
         liquid.rho() =
             liquid.alphaRho()/Foam::max(alpha2, liquid.residualAlpha());
-        liquid.thermo().correct();
+//         liquid.thermo().correct();
     }
     else
     {

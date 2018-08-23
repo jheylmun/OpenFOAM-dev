@@ -54,7 +54,7 @@ class liquidPhaseModel
     // Private member data
 
         //- Constant reference to thermodynamic pressure
-        volScalarField& p_;
+        const volScalarField& p_;
 
         //- Model to calculate hyperbolic phase flux
         autoPtr<fluidFluxFunction> fluxFunction_;
@@ -99,6 +99,9 @@ public:
             NotImplemented;
             return *this;
         }
+
+        //- Speed of sound of the phase
+        virtual tmp<volScalarField> c() const;
 
         //- Return the phase volumentric flux
         virtual const surfaceScalarField& phi() const

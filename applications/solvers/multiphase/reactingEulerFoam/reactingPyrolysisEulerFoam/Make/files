@@ -1,0 +1,3 @@
+reactingPyrolysisEulerFoam.C
+
+EXE = $(FOAM_APPBIN)/reactingPyrolysisEulerFoam

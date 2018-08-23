@@ -1027,6 +1027,8 @@ void Foam::twoPhaseSystem::relax()
     U_ = mixtureU();
     p_ = mixturep();
 
+    relaxPressure();
+
 }
 
 

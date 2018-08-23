@@ -18,8 +18,8 @@ FoamFile
 phases (air water);
 relaxation
 {
-    instantRelaxation       yes;
-    pressureRelaxationTime  5e-4;
+    instantRelaxation       no;
+    pressureRelaxationTime  1e-3;
 }
 
 air
@@ -73,25 +73,25 @@ aspectRatio
 
 drag
 (
-//     (air in water)
-//     {
-//         type            SchillerNaumann;
-//         residualRe      1e-3;
-//         swarmCorrection
-//         {
-//             type        none;
-//         }
-//     }
-//
-//     (water in air)
-//     {
-//         type            SchillerNaumann;
-//         residualRe      1e-3;
-//         swarmCorrection
-//         {
-//             type        none;
-//         }
-//     }
+    (air in water)
+    {
+        type            SchillerNaumann;
+        residualRe      1e-3;
+        swarmCorrection
+        {
+            type        none;
+        }
+    }
+
+    (water in air)
+    {
+        type            SchillerNaumann;
+        residualRe      1e-3;
+        swarmCorrection
+        {
+            type        none;
+        }
+    }
 );
 
 virtualMass
@@ -100,6 +100,14 @@ virtualMass
 
 heatTransfer
 (
+    (air in water)
+    {
+        type RanzMarshall;
+    }
+    (water in air)
+    {
+        type RanzMarshall;
+    }
 );
 
 lift
