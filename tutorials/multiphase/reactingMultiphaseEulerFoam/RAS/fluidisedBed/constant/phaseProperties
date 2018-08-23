@@ -21,7 +21,7 @@ phases (air particles particles1 particles2);
 
 particles
 {
-    type          purePhaseModel;
+    type          pureSolidPhaseModel;
 
     diameterModel constant;
     constantCoeffs

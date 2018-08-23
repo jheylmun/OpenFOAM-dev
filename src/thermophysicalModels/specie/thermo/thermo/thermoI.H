@@ -583,6 +583,7 @@ inline Foam::scalar Foam::species::thermo<Thermo, Type>::THErho
     return Type<thermo<Thermo, Type>>::THErho(*this, he, rho, T0);
 }
 
+
 template<class Thermo, template<class> class Type>
 inline Foam::scalar
 Foam::species::thermo<Thermo, Type>::dKcdTbyKc
@@ -682,6 +683,7 @@ inline Foam::scalar Foam::species::thermo<Thermo, Type>::TEarho
         &thermo<Thermo, Type>::limit
     );
 }
+
 
 template<class Thermo, template<class> class Type>
 inline Foam::scalar
