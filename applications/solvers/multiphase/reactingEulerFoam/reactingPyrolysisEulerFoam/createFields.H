@@ -23,8 +23,7 @@ forAll(phases, phaseI)
         gasReactionPhases.append(dict.lookup("gasPhase"));
     }
 }
-Info<<solidReactionPhases<<endl;
-Info<<gasReactionPhases<<endl;
+
 dimensionedScalar pMin
 (
     "pMin",

@@ -117,37 +117,60 @@ void Foam::Reaction<ReactionThermo>::setThermo
     const HashPtrTable<ReactionThermo>& thermoDatabase
 )
 {
-    typename ReactionThermo::thermoType rhsThermo
-    (
-        rhs_[0].stoichCoeff
-       *(*thermoDatabase[species_[rhs_[0].index]]).W()
-       *(*thermoDatabase[species_[rhs_[0].index]])
-    );
-
-    for (label i=1; i<rhs_.size(); ++i)
+    typename ReactionThermo::thermoType* rhsThermo = nullptr;
+    typename ReactionThermo::thermoType* lhsThermo = nullptr;
+    if (rhs_.size() > 0)
     {
-        rhsThermo +=
-            rhs_[i].stoichCoeff
-           *(*thermoDatabase[species_[rhs_[i].index]]).W()
-           *(*thermoDatabase[species_[rhs_[i].index]]);
+        rhsThermo = new typename ReactionThermo::thermoType
+        (
+            rhs_[0].stoichCoeff
+           *(*thermoDatabase[species_[rhs_[0].index]]).W()
+           *(*thermoDatabase[species_[rhs_[0].index]])
+        );
+
+        for (label i=1; i<rhs_.size(); ++i)
+        {
+            *rhsThermo +=
+                rhs_[i].stoichCoeff
+               *(*thermoDatabase[species_[rhs_[i].index]]).W()
+               *(*thermoDatabase[species_[rhs_[i].index]]);
+        }
+
+    }
+    if (lhs_.size() > 0)
+    {
+        lhsThermo = new typename ReactionThermo::thermoType
+        (
+            lhs_[0].stoichCoeff
+           *(*thermoDatabase[species_[lhs_[0].index]]).W()
+           *(*thermoDatabase[species_[lhs_[0].index]])
+        );
+
+        for (label i=1; i<lhs_.size(); ++i)
+        {
+            *lhsThermo +=
+                lhs_[i].stoichCoeff
+               *(*thermoDatabase[species_[lhs_[i].index]]).W()
+               *(*thermoDatabase[species_[lhs_[i].index]]);
+        }
     }
 
-    typename ReactionThermo::thermoType lhsThermo
-    (
-        lhs_[0].stoichCoeff
-       *(*thermoDatabase[species_[lhs_[0].index]]).W()
-       *(*thermoDatabase[species_[lhs_[0].index]])
-    );
-
-    for (label i=1; i<lhs_.size(); ++i)
+    if (lhsThermo && rhsThermo)
     {
-        lhsThermo +=
-            lhs_[i].stoichCoeff
-           *(*thermoDatabase[species_[lhs_[i].index]]).W()
-           *(*thermoDatabase[species_[lhs_[i].index]]);
+        ReactionThermo::thermoType::operator=(*lhsThermo == *rhsThermo);
     }
-
-    ReactionThermo::thermoType::operator=(lhsThermo == rhsThermo);
+    else if (rhsThermo)
+    {
+        ReactionThermo::thermoType::operator=(*rhsThermo);
+    }
+    else if (lhsThermo)
+    {
+        ReactionThermo::thermoType::operator=(*lhsThermo);
+    }
+    else
+    {
+        return;
+    }
 }
 
 

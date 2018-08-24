@@ -25,7 +25,7 @@
 
             if (gasReactionPhases.found(phase.name()))
             {
-                YiEqn += alpha*phases[solidReactionPhases[0]].R(Y[i]);
+                YiEqn -= alpha*phases[solidReactionPhases[0]].R(Y[i]);
             }
             YiEqn.relax();
             YiEqn.solve(mesh.solver("Yi"));

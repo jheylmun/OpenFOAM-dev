@@ -40,13 +40,13 @@ volScalarField xi(pos0(sumRRs));
         {
             UEqns[phase.index()] +=
                 fvm::Sp(sumRRs*xi, U)
-              - sumRRs*(1.0 - xi)*gasPhase.U();
+              + sumRRs*(1.0 - xi)*gasPhase.U();
         }
         else if (gasReactionPhases.found(phase.name()))
         {
-            UEqns[phase.index()] +=
+            UEqns[phase.index()] -=
                 fvm::Sp(sumRRs*(1.0 - xi), U)
-              - sumRRs*xi*solidPhase.U();
+              + sumRRs*xi*solidPhase.U();
         }
 
 

@@ -284,7 +284,7 @@ Foam::pyrolysisChemistryModel<CompType, SolidThermo, GasThermo>::omega
     for (label s=0; s<Nl; s++)
     {
         label si = R.lhs()[s].index;
-        const scalar exp = R.lhs()[si].exponent;
+        const scalar exp = R.lhs()[s].exponent;
 
         kf *=
             pow(c1[si]/Ys0_[si][celli], exp)

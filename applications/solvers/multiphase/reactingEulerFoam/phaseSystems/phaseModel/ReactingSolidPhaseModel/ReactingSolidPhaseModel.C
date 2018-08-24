@@ -83,7 +83,7 @@ void Foam::ReactingSolidPhaseModel
 >::correctThermo()
 {
     BasePhaseModel::correctThermo();
-    chemistryPtr_->calculate();
+    chemistryPtr_->solve(this->fluid().mesh().time().deltaTValue());
 }
 
 
@@ -101,7 +101,7 @@ Foam::ReactingSolidPhaseModel
 {
     tmp<fvScalarMatrix> tSu(new fvScalarMatrix(Yi, dimMass/dimTime));
     fvScalarMatrix& Su = tSu.ref();
-    volScalarField::Internal rr
+    volScalarField RR
     (
         IOobject
         (
@@ -127,19 +127,16 @@ Foam::ReactingSolidPhaseModel
                 this->thermo()
             ).composition().species()[Yi.member()];
 
-            rr += chemistryPtr_->RRs(specieI);
+            RR.ref() = chemistryPtr_->RRs(specieI);
     }
     else if (chemistryPtr_->gasTable().contains(Yi.member()))
     {
         const label specieI =
             chemistryPtr_->gasTable()[Yi.member()];
-        rr += chemistryPtr_->RRg(specieI);
+        RR.ref() += chemistryPtr_->RRg(specieI);
     }
 
-    forAll(rr, cellI)
-    {
-        Su.source()[cellI] += rr[cellI];
-    }
+    Su += RR;
     return tSu;
 }
 

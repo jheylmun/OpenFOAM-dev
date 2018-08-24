@@ -266,7 +266,7 @@ while (pimple.correct())
         }
         else
         {
-            dmdts[gasi] += phases[gasi].dmdt();
+            dmdts[gasi] += phases[solidi].dmdt(false);
         }
     }
     forAll(phases, phasei)

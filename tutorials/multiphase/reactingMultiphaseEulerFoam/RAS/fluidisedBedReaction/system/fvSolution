@@ -55,7 +55,7 @@ solvers
 
     "(e|h).*"
     {
-        solver          PBiCG;
+        solver          PBiCGStab;
         preconditioner  DILU;
         tolerance       1e-10;
         relTol          0;
@@ -88,7 +88,7 @@ PIMPLE
     nOuterCorrectors 1;
     nCorrectors      2;
     nNonOrthogonalCorrectors 0;
-    nEnergyCorrectors   10;
+    nEnergyCorrectors   5;
     faceMomentum        no;
 }
 
@@ -102,7 +102,7 @@ relaxationFactors
     equations
     {
         ".*"            1;
-        "(h|e).*"       0.01;
+        "(h|e).*"       0.1;
         "iDmt.*"        0.2;
         "Yi.*"          0.2;
         "k.*"           0.1;

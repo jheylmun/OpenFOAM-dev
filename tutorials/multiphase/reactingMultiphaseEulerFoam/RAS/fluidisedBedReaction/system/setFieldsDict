@@ -20,12 +20,6 @@ defaultFieldValues
     volScalarFieldValue alpha.air 1
     volScalarFieldValue alpha.particles1 0
     volScalarFieldValue alpha.particles2 0
-    volScalarFieldValue T.air 500.0
-    volScalarFieldValue T.particles1 500.0
-    volScalarFieldValue T.particles2 500.0
-    volScalarFieldValue wood.particles2 1.0
-    volScalarFieldValue char.particles2 0
-    volScalarFieldValue tar.particles2 0
 );
 
 regions
@@ -39,7 +33,6 @@ regions
             volScalarFieldValue alpha.air 0.4
             volScalarFieldValue alpha.particles1    0.30
             volScalarFieldValue alpha.particles2    0.30
-            volScalarFieldValue T.particles2 600.0
         );
     }
 );
