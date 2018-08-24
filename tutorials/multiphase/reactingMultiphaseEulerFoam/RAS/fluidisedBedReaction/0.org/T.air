@@ -16,22 +16,27 @@ FoamFile
 
 dimensions          [0 0 0 1 0 0 0];
 
-internalField       uniform 550;
+internalField       uniform 1123;
 
 boundaryField
 {
-    inlet
+    gasInlet
     {
-        type               fixedValue;
-        value              uniform 550;
+        type            fixedValue;
+        value           uniform 550;
+    }
+    biomassInlet
+    {
+        type            fixedValue;
+        value           uniform 300;
     }
 
     outlet
     {
         type               inletOutlet;
         phi                phi.air;
-        inletValue         uniform 550;
-        value              uniform 550;
+        inletValue         uniform 1123;
+        value              uniform 1123;
     }
 
     walls

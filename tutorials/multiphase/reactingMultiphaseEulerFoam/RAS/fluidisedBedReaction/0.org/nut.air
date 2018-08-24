@@ -20,10 +20,15 @@ internalField       uniform 0;
 
 boundaryField
 {
-    inlet
+    gasInlet
     {
-        type               calculated;
-        value              $internalField;
+        type            calculated;
+        value           $internalField;
+    }
+    biomassInlet
+    {
+        type            calculated;
+        value           $internalField;
     }
 
     outlet

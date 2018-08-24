@@ -16,14 +16,19 @@ FoamFile
 
 dimensions      [0 0 0 0 0 0 0];
 
-internalField   uniform 1;
+internalField   uniform 0.79;
 
 boundaryField
 {
-    inlet
+    gasInlet
     {
         type            fixedValue;
-        value           uniform 1;
+        value           uniform 0.79;
+    }
+    biomassInlet
+    {
+        type            fixedValue;
+        value           uniform 0.79;
     }
 
     outlet

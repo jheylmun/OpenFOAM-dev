@@ -234,7 +234,6 @@ Foam::ReactingSolidPhaseModel
         forAll(gasThermo_, specieI)
         {
             dmdt.ref() += chemistryPtr_->RRg(specieI);
-            Info<<max(mag(chemistryPtr_->RRg(specieI)))<<endl;
         }
     }
 

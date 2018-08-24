@@ -20,18 +20,19 @@ internalField       uniform 300;
 
 boundaryField
 {
-    inlet
+    gasInlet
     {
-        type               fixedValue;
-        value              uniform 300;
+        type            zeroGradient;
+    }
+    biomassInlet
+    {
+        type            fixedValue;
+        value           uniform 300;
     }
 
     outlet
     {
-        type               inletOutlet;
-        phi                phi.particles2;
-        inletValue         uniform 300;
-        value              uniform 300;
+        type               zeroGradient;
     }
 
     walls

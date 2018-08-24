@@ -25,7 +25,7 @@ solvers
 
         solver          smoothSolver;
         smoother        symGaussSeidel;
-        tolerance       1e-9;
+        tolerance       1e-10;
         relTol          0;
         minIter         1;
     }
@@ -74,18 +74,18 @@ solvers
 
     Yi
     {
-        solver          smoothSolver;
-        smoother        symGaussSeidel;
-        tolerance       1e-8;
+        solver          PBiCGStab;
+        preconditioner  DILU;
+        tolerance       1e-10;
         relTol          0;
         minIter         1;
-        residualAlpha   1e-10;
+        residualAlpha   1e-8;
     }
 }
 
 PIMPLE
 {
-    nOuterCorrectors 1;
+    nOuterCorrectors 2;
     nCorrectors      2;
     nNonOrthogonalCorrectors 0;
     nEnergyCorrectors   5;
@@ -104,7 +104,7 @@ relaxationFactors
         ".*"            1;
         "(h|e).*"       0.1;
         "iDmt.*"        0.2;
-        "Yi.*"          0.2;
+        "Yi.*"          0.1;
         "k.*"           0.1;
         "epsilon.*"     0.5;
     }

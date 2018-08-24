@@ -16,14 +16,21 @@ FoamFile
 
 dimensions      [0 1 -1 0 0 0 0];
 
-internalField   uniform (0 0.25 0);
+internalField   uniform (0 0.042 0);
 
 boundaryField
 {
-    inlet
+    gasInlet
     {
         type               interstitialInletVelocity;
-        inletVelocity      uniform (0 0.25 0);
+        inletVelocity      uniform (0 0.42 0);
+        alpha              alpha.air;
+        value              $internalField;
+    }
+    biomassInlet
+    {
+        type               interstitialInletVelocity;
+        inletVelocity      uniform (0.13 0 0);
         alpha              alpha.air;
         value              $internalField;
     }

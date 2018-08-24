@@ -28,7 +28,7 @@ wood
     thermodynamics
     {
         Cp          2500;
-        Hf          0;//-1.41e6;
+        Hf          -1.41e6;
     }
     equationOfState
     {
@@ -49,7 +49,7 @@ char
     thermodynamics
     {
         Cp          1000;
-        Hf          0;//-10.0e3;
+        Hf          -10.0e3;
     }
     equationOfState
     {

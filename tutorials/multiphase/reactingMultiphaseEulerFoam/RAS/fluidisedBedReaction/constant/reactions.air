@@ -48,7 +48,7 @@ reactions
      CO_05O2Reaction
      {
          type     irreversibleArrheniusReaction;
-         reaction "CO + 0.5O2^0.25 = CO2";
+         reaction "CO + 0.5O2 = CO2";
          A        3.98e14;
          beta     0;
          Ta       2.0119e4;
@@ -56,7 +56,7 @@ reactions
      H2_05O2Reaction
      {
          type     irreversibleArrheniusReaction;
-         reaction "H2 + 0.5O2 = H2O^0.5";
+         reaction "H2 + 0.5O2 = H2O";
          A        2.196e12;
          beta     0;
          Ta       1.3127e4;
@@ -64,7 +64,7 @@ reactions
      CH4_2O2Reaction
      {
          type     irreversibleArrheniusReaction;
-         reaction "CH4^0.7 + 2O2^0.8 = CO2 + 2H20";
+         reaction "CH4 + 2O2 = CO2 + 2H20";
          A        1.5e13;
          beta     0;
          Ta       2.4343e4;

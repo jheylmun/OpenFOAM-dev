@@ -20,16 +20,20 @@ internalField   uniform (0 0 0);
 
 boundaryField
 {
-    inlet
+    gasInlet
     {
-        type               fixedValue;
-        value              uniform (0 0 0);
+        type                fixedValue;
+        value               $internalField;
+    }
+    biomassInlet
+    {
+        type                fixedValue;
+        value               uniform (0.13 0 0);
     }
 
     outlet
     {
-        type               fixedValue;
-        value              uniform (0 0 0);
+        type               zeroGradient;
     }
 
     walls

@@ -20,24 +20,28 @@ internalField   uniform 0;
 
 boundaryField
 {
-    inlet
+    gasInlet
     {
-        type            zeroGradient;
+        type                zeroGradient;
+    }
+    biomassInlet
+    {
+        type                zeroGradient;
     }
 
     outlet
     {
-        type            zeroGradient;
+        type                zeroGradient;
     }
 
     walls
     {
-        type            zeroGradient;
+        type                zeroGradient;
     }
 
     defaultFaces
     {
-        type            empty;
+        type                empty;
     }
 }
 

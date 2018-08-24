@@ -22,10 +22,15 @@ referenceLevel      1e-4;
 
 boundaryField
 {
-    inlet
+    gasInlet
     {
-        type               fixedValue;
-        value              uniform 1e-4;
+        type                fixedValue;
+        value               $internalField;
+    }
+    biomassInlet
+    {
+        type                fixedValue;
+        value               $internalField;
     }
 
     outlet

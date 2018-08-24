@@ -20,10 +20,15 @@ internalField       uniform 10;
 
 boundaryField
 {
-    inlet
+    gasInlet
     {
-        type               fixedValue;
-        value              $internalField;
+        type                fixedValue;
+        value               $internalField;
+    }
+    biomassInlet
+    {
+        type                fixedValue;
+        value               $internalField;
     }
 
     outlet

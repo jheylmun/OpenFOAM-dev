@@ -20,9 +20,14 @@ internalField   uniform 0.0;
 
 boundaryField
 {
-    inlet
+    gasInlet
     {
         type            zeroGradient;
+    }
+    biomassInlet
+    {
+        type            fixedValue;
+        value           uniform 0;
     }
 
     outlet
