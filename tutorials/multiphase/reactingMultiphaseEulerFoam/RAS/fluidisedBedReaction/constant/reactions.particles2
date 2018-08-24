@@ -30,7 +30,36 @@ reactions
         reaction    "tar = char + CO + CO2 + CH4 + H2";
         A           4.125e6;
         beta        0;
-        Ta          1.3555e4;//112.7;
+        Ta          1.3555e4;
+        Tcrit       400;
+    }
+
+    woodToChar
+    {
+        type        irreversibleArrheniusSolidReaction;
+        reaction    "wood = char";
+        A           7.3766e5;
+        beta        0;
+        Ta          1.28e4;
+        Tcrit       400;
+    }
+    woodToTar
+    {
+        type        irreversibleArrheniusSolidReaction;
+        reaction    "wood = tar";
+        A           4.125e6;
+        beta        0;
+        Ta          1.3555e4;
+        Tcrit       400;
+    }
+
+    tarToGas
+    {
+        type        irreversibleArrheniusSolidReaction;
+        reaction    "tar = char + 0.5633CO + 0.1110CO2 + 0.0884CH4 + 0.0173H2";
+        A           4.28e6;
+        beta        0;
+        Ta          1.299e4;
         Tcrit       400;
     }
 }

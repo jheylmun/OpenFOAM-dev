@@ -313,7 +313,7 @@ void Foam::fluidFluxFunctions::AUSMPlusFlux::updateFluxes
         alphaf*(BetaOwn*pOwn + BetaNei*pNei) + Du
     );
 
-    pf_ = alphaP/max((alphaOwn + alphaNei)*0.5, residualAlpha_);
+    pf_ = alphaP/max(alphaf, residualAlpha_);
 
     massFlux = mesh_.magSf()*mDot;
     Uf_ = pos0(mDot)*UOwn + neg(mDot)*UNei;

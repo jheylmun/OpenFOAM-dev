@@ -12,5 +12,69 @@ species
 
 reactions
 {
+    C_O2Reaction
+     {
+         type     irreversibleArrheniusReaction;
+         reaction "C + 0.5O2 = CO";
+         A        2.3;
+         beta     1;
+         Ta       1.11e4;
+     }
+     C_CO2Reaction
+     {
+         type     irreversibleArrheniusReaction;
+         reaction "C + CO2 = 2CO";
+         A        589.0;
+         beta     1;
+         Ta       2.68e4;
+     }
+     C_H2OReaction
+     {
+         type     irreversibleArrheniusReaction;
+         reaction "C + H2O = CO2";
+         A        589.0;
+         beta     1;
+         Ta       2.68e4;
+     }
+     C_2H2Reaction
+     {
+         type     irreversibleArrheniusReaction;
+         reaction "C + 2H2 = CH4";
+         A        0.589;
+         beta     1;
+         Ta       2.68e4;
+     }
 
+     CO_05O2Reaction
+     {
+         type     irreversibleArrheniusReaction;
+         reaction "CO + 0.5O2^0.25 = CO2";
+         A        3.98e14;
+         beta     0;
+         Ta       2.0119e4;
+     }
+     H2_05O2Reaction
+     {
+         type     irreversibleArrheniusReaction;
+         reaction "H2 + 0.5O2 = H2O^0.5";
+         A        2.196e12;
+         beta     0;
+         Ta       1.3127e4;
+     }
+     CH4_2O2Reaction
+     {
+         type     irreversibleArrheniusReaction;
+         reaction "CH4^0.7 + 2O2^0.8 = CO2 + 2H20";
+         A        1.5e13;
+         beta     0;
+         Ta       2.4343e4;
+     }
+     CO_H2OReaction
+     {
+         type     reversibleArrheniusReaction;
+         reaction "CO + H2O = CO2 + H2";
+         A        2.780e6;
+         beta     0;
+         Ta       1.51e3;
+     }
 }

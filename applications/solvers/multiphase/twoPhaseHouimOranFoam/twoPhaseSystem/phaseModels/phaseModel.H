@@ -358,12 +358,6 @@ public:
             const label patchi
         ) const;
 
-        //- Return the laminar thermal diffusivity for enthalpy
-        inline tmp<volScalarField> alphahe() const;
-
-        //- Return the laminar thermal diffusivity for enthalpy on a patch
-        inline tmp<scalarField> alphahe(const label patchi) const;
-
         //- Return the specific heat capacity
         inline tmp<volScalarField> Cp() const;
 
