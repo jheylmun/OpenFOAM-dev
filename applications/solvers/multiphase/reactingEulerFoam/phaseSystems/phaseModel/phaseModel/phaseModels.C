@@ -324,7 +324,8 @@ namespace Foam
                     <
                         ThermoPhaseModel<phaseModel, solidReactionThermo>
                     >,
-                    solidReactionThermo
+                    solidReactionThermo,
+                    rhoReactionThermo
                 >
             >
         >

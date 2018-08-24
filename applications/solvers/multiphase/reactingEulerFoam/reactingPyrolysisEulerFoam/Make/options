@@ -1,9 +1,9 @@
 EXE_INC = \
-    -ImultiphaseSystem/lnInclude \
-    -I../../reactingMultiphaseEulerFoam/phaseSystems/lnInclude \
-    -I../../reactingMultiphaseEulerFoam/interfacialModels/lnInclude \
-    -I../../reactingMultiphaseEulerFoam/interfacialCompositionModels/lnInclude \
-    -ImultiphaseCompressibleTurbulenceModels/lnInclude \
+    -I../reactingMultiphaseEulerFoam/multiphaseSystem/lnInclude \
+    -I../phaseSystems/lnInclude \
+    -I../interfacialModels/lnInclude \
+    -I../interfacialCompositionModels/lnInclude \
+    -I../reactingMultiphaseEulerFoam/multiphaseCompressibleTurbulenceModels/lnInclude \
     -I$(LIB_SRC)/thermophysicalModels/basic/lnInclude \
     -I$(LIB_SRC)/transportModels/compressible/lnInclude \
     -I$(LIB_SRC)/TurbulenceModels/turbulenceModels/lnInclude \

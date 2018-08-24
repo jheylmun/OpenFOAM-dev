@@ -11,6 +11,20 @@ autoPtr<multiphaseSystem> fluidPtr
 multiphaseSystem& fluid = fluidPtr();
 multiphaseSystem::phaseModelList& phases = fluid.phases();
 
+hashedWordList solidReactionPhases;
+hashedWordList gasReactionPhases;
+
+forAll(phases, phaseI)
+{
+    const dictionary& dict = fluid.subDict(phases[phaseI].name());
+    if (dict.lookupType<word>("type") == "reactingSolidPhaseModel")
+    {
+        solidReactionPhases.append(phases[phaseI].name());
+        gasReactionPhases.append(dict.lookup("gasPhase"));
+    }
+}
+Info<<solidReactionPhases<<endl;
+Info<<gasReactionPhases<<endl;
 dimensionedScalar pMin
 (
     "pMin",

@@ -30,9 +30,13 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-template<class BasePhaseModel, class ReactionType>
-Foam::ReactingSolidPhaseModel<BasePhaseModel, ReactionType>::
-ReactingSolidPhaseModel
+template<class BasePhaseModel, class SolidReactionType, class GasReactionType>
+Foam::ReactingSolidPhaseModel
+<
+    BasePhaseModel,
+    SolidReactionType,
+    GasReactionType
+>::ReactingSolidPhaseModel
 (
     const phaseSystem& fluid,
     const word& phaseName,
@@ -40,113 +44,114 @@ ReactingSolidPhaseModel
 )
 :
     BasePhaseModel(fluid, phaseName, index),
-    chemistryPtr_(BasicChemistryModel<ReactionType>::New(this->thermo_())),
-    active_(chemistryPtr_->lookupOrDefault("active", true)),
-    integrateReactionRate_
+    chemistryPtr_(basicSolidChemistryModel::New(this->thermo_())),
+    gasPhaseName_(fluid.subDict(phaseName).lookup("gasPhase")),
+    gasThermo_
     (
-        chemistryPtr_->lookupOrDefault("integrateReactionRate", true)
+        fluid.mesh().template lookupObject<GasReactionType>
+        (
+            this->thermo().phasePropertyName
+            (
+                basicThermo::dictName,
+                gasPhaseName_
+            )
+        )
     )
-{
-    if (integrateReactionRate_)
-    {
-        Info<< "    using integrated reaction rate" << endl;
-    }
-    else
-    {
-        Info<< "    using instantaneous reaction rate" << endl;
-    }
-}
+{}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-template<class BasePhaseModel, class ReactionType>
-Foam::ReactingSolidPhaseModel<BasePhaseModel, ReactionType>::
-~ReactingSolidPhaseModel()
+template<class BasePhaseModel, class SolidReactionType, class GasReactionType>
+Foam::ReactingSolidPhaseModel
+<
+    BasePhaseModel,
+    SolidReactionType,
+    GasReactionType
+>::~ReactingSolidPhaseModel()
 {}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-template<class BasePhaseModel, class ReactionType>
-void Foam::ReactingSolidPhaseModel<BasePhaseModel, ReactionType>::correctThermo()
+template<class BasePhaseModel, class SolidReactionType, class GasReactionType>
+void Foam::ReactingSolidPhaseModel
+<
+    BasePhaseModel,
+    SolidReactionType,
+    GasReactionType
+>::correctThermo()
 {
     BasePhaseModel::correctThermo();
-
-    if (active_)
-    {
-        if (integrateReactionRate_)
-        {
-            if (fv::localEulerDdt::enabled(this->fluid().mesh()))
-            {
-                const scalarField& rDeltaT =
-                    fv::localEulerDdt::localRDeltaT(this->fluid().mesh());
-
-                if (chemistryPtr_->found("maxIntegrationTime"))
-                {
-                    scalar maxIntegrationTime
-                    (
-                        readScalar
-                        (
-                            chemistryPtr_->lookup("maxIntegrationTime")
-                        )
-                    );
-
-                    chemistryPtr_->solve
-                    (
-                        min(1.0/rDeltaT, maxIntegrationTime)()
-                    );
-                }
-                else
-                {
-                    chemistryPtr_->solve((1.0/rDeltaT)());
-                }
-            }
-            else
-            {
-                chemistryPtr_->solve
-                (
-                    this->fluid().mesh().time().deltaTValue()
-                );
-            }
-        }
-        else
-        {
-            chemistryPtr_->calculate();
-        }
-    }
+    chemistryPtr_->calculate();
 }
 
 
-template<class BasePhaseModel, class ReactionType>
+template<class BasePhaseModel, class SolidReactionType, class GasReactionType>
 Foam::tmp<Foam::fvScalarMatrix>
-Foam::ReactingSolidPhaseModel<BasePhaseModel, ReactionType>::R
+Foam::ReactingSolidPhaseModel
+<
+    BasePhaseModel,
+    SolidReactionType,
+    GasReactionType
+>::R
 (
     volScalarField& Yi
 ) const
 {
     tmp<fvScalarMatrix> tSu(new fvScalarMatrix(Yi, dimMass/dimTime));
-
     fvScalarMatrix& Su = tSu.ref();
+    volScalarField::Internal rr
+    (
+        IOobject
+        (
+            IOobject::groupName("RR", Yi.name()),
+            this->fluid().mesh().time().timeName(),
+            this->fluid().mesh()
+        ),
+        this->fluid().mesh(),
+        dimensionedScalar("0", dimDensity/dimTime, 0.0)
+    );
 
-    if (active_)
+    if
+    (
+        refCast<const SolidReactionType>
+        (
+            this->thermo()
+        ).composition().contains(Yi.member())
+    )
     {
         const label specieI =
-            refCast<const ReactionType>
+            refCast<const SolidReactionType>
             (
                 this->thermo()
             ).composition().species()[Yi.member()];
 
-        Su += chemistryPtr_->RR(specieI);
+            rr += chemistryPtr_->RRs(specieI);
+    }
+    else if (chemistryPtr_->gasTable().contains(Yi.member()))
+    {
+        const label specieI =
+            chemistryPtr_->gasTable()[Yi.member()];
+        rr += chemistryPtr_->RRg(specieI);
     }
 
+    forAll(rr, cellI)
+    {
+        Su.source()[cellI] += rr[cellI];
+    }
     return tSu;
 }
 
 
-template<class BasePhaseModel, class ReactionType>
+template<class BasePhaseModel, class SolidReactionType, class GasReactionType>
 Foam::tmp<Foam::volScalarField>
-Foam::ReactingSolidPhaseModel<BasePhaseModel, ReactionType>::Qdot() const
+Foam::ReactingSolidPhaseModel
+<
+    BasePhaseModel,
+    SolidReactionType,
+    GasReactionType
+>::Qdot(const bool local) const
 {
     tmp<volScalarField> tQdot
     (
@@ -166,13 +171,77 @@ Foam::ReactingSolidPhaseModel<BasePhaseModel, ReactionType>::Qdot() const
         )
     );
 
-    if (active_)
+    if (local)
     {
         tQdot.ref() = chemistryPtr_->Qdot();
+    }
+    else
+    {
+        forAll(chemistryPtr_->gasTable(), specieI)
+        {
+            forAll(tQdot(), cellI)
+            {
+                scalar hf = gasThermo_.composition().Hc(specieI);
+                tQdot.ref()[cellI] -= hf*chemistryPtr_->RRg(specieI)[cellI];
+            }
+        }
     }
 
     return tQdot;
 }
 
+
+template<class BasePhaseModel, class SolidReactionType, class GasReactionType>
+Foam::tmp<Foam::volScalarField>
+Foam::ReactingSolidPhaseModel
+<
+    BasePhaseModel,
+    SolidReactionType,
+    GasReactionType
+>::dmdt(const bool local) const
+{
+    tmp<volScalarField> tdmdt
+    (
+        new volScalarField
+        (
+            IOobject
+            (
+                IOobject::groupName
+                (
+                    "dmdt",
+                    (local == 0 ? this->name() : gasPhaseName_)
+                ),
+                this->fluid().mesh().time().timeName(),
+                this->fluid().mesh(),
+                IOobject::NO_READ,
+                IOobject::NO_WRITE,
+                false
+            ),
+            this->fluid().mesh(),
+            dimensionedScalar("dmdt", dimDensity/dimTime, 0.0)
+        )
+    );
+    volScalarField& dmdt = tdmdt.ref();
+
+    if (local)
+    {
+        label nSpecies =
+            this->thermo_->composition().species().size();
+        for (label specieI = 0; specieI < nSpecies; specieI++)
+        {
+            dmdt.ref() += chemistryPtr_->RRs(specieI);
+        }
+    }
+    else
+    {
+        forAll(gasThermo_, specieI)
+        {
+            dmdt.ref() += chemistryPtr_->RRg(specieI);
+            Info<<max(mag(chemistryPtr_->RRg(specieI)))<<endl;
+        }
+    }
+
+    return tdmdt;
+}
 
 // ************************************************************************* //

@@ -37,7 +37,7 @@ SourceFiles
 #define ReactingSolidPhaseModel_H
 
 #include "phaseModel.H"
-#include "BasicChemistryModel.H"
+#include "basicSolidChemistryModel.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -48,7 +48,7 @@ namespace Foam
                      Class ReactingSolidPhaseModel Declaration
 \*---------------------------------------------------------------------------*/
 
-template<class BasePhaseModel, class ReactionType>
+template<class BasePhaseModel, class SolidReactionType, class GasReactionType>
 class ReactingSolidPhaseModel
 :
     public BasePhaseModel
@@ -58,13 +58,13 @@ protected:
     // Protected data
 
         //- Reaction model
-        autoPtr<BasicChemistryModel<ReactionType>> chemistryPtr_;
+        autoPtr<basicSolidChemistryModel> chemistryPtr_;
 
-        //- Is Chemistry active?
-        Switch active_;
+        //- Gas phase name
+        const word gasPhaseName_;
 
-        //- Are reaction rates finite
-        Switch integrateReactionRate_;
+        //- Reference to gas phase thermo
+        const GasReactionType& gasThermo_;
 
 
 public:
@@ -92,7 +92,10 @@ public:
         virtual tmp<fvScalarMatrix> R(volScalarField& Yi) const;
 
         //- Return heat release rate
-        virtual tmp<volScalarField> Qdot() const;
+        virtual tmp<volScalarField> Qdot(const bool = true) const;
+
+        //- Return the species fraction equation
+        virtual tmp<volScalarField> dmdt(const bool local = true) const;
 };
 
 

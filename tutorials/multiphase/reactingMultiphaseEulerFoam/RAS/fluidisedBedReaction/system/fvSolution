@@ -19,7 +19,7 @@ solvers
 {
     "alpha.*"
     {
-        nAlphaCorr      1;
+        nAlphaCorr      2;
         nAlphaSubCycles 2;
         implicitPhasePressure yes;
 
@@ -46,21 +46,21 @@ solvers
 
     "U.*"
     {
-        solver          PBiCG;
+        solver          PBiCGStab;
         preconditioner  DILU;
-        tolerance       1e-5;
+        tolerance       1e-6;
         relTol          0;
         minIter         1;
     }
 
     "(e|h).*"
     {
-        solver          smoothSolver;
-        smoother        symGaussSeidel;
-        tolerance       1e-8;
+        solver          PBiCG;
+        preconditioner  DILU;
+        tolerance       1e-10;
         relTol          0;
         minIter         1;
-        maxIter         20;
+        maxIter         100;
     }
 
     "(k|epsilon|Theta).*"
@@ -76,19 +76,19 @@ solvers
     {
         solver          smoothSolver;
         smoother        symGaussSeidel;
-        tolerance       1e-6;
+        tolerance       1e-8;
         relTol          0;
         minIter         1;
-        residualAlpha   1e-8;
+        residualAlpha   1e-10;
     }
 }
 
 PIMPLE
 {
     nOuterCorrectors 1;
-    nCorrectors      1;
+    nCorrectors      2;
     nNonOrthogonalCorrectors 0;
-    nEnergyCorrectors   5;
+    nEnergyCorrectors   10;
     faceMomentum        no;
 }
 
@@ -102,10 +102,10 @@ relaxationFactors
     equations
     {
         ".*"            1;
-        "(h|e).*"       0.2;
+        "(h|e).*"       0.01;
         "iDmt.*"        0.2;
         "Yi.*"          0.2;
-        "k.*"           0.5;
+        "k.*"           0.1;
         "epsilon.*"     0.5;
     }
 }

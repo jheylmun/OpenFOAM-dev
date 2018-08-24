@@ -19,7 +19,7 @@ wood
 {
     specie
     {
-        molWeight   8.0;
+        molWeight   100;
     }
     transport
     {
@@ -28,7 +28,7 @@ wood
     thermodynamics
     {
         Cp          2500;
-        Hf          -1.41e6;
+        Hf          0;//-1.41e6;
     }
     equationOfState
     {
@@ -49,7 +49,7 @@ char
     thermodynamics
     {
         Cp          1000;
-        Hf          -10.0e3;
+        Hf          0;//-10.0e3;
     }
     equationOfState
     {
@@ -57,109 +57,24 @@ char
     }
 };
 
-CO
+tar
 {
     specie
     {
-        molWeight       28.0106;
-    }
-    thermodynamics
-    {
-        Cp 1000;
-        Hf -110.5e3;
+        molWeight       292.2;
     }
     equationOfState
     {
-        rho         1.14;
-    }
-    transport
-    {
-        kappa       0.039;
-    }
-}
-
-
-H2O
-{
-    specie
-    {
-        molWeight       18.0153;
+        rho             1000;
     }
     thermodynamics
     {
-        Cp 2000;
-        Hf -241.8e3;
-    }
-    equationOfState
-    {
-        rho         1.27;
+        Cp              1000;
+        Hf              0;
     }
     transport
     {
-        kappa       113e-6;
-    }
-}
-
-CH4
-{
-    specie
-    {
-        molWeight       16.0428;
-    }
-    thermodynamics
-    {
-        Cp 2889;
-        Hf 0;
-    }
-    equationOfState
-    {
-        rho         0.565;
-    }
-    transport
-    {
-        kappa       0.0681;
-    }
-}
-
-CO2
-{
-    specie
-    {
-        molWeight       44.01;
-    }
-    thermodynamics
-    {
-        Cp 1000;
-        Hf -393.5e3;
-    }
-    equationOfState
-    {
-        rho         0.8938;
-    }
-    transport
-    {
-        kappa       0.04311;
-    }
-}
-
-H2
-{
-    specie
-    {
-        molWeight       2.01594;
-    }
-    thermodynamics
-    {
-        Cp 14574;
-        Hf 0;
-    }
-    equationOfState
-    {
-        rho         0.03;
-    }
-    transport
-    {
-        kappa       0.421;
+        kappa           0.04;
     }
 }
 

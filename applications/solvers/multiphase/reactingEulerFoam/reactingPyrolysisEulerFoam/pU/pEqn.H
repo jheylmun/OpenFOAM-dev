@@ -247,6 +247,28 @@ while (pimple.correct())
     // Compressible pressure equations
     PtrList<fvScalarMatrix> pEqnComps(phases.size());
     PtrList<volScalarField> dmdts(fluid.dmdts());
+    forAll(solidReactionPhases, phasei)
+    {
+        label solidi = phases[solidReactionPhases[phasei]].index();
+        if (!dmdts.set(solidi))
+        {
+            dmdts.set(solidi, new volScalarField(phases[solidi].dmdt()));
+        }
+        else
+        {
+            dmdts[solidi] += phases[solidi].dmdt();
+        }
+
+        label gasi = phases[gasReactionPhases[phasei]].index();
+        if (!dmdts.set(gasi))
+        {
+            dmdts.set(gasi, new volScalarField(phases[solidi].dmdt(false)));
+        }
+        else
+        {
+            dmdts[gasi] += phases[gasi].dmdt();
+        }
+    }
     forAll(phases, phasei)
     {
         phaseModel& phase = phases[phasei];

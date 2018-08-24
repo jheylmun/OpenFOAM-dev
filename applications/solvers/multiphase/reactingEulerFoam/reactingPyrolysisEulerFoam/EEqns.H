@@ -24,6 +24,20 @@ for (int Ecorr=0; Ecorr<nEnergyCorrectors; Ecorr++)
           + fvOptions(alpha, rho, phase.thermoRef().he())
         );
 
+//         if (gasReactionPhases.found(phase.name()))
+//         {
+//             const phaseModel& solidPhase = phases[solidReactionPhases[0]];
+//             EEqn +=
+//                  alpha*solidPhase.Qdot();
+//              + fvm::Sp(alpha*solidPhase.dmdt(false), phase.thermoRef().he());
+//         }
+//         if (solidReactionPhases.found(phase.name()))
+//         {
+//             const phaseModel& solidPhase = phases[solidReactionPhases[0]];
+//             EEqn +=
+//                 fvm::Sp(alpha*solidPhase.dmdt(), phase.thermoRef().he());
+//         }
+
         EEqn.relax();
         fvOptions.constrain(EEqn);
         EEqn.solve();

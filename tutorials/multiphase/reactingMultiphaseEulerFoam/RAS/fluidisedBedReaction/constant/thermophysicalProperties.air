@@ -23,7 +23,7 @@ thermoType
     thermo          janaf;
     equationOfState perfectGas;
     specie          specie;
-    energy          sensibleInternalEnergy;
+    energy          sensibleEnthalpy;
 }
 
 inertSpecie N2;

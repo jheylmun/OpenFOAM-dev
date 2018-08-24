@@ -249,6 +249,15 @@ public:
             //- Return the species fraction equation
             virtual tmp<fvScalarMatrix> YiEqn(volScalarField& Yi) = 0;
 
+            //- Return the species fraction equation
+            virtual tmp<fvScalarMatrix> R(volScalarField& Yi) const = 0;
+
+            //- Return the species fraction equation
+            virtual tmp<volScalarField> Qdot(const bool = true) const = 0;
+
+            //- Return the species fraction equation
+            virtual tmp<volScalarField> dmdt(const bool local = true) const = 0;
+
             //- Return the species mass fractions
             virtual const PtrList<volScalarField>& Y() const = 0;
 

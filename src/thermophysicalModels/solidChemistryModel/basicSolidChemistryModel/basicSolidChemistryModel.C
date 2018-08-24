@@ -44,10 +44,7 @@ Foam::basicSolidChemistryModel::basicSolidChemistryModel
 :
     basicChemistryModel(thermo),
     solidThermo_(thermo)
-{
-    Info<<"here"<<endl;
-    Info<<this->name()<<endl;
-}
+{}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //

@@ -66,6 +66,13 @@ License
 #include "TDACChemistryModel.H"
 #include "thermoPhysicsTypes.H"
 
+#include "makeSolidChemistryModel.H"
+
+#include "pyrolysisChemistryModel.H"
+#include "basicSolidChemistryModel.H"
+#include "solidChemistryModel.H"
+#include "solidThermoPhysicsTypes.H"
+#include "thermoPhysicsTypes.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -344,6 +351,70 @@ makeStandardChemistrySolverTypes
     hExpKappaConstSolidThermoPhysics
 );
 
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+// hConstSolidThermoPhysics
+
+makeSolidChemistryModel
+(
+    solidChemistryModel,
+    pyrolysisChemistryModel,
+    basicSolidChemistryModel,
+    hConstSolidThermoPhysics
+);
+
+makeSolidGasChemistryModel
+(
+    solidChemistryModel,
+    pyrolysisChemistryModel,
+    basicSolidChemistryModel,
+    hConstSolidThermoPhysics,
+    gasHThermoPhysics
+);
+
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+// hPowerSolidThermoPhysics
+
+makeSolidChemistryModel
+(
+    solidChemistryModel,
+    pyrolysisChemistryModel,
+    basicSolidChemistryModel,
+    hPowerSolidThermoPhysics
+);
+
+makeSolidGasChemistryModel
+(
+    solidChemistryModel,
+    pyrolysisChemistryModel,
+    basicSolidChemistryModel,
+    hPowerSolidThermoPhysics,
+    gasHThermoPhysics
+);
+
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+// hExpKappaConstSolidThermoPhysics
+
+makeSolidChemistryModel
+(
+    solidChemistryModel,
+    pyrolysisChemistryModel,
+    basicSolidChemistryModel,
+    hExpKappaConstSolidThermoPhysics
+);
+
+makeSolidGasChemistryModel
+(
+    solidChemistryModel,
+    pyrolysisChemistryModel,
+    basicSolidChemistryModel,
+    hExpKappaConstSolidThermoPhysics,
+    gasHThermoPhysics
+);
+
+
+// ************************************************************************* //
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 } // End namespace Foam

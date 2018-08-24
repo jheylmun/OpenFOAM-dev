@@ -75,10 +75,30 @@ Foam::ReactingPhaseModel<BasePhaseModel, ReactionType>::R
 
 template<class BasePhaseModel, class ReactionType>
 Foam::tmp<Foam::volScalarField>
-Foam::ReactingPhaseModel<BasePhaseModel, ReactionType>::Qdot() const
+Foam::ReactingPhaseModel<BasePhaseModel, ReactionType>::Qdot(const bool) const
 {
     return reaction_->Qdot();
 }
 
+
+template<class BasePhaseModel, class ReactionType>
+Foam::tmp<Foam::volScalarField>
+Foam::ReactingPhaseModel<BasePhaseModel, ReactionType>::dmdt(const bool) const
+{
+    return tmp<volScalarField>
+    (
+        new volScalarField
+        (
+            IOobject
+            (
+                IOobject::groupName("dmdt", this->name()),
+                this->mesh().time().timeName(),
+                this->mesh()
+            ),
+            this->mesh(),
+            dimensionedScalar("zero", dimDensity/dimTime, 0)
+        )
+    );
+}
 
 // ************************************************************************* //
