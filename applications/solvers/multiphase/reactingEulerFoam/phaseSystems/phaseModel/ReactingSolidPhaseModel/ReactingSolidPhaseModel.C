@@ -82,8 +82,20 @@ void Foam::ReactingSolidPhaseModel
     GasReactionType
 >::correctThermo()
 {
+    phaseModel& gasPhase = this->fluid().mesh().template lookupObjectRef<phaseModel>
+    (
+        IOobject::groupName("alpha", gasPhaseName_)
+    );
     BasePhaseModel::correctThermo();
+    volScalarField rhoSolidOld(this->rho());
+    this->rhoRef() *= max(*this, this->residualAlpha());
+    volScalarField rhoGasOld(gasThermo_.rho());
+    gasPhase.rhoRef() *= refCast<const volScalarField>(gasPhase);
+
     chemistryPtr_->solve(this->fluid().mesh().time().deltaTValue());
+
+    this->rhoRef() /= max(*this, this->residualAlpha());
+    gasPhase.rhoRef() /= max(gasPhase, gasPhase.residualAlpha());
 }
 
 
@@ -206,7 +218,7 @@ Foam::ReactingSolidPhaseModel
                 IOobject::groupName
                 (
                     "dmdt",
-                    (local == 0 ? this->name() : gasPhaseName_)
+                    (local == true ? this->name() : gasPhaseName_)
                 ),
                 this->fluid().mesh().time().timeName(),
                 this->fluid().mesh(),
