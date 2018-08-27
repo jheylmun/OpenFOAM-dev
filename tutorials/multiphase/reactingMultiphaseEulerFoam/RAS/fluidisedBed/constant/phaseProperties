@@ -219,6 +219,7 @@ phaseTransfer
 kineticTheory
 {
     name                    Particles;
+    writeTotal              true;
     alphaMax                0.63;
     residualAlpha           1e-4;
 

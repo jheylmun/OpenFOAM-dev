@@ -50,9 +50,9 @@ Foam::multiphaseKineticTheorySystem::multiphaseKineticTheorySystem
         IOobject
         (
             "kineticTheorySystem",
-            fluid.mesh().time().timeName(),
+            fluid.mesh().time().constant(),
             fluid.mesh(),
-            IOobject::NO_READ,
+            IOobject::MUST_READ_IF_MODIFIED,
             IOobject::NO_WRITE,
             true
         )
@@ -60,6 +60,7 @@ Foam::multiphaseKineticTheorySystem::multiphaseKineticTheorySystem
     fluid_(fluid),
     dict_(fluid.subDict("kineticTheory")),
     name_(dict_.lookup("name")),
+    writeTotal_(dict_.lookupOrDefault("writeTotal", false)),
     alphap_
     (
         IOobject
@@ -194,15 +195,38 @@ Foam::multiphaseKineticTheorySystem::~multiphaseKineticTheorySystem()
 
 bool Foam::multiphaseKineticTheorySystem::read()
 {
+    Info<<"multiphase read"<<endl;
+    residualAlpha_.readIfPresent(dict_);
+
+    radialModel_->read();
+    viscosityModel_->read();
+    frictionalStressModel_->read();
+    granularPressureModel_->read();
+    conductivityModel_->read();
+
+    writeTotal_ = dict_.lookupOrDefault("writeTotal", false);
+    Info<<"write Total: " << writeTotal_<<endl;
+    if (writeTotal_)
+    {
+        alphap_.writeOpt() = AUTO_WRITE;
+        Up_.writeOpt() = AUTO_WRITE;
+        Thetap_.writeOpt() = AUTO_WRITE;
+    }
+    else
+    {
+        alphap_.writeOpt() = NO_WRITE;
+        Up_.writeOpt() = NO_WRITE;
+        Thetap_.writeOpt() = NO_WRITE;
+    }
+
+    return true;
+}
+
+bool Foam::multiphaseKineticTheorySystem::readIfModified()
+{
     if (fluid_.modified())
     {
-        residualAlpha_.readIfPresent(dict_);
-
-        radialModel_->read();
-        viscosityModel_->read();
-        frictionalStressModel_->read();
-        granularPressureModel_->read();
-        conductivityModel_->read();
+        read();
 
         return true;
     }
@@ -459,7 +483,7 @@ void Foam::multiphaseKineticTheorySystem::addPhase
     minAlphaMax_ = min(minAlphaMax_, phase.alphaMax());
 
     // Print granular quantities only if more than 1 phase is present
-    if (phases_.size() == 2)
+    if (phases_.size() > 1 && writeTotal_)
     {
         alphap_.writeOpt() = AUTO_WRITE;
         Up_.writeOpt() = AUTO_WRITE;

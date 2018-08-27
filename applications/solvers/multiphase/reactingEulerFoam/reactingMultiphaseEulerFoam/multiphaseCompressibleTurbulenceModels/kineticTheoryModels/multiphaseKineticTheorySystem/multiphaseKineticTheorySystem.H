@@ -82,6 +82,9 @@ class multiphaseKineticTheorySystem
         //- Name of total partical phase
         const word name_;
 
+        //- Write the total granular phase
+        Switch writeTotal_;
+
         // Total granualr fields
 
             //- Total granular phase-fraction
@@ -210,7 +213,9 @@ public:
         bool polydisperse() const;
 
         //- Re-read model coefficients if they have changed
-        bool read();
+        virtual bool read();
+
+        virtual bool readIfModified();
 
         //- Return fluid
         const phaseSystem& fluid() const

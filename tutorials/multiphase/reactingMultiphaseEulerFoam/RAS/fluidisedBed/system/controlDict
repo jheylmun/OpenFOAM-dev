@@ -29,7 +29,7 @@ deltaT          0.0002;
 
 writeControl    adjustableRunTime;
 
-writeInterval   .05;
+writeInterval   .01;
 
 purgeWrite      0;
 
@@ -58,7 +58,7 @@ functions
         type            fieldAverage;
         libs            ("libfieldFunctionObjects.so");
         writeControl    writeTime;
-        startTime       1.0;
+        timeStart       1.0;
         fields
         (
             U.Particles
