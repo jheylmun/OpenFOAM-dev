@@ -82,20 +82,19 @@ void Foam::ReactingSolidPhaseModel
     GasReactionType
 >::correctThermo()
 {
-    phaseModel& gasPhase = this->fluid().mesh().template lookupObjectRef<phaseModel>
-    (
-        IOobject::groupName("alpha", gasPhaseName_)
-    );
+//     phaseModel& gasPhase = this->fluid().mesh().template
+//         lookupObjectRef<phaseModel>
+//         (
+//             IOobject::groupName("alpha", gasPhaseName_)
+//         );
     BasePhaseModel::correctThermo();
-    volScalarField rhoSolidOld(this->rho());
-    this->rhoRef() *= max(*this, this->residualAlpha());
-    volScalarField rhoGasOld(gasThermo_.rho());
-    gasPhase.rhoRef() *= refCast<const volScalarField>(gasPhase);
+//     this->rhoRef() *= max(*this, this->residualAlpha());
+//     gasPhase.rhoRef() *= refCast<const volScalarField>(gasPhase);
 
     chemistryPtr_->solve(this->fluid().mesh().time().deltaTValue());
 
-    this->rhoRef() /= max(*this, this->residualAlpha());
-    gasPhase.rhoRef() /= max(gasPhase, gasPhase.residualAlpha());
+//     this->rhoRef() /= max(*this, this->residualAlpha());
+//     gasPhase.rhoRef() /= max(gasPhase, gasPhase.residualAlpha());
 }
 
 
@@ -145,7 +144,7 @@ Foam::ReactingSolidPhaseModel
     {
         const label specieI =
             chemistryPtr_->gasTable()[Yi.member()];
-        RR.ref() += chemistryPtr_->RRg(specieI);
+        RR.ref() += chemistryPtr_->RRg(specieI)*(*this);
     }
 
     Su += RR;
@@ -180,20 +179,18 @@ Foam::ReactingSolidPhaseModel
         )
     );
 
-    if (local)
+    tQdot.ref() = chemistryPtr_->Qdot();
+    if (!local)
     {
-        tQdot.ref() = chemistryPtr_->Qdot();
-    }
-    else
-    {
-        forAll(chemistryPtr_->gasTable(), specieI)
-        {
-            forAll(tQdot(), cellI)
-            {
-                scalar hf = gasThermo_.composition().Hc(specieI);
-                tQdot.ref()[cellI] -= hf*chemistryPtr_->RRg(specieI)[cellI];
-            }
-        }
+        tQdot.ref() *= -(*this);
+//         forAll(chemistryPtr_->gasTable(), specieI)
+//         {
+//             forAll(tQdot(), cellI)
+//             {
+//                 scalar hf = gasThermo_.composition().Hc(specieI);
+//                 tQdot.ref()[cellI] -= hf*chemistryPtr_->RRg(specieI)[cellI];
+//             }
+//         }
     }
 
     return tQdot;
@@ -249,7 +246,7 @@ Foam::ReactingSolidPhaseModel
         }
     }
 
-    return tdmdt;
+    return tdmdt*(*this);
 }
 
 // ************************************************************************* //

@@ -58,7 +58,7 @@ functions
         type            fieldAverage;
         libs            ("libfieldFunctionObjects.so");
         writeControl    writeTime;
-        startTime       10;
+        timeStart       50;
         fields
         (
             U.Particles
