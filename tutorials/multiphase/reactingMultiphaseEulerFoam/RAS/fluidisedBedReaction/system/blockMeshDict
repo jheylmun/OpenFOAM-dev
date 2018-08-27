@@ -16,7 +16,7 @@ FoamFile
 
 convertToMeters 0.01;
 
-H   34.29;
+H   40;
 h1  1.335;
 h2  2.069;
 W   3.81;
