@@ -124,6 +124,12 @@ public:
         //    ddt(alpha2*rho2*hb) + ... = ... K*(Tb - Ta)
         //  with a specified residual volume fraction
         virtual tmp<volScalarField> K(const scalar residualAlpha) const = 0;
+
+        //- The heat transfer function K used in the enthalpy equation for cell
+        virtual scalar cellK(const label celli) const;
+
+        //- The heat transfer function K used in the enthalpy equation for cell
+        virtual scalar cellK(const scalar residualAlpha, const label celli) const = 0;
 };
 
 

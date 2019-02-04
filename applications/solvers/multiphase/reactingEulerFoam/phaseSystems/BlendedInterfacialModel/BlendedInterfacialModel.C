@@ -185,6 +185,67 @@ Foam::BlendedInterfacialModel<ModelType>::evaluate
 }
 
 
+template<class ModelType>
+template<class Type>
+Type Foam::BlendedInterfacialModel<ModelType>::evaluate
+(
+    const label celli,
+    Type (ModelType::*method)(const label) const,
+    const word& name,
+    const bool subtract
+) const
+{
+    scalar f1 = 0.0;
+    scalar f2 = 0.0;
+
+    if (model_.valid() || model1In2_.valid())
+    {
+        f1 = blending_.f1(phase1_, phase2_, celli);
+    }
+
+    if (model_.valid() || model2In1_.valid())
+    {
+        f2 = blending_.f2(phase1_, phase2_, celli);
+    }
+
+    scalar x = 0.0;
+
+    if (model_.valid())
+    {
+        if (subtract)
+        {
+            FatalErrorInFunction
+                << "Cannot treat an interfacial model with no distinction "
+                << "between continuous and dispersed phases as signed"
+                << exit(FatalError);
+        }
+
+        x += (model_().*method)(celli)*(scalar(1) - f1 - f2);
+    }
+
+    if (model1In2_.valid())
+    {
+        x += (model1In2_().*method)(celli)*f1;
+    }
+
+    if (model2In1_.valid())
+    {
+        Type dx = (model2In1_().*method)(celli)*f2;
+
+        if (subtract)
+        {
+            x -= dx;
+        }
+        else
+        {
+            x += dx;
+        }
+    }
+
+    return x;
+}
+
+
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 template<class ModelType>
@@ -320,6 +381,16 @@ Foam::BlendedInterfacialModel<ModelType>::K() const
     tmp<volScalarField> (ModelType::*k)() const = &ModelType::K;
 
     return evaluate(k, "K", ModelType::dimK, false);
+}
+
+
+template<class ModelType>
+Foam::scalar
+Foam::BlendedInterfacialModel<ModelType>::cellK(const label celli) const
+{
+    scalar (ModelType::*k)(const label) const = &ModelType::cellK;
+
+    return evaluate(celli, k, "cellK", false);
 }
 
 

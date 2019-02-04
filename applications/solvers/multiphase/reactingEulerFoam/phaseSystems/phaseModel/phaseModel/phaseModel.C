@@ -131,6 +131,12 @@ Foam::tmp<Foam::volScalarField> Foam::phaseModel::d() const
 }
 
 
+Foam::scalar Foam::phaseModel::d(const label celli) const
+{
+    return diameterModel_().d(celli);
+}
+
+
 const Foam::autoPtr<Foam::diameterModel>& Foam::phaseModel::dPtr() const
 {
     return diameterModel_;

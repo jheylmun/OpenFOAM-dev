@@ -107,6 +107,7 @@ public:
 
         //- Aspect ratio
         virtual tmp<volScalarField> E() const = 0;
+        virtual scalar E(const label) const = 0;
 };
 
 

@@ -282,6 +282,31 @@ Foam::tmp<Foam::volScalarField> Foam::phaseSystem::rho() const
 }
 
 
+Foam::scalar Foam::phaseSystem::rho(const label celli) const
+{
+    scalar rho = 0.0;
+    forAll(movingPhaseModels_, movingPhasei)
+    {
+        rho +=
+            movingPhaseModels_[movingPhasei][celli]
+           *movingPhaseModels_[movingPhasei].thermo().cellrho(celli);
+    }
+
+    if (stationaryPhaseModels_.empty())
+    {
+        return rho;
+    }
+
+    scalar alpha = 0.0;
+    forAll(movingPhaseModels_, movingPhasei)
+    {
+        alpha += movingPhaseModels_[movingPhasei][celli];
+    }
+
+    return rho/alpha;
+}
+
+
 Foam::tmp<Foam::volVectorField> Foam::phaseSystem::U() const
 {
     const label nMovingPhases = movingPhaseModels_.size();
@@ -303,6 +328,31 @@ Foam::tmp<Foam::volVectorField> Foam::phaseSystem::U() const
     for (label movingPhasei = 1; movingPhasei < nMovingPhases; ++ movingPhasei)
     {
         alpha += movingPhaseModels_[movingPhasei];
+    }
+
+    return U/alpha;
+}
+
+
+Foam::vector Foam::phaseSystem::U(const label celli) const
+{
+    vector U = Zero;
+    forAll(movingPhaseModels_, movingPhasei)
+    {
+        U +=
+            movingPhaseModels_[movingPhasei][celli]
+           *movingPhaseModels_[movingPhasei].U(celli);
+    }
+
+    if (stationaryPhaseModels_.empty())
+    {
+        return U;
+    }
+
+    scalar alpha = 0.0;
+    forAll(movingPhaseModels_, movingPhasei)
+    {
+        alpha += movingPhaseModels_[movingPhasei][celli];
     }
 
     return U/alpha;
@@ -339,6 +389,20 @@ Foam::phaseSystem::E(const phasePairKey& key) const
 }
 
 
+Foam::scalar
+Foam::phaseSystem::E(const phasePairKey& key, const label celli) const
+{
+    if (aspectRatioModels_.found(key))
+    {
+        return aspectRatioModels_[key]->E(celli);
+    }
+    else
+    {
+        return 0.0;
+    }
+}
+
+
 Foam::tmp<Foam::volScalarField>
 Foam::phaseSystem::sigma(const phasePairKey& key) const
 {
@@ -365,6 +429,20 @@ Foam::phaseSystem::sigma(const phasePairKey& key) const
                 dimensionedScalar("zero", surfaceTensionModel::dimSigma, 0)
             )
         );
+    }
+}
+
+
+Foam::scalar
+Foam::phaseSystem::sigma(const phasePairKey& key, const label celli) const
+{
+    if (surfaceTensionModels_.found(key))
+    {
+        return surfaceTensionModels_[key]->sigma(celli);
+    }
+    else
+    {
+        return 0.0;
     }
 }
 
@@ -442,7 +520,16 @@ void Foam::phaseSystem::correctThermo()
 
 void Foam::phaseSystem::correctTurbulence(const bool postSolve)
 {
-    if (kineticTheoryPtr_)
+    if (!kineticTheoryPtr_)
+    {
+        forAll(phaseModels_, phasei)
+        {
+            phaseModels_[phasei].correctTurbulence();
+        }
+        return;
+    }
+
+    if (kineticTheoryPtr_ && !postSolve)
     {
         kineticTheoryPtr_->correct();
     }

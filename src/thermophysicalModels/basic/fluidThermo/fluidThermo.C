@@ -80,6 +80,12 @@ Foam::tmp<Foam::volScalarField> Foam::fluidThermo::nu() const
 }
 
 
+Foam::scalar Foam::fluidThermo::cellnu(const label celli) const
+{
+    return cellmu(celli)/cellrho(celli);
+}
+
+
 Foam::tmp<Foam::scalarField> Foam::fluidThermo::nu(const label patchi) const
 {
     return mu(patchi)/rho(patchi);

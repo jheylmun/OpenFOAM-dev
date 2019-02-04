@@ -101,6 +101,12 @@ public:
 
         //- The drag function Kf used in the face-momentum equations
         virtual tmp<surfaceScalarField> Kf() const;
+
+        //- Drag coefficient for cell
+        virtual scalar cellCdRe(const label) const;
+
+        //- The drag function used in the momentum equation for cell
+        virtual scalar cellK(const label) const;
 };
 
 

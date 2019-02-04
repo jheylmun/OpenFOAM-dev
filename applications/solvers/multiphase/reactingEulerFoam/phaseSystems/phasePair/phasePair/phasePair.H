@@ -82,6 +82,7 @@ private:
 
         // Etvos number for given diameter
         tmp<volScalarField> EoH(const volScalarField& d) const;
+        scalar EoH(const label celli, const scalar& d) const;
 
 
 public:
@@ -117,39 +118,51 @@ public:
 
         //- Average density
         tmp<volScalarField> rho() const;
+        scalar rho(const label) const;
 
         //- Relative velocity magnitude
         tmp<volScalarField> magUr() const;
+        scalar magUr(const label) const;
 
         //- Relative velocity
         tmp<volVectorField> Ur() const;
+        vector Ur(const label) const;
 
         //- Reynolds number
         tmp<volScalarField> Re() const;
+        scalar Re(const label) const;
 
         //- Prandtl number
         tmp<volScalarField> Pr() const;
+        scalar Pr(const label) const;
 
         //- Eotvos number
         tmp<volScalarField> Eo() const;
+        scalar Eo(const label) const;
 
         //- Eotvos number based on hydraulic diameter type 1
         tmp<volScalarField> EoH1() const;
+        scalar EoH1(const label) const;
 
         //- Eotvos number based on hydraulic diameter type 2
         tmp<volScalarField> EoH2() const;
+        scalar EoH2(const label) const;
 
         //- Surface tension coefficient
         tmp<volScalarField> sigma() const;
+        scalar sigma(const label) const;
 
         //- Morton Number
         tmp<volScalarField> Mo() const;
+        scalar Mo(const label) const;
 
         //- Takahashi Number
         tmp<volScalarField> Ta() const;
+        scalar Ta(const label) const;
 
         //- Aspect ratio
         virtual tmp<volScalarField> E() const;
+        virtual scalar E(const label) const;
 
         // Access
 

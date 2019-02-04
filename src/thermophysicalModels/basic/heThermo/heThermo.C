@@ -378,6 +378,20 @@ Foam::heThermo<BasicThermo, MixtureType>::Cp() const
 
 
 template<class BasicThermo, class MixtureType>
+Foam::scalar Foam::heThermo<BasicThermo, MixtureType>::cellCp
+(
+    const label celli
+) const
+{
+    return this->cellMixture(celli).Cp
+    (
+        this->p_[celli],
+        this->T_[celli]
+    );
+}
+
+
+template<class BasicThermo, class MixtureType>
 Foam::tmp<Foam::scalarField>
 Foam::heThermo<BasicThermo, MixtureType>::Cv
 (
@@ -444,6 +458,20 @@ Foam::heThermo<BasicThermo, MixtureType>::Cv() const
     }
 
     return tCv;
+}
+
+
+template<class BasicThermo, class MixtureType>
+Foam::scalar Foam::heThermo<BasicThermo, MixtureType>::cellCv
+(
+    const label celli
+) const
+{
+    return this->cellMixture(celli).Cv
+    (
+        this->p_[celli],
+        this->T_[celli]
+    );
 }
 
 
@@ -523,6 +551,20 @@ Foam::heThermo<BasicThermo, MixtureType>::gamma() const
 
 
 template<class BasicThermo, class MixtureType>
+Foam::scalar Foam::heThermo<BasicThermo, MixtureType>::cellgamma
+(
+    const label celli
+) const
+{
+    return this->cellMixture(celli).gamma
+    (
+        this->p_[celli],
+        this->T_[celli]
+    );
+}
+
+
+template<class BasicThermo, class MixtureType>
 Foam::tmp<Foam::scalarField> Foam::heThermo<BasicThermo, MixtureType>::Cpv
 (
     const scalarField& p,
@@ -591,6 +633,20 @@ Foam::heThermo<BasicThermo, MixtureType>::Cpv() const
     }
 
     return tCpv;
+}
+
+
+template<class BasicThermo, class MixtureType>
+Foam::scalar Foam::heThermo<BasicThermo, MixtureType>::cellCpv
+(
+    const label celli
+) const
+{
+    return this->cellMixture(celli).Cpv
+    (
+        this->p_[celli],
+        this->T_[celli]
+    );
 }
 
 
@@ -670,6 +726,20 @@ Foam::heThermo<BasicThermo, MixtureType>::CpByCpv() const
     }
 
     return tCpByCpv;
+}
+
+
+template<class BasicThermo, class MixtureType>
+Foam::scalar Foam::heThermo<BasicThermo, MixtureType>::cellCpByCpv
+(
+    const label celli
+) const
+{
+    return this->cellMixture(celli).CpByCpv
+    (
+        this->p_[celli],
+        this->T_[celli]
+    );
 }
 
 
@@ -788,12 +858,32 @@ Foam::tmp<Foam::scalarField> Foam::heThermo<BasicThermo, MixtureType>::W
 
 
 template<class BasicThermo, class MixtureType>
+Foam::scalar Foam::heThermo<BasicThermo, MixtureType>::cellW
+(
+    const label celli
+) const
+{
+    return this->cellMixture(celli).W();
+}
+
+
+template<class BasicThermo, class MixtureType>
 Foam::tmp<Foam::volScalarField>
 Foam::heThermo<BasicThermo, MixtureType>::kappa() const
 {
     tmp<Foam::volScalarField> kappa(Cp()*this->alpha_);
     kappa.ref().rename("kappa");
     return kappa;
+}
+
+
+template<class BasicThermo, class MixtureType>
+Foam::scalar Foam::heThermo<BasicThermo, MixtureType>::cellkappa
+(
+    const label celli
+) const
+{
+    return cellCp(celli)*this->alpha_[celli];
 }
 
 
@@ -824,6 +914,16 @@ Foam::heThermo<BasicThermo, MixtureType>::alphahe() const
 
 
 template<class BasicThermo, class MixtureType>
+Foam::scalar Foam::heThermo<BasicThermo, MixtureType>::cellalphahe
+(
+    const label celli
+) const
+{
+    return cellCpByCpv(celli)*this->alpha_[celli];
+}
+
+
+template<class BasicThermo, class MixtureType>
 Foam::tmp<Foam::scalarField>
 Foam::heThermo<BasicThermo, MixtureType>::alphahe(const label patchi) const
 {
@@ -848,6 +948,17 @@ Foam::heThermo<BasicThermo, MixtureType>::kappaEff
     tmp<Foam::volScalarField> kappaEff(Cp()*(this->alpha_ + alphat));
     kappaEff.ref().rename("kappaEff");
     return kappaEff;
+}
+
+
+template<class BasicThermo, class MixtureType>
+Foam::scalar Foam::heThermo<BasicThermo, MixtureType>::cellkappaEff
+(
+    const scalar& alphat,
+    const label celli
+) const
+{
+    return cellCp(celli)*(this->alpha_[celli] + alphat);
 }
 
 
@@ -883,6 +994,17 @@ Foam::heThermo<BasicThermo, MixtureType>::alphaEff
     tmp<Foam::volScalarField> alphaEff(this->CpByCpv()*(this->alpha_ + alphat));
     alphaEff.ref().rename("alphaEff");
     return alphaEff;
+}
+
+
+template<class BasicThermo, class MixtureType>
+Foam::scalar Foam::heThermo<BasicThermo, MixtureType>::cellalphaEff
+(
+    const scalar& alphat,
+    const label celli
+) const
+{
+    return cellCpByCpv(celli)*(this->alpha_[celli] + alphat);
 }
 
 

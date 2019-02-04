@@ -90,4 +90,43 @@ Foam::tmp<Foam::volScalarField> Foam::dragModels::SyamlalOBrien::CdRe() const
 }
 
 
+Foam::scalar
+Foam::dragModels::SyamlalOBrien::cellCdRe(const label celli) const
+{
+    scalar alpha2
+    (
+        max
+        (
+            pair_.continuous()[celli],
+            pair_.continuous().residualAlpha().value()
+        )
+    );
+
+    scalar A(pow(alpha2, 4.14));
+    scalar B
+    (
+        neg(alpha2 - 0.85)*(0.8*pow(alpha2, 1.28))
+      + pos0(alpha2 - 0.85)*(pow(alpha2, 2.65))
+    );
+    scalar Re(pair_.Re(celli));
+    scalar Vr
+    (
+        0.5
+       *(
+            A - 0.06*Re + sqrt(sqr(0.06*Re) + 0.12*Re*(2*B - A) + sqr(A))
+        )
+    );
+    scalar CdsRe(sqr(0.63*sqrt(Re) + 4.8*sqrt(Vr)));
+
+    return
+        CdsRe
+       *max
+        (
+            pair_.continuous()[celli],
+            pair_.continuous().residualAlpha().value()
+        )
+       /sqr(Vr);
+}
+
+
 // ************************************************************************* //

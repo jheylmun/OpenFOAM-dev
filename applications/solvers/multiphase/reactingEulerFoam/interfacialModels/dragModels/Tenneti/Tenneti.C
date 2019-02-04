@@ -100,4 +100,51 @@ Foam::tmp<Foam::volScalarField> Foam::dragModels::Tenneti::CdRe() const
 }
 
 
+Foam::scalar
+Foam::dragModels::Tenneti::cellCdRe(const label celli) const
+{
+    scalar alpha1
+    (
+        max
+        (
+            pair_.dispersed()[celli],
+            pair_.continuous().residualAlpha().value()
+        )
+    );
+
+    scalar alpha2
+    (
+        max
+        (
+            pair_.continuous()[celli],
+            pair_.continuous().residualAlpha().value()
+        )
+    );
+
+    scalar Res(alpha2*pair_.Re(celli));
+
+    scalar CdReIsolated
+    (
+        neg(Res - 1000)*24*(1 + 0.15*pow(Res, 0.687))
+      + pos0(Res - 1000)*0.44*max(Res, residualRe_.value())
+    );
+
+    scalar F0
+    (
+        5.81*alpha1/pow3(alpha2) + 0.48*pow(alpha1, 1.0/3.0)/pow4(alpha2)
+    );
+
+    scalar F1
+    (
+        pow3(alpha1)*Res*(0.95 + 0.61*pow3(alpha1)/sqr(alpha2))
+    );
+
+    // Tenneti et al. correlation includes the mean pressure drag.
+    // This was removed here by multiplying F by alpha2 for consistency with
+    // the formulation used in OpenFOAM
+    return
+        CdReIsolated + 24*sqr(alpha2)*(F0 + F1);
+}
+
+
 // ************************************************************************* //

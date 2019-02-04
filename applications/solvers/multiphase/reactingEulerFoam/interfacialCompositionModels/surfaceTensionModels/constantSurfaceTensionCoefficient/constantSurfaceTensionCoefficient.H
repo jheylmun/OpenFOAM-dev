@@ -83,6 +83,7 @@ public:
 
         //- Aspect ratio
         virtual tmp<volScalarField> sigma() const;
+        virtual scalar sigma(const label) const;
 };
 
 

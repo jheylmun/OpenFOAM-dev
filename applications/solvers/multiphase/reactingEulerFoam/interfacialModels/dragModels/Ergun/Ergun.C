@@ -77,4 +77,26 @@ Foam::tmp<Foam::volScalarField> Foam::dragModels::Ergun::CdRe() const
 }
 
 
+Foam::scalar
+Foam::dragModels::Ergun::cellCdRe(const label celli) const
+{
+    return
+        (4.0/3.0)
+       *(
+            150
+           *max
+            (
+                scalar(1) - pair_.continuous()[celli],
+                pair_.continuous().residualAlpha().value()
+            )
+           /max
+           (
+               pair_.continuous()[celli],
+                pair_.continuous().residualAlpha().value()
+           )
+          + 1.75*pair_.Re(celli)
+        );
+}
+
+
 // ************************************************************************* //

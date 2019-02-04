@@ -64,6 +64,8 @@ int main(int argc, char *argv[])
     (
         pimple.dict().lookupOrDefault<Switch>("faceMomentum", false)
     );
+    Switch solveDragOde(fluid.solveDragOde());
+
 
     #include "pUf/createRDeltaTf.H"
 
@@ -107,7 +109,14 @@ int main(int argc, char *argv[])
 
             #include "YEqns.H"
 
-            if (faceMomentum)
+            if (solveDragOde)
+            {
+                #include "pUOde/UEqns.H"
+                #include "EEqns.H"
+                #include "pUOde/pEqn.H"
+                fluid.solveDrag();
+            }
+            else if (faceMomentum)
             {
                 #include "pUf/UEqns.H"
                 #include "EEqns.H"

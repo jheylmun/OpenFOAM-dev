@@ -82,4 +82,25 @@ Foam::dragModels::TomiyamaCorrelated::CdRe() const
 }
 
 
+Foam::scalar
+Foam::dragModels::TomiyamaCorrelated::cellCdRe(const label celli) const
+{
+    scalar Re(pair_.Re(celli));
+    scalar Eo(pair_.Eo(celli));
+
+    return
+        max
+        (
+            A_.value()
+           *min
+            (
+                (1 + 0.15*pow(Re, 0.687)),
+                scalar(3)
+            ),
+            8*Eo*Re/(3*Eo + 12)
+        );
+
+}
+
+
 // ************************************************************************* //

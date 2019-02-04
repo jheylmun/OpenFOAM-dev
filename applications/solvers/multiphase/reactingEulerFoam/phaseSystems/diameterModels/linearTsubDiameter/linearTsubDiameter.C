@@ -135,6 +135,12 @@ Foam::tmp<Foam::volScalarField> Foam::diameterModels::linearTsub::d() const
 }
 
 
+Foam::scalar Foam::diameterModels::linearTsub::d(const label celli) const
+{
+    return d_[celli];
+}
+
+
 bool Foam::diameterModels::linearTsub::read(const dictionary& phaseProperties)
 {
     diameterModel::read(phaseProperties);

@@ -95,6 +95,17 @@ Foam::tmp<Foam::volScalarField> Foam::blendingMethods::noBlending::f1
 }
 
 
+Foam::scalar Foam::blendingMethods::noBlending::f1
+(
+    const phaseModel& phase1,
+    const phaseModel& phase2,
+    const label celli
+) const
+{
+    return phase2.name() == continuousPhase_;
+}
+
+
 Foam::tmp<Foam::volScalarField> Foam::blendingMethods::noBlending::f2
 (
     const phaseModel& phase1,
@@ -123,6 +134,16 @@ Foam::tmp<Foam::volScalarField> Foam::blendingMethods::noBlending::f2
                 )
             )
         );
+}
+
+Foam::scalar Foam::blendingMethods::noBlending::f2
+(
+    const phaseModel& phase1,
+    const phaseModel& phase2,
+    const label celli
+) const
+{
+    return phase1.name() == continuousPhase_;
 }
 
 

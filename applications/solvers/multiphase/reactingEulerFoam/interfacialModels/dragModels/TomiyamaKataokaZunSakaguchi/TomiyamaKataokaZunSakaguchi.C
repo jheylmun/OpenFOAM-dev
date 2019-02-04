@@ -83,4 +83,21 @@ Foam::dragModels::TomiyamaKataokaZunSakaguchi::CdRe() const
 }
 
 
+Foam::scalar
+Foam::dragModels::TomiyamaKataokaZunSakaguchi
+::cellCdRe(const label celli) const
+{
+    scalar Re(pair_.Re(celli));
+    scalar Eo(max(pair_.Eo(celli), residualEo_.value()));
+
+    return
+        max
+        (
+            24*(1 + 0.15*pow(Re, 0.687))/max(Re, residualRe_.value()),
+            8*Eo/(3*(Eo + 4.0))
+        )
+       *max(pair_.Re(celli), residualRe_.value());
+}
+
+
 // ************************************************************************* //

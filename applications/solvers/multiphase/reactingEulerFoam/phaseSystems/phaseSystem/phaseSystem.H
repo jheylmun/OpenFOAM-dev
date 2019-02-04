@@ -423,15 +423,19 @@ public:
 
             //- Return the mixture density
             tmp<volScalarField> rho() const;
+            scalar rho(const label) const;
 
             //- Return the mixture velocity
             tmp<volVectorField> U() const;
+            vector U(const label) const;
 
             //- Return the aspect-ratio for a pair
             tmp<volScalarField> E(const phasePairKey& key) const;
+            scalar E(const phasePairKey& key, const label) const;
 
             //- Return the surface tension coefficient for a pair
             tmp<volScalarField> sigma(const phasePairKey& key) const;
+            scalar sigma(const phasePairKey& key, const label) const;
 
             //- Return the mass transfer rate for a pair
             virtual tmp<volScalarField> dmdt(const phasePairKey& key) const;
@@ -441,6 +445,12 @@ public:
 
 
         // Transfers
+
+            //- Is drag solved with an Ode system
+            virtual bool solveDragOde() const = 0;
+
+            //- Solve the drag ode system
+            virtual void solveDrag() = 0;
 
             //- Return the momentum transfer matrices for the cell-based
             //  algorithm

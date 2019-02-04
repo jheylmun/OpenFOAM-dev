@@ -190,6 +190,7 @@ public:
 
         //- Return the Sauter-mean diameter
         virtual tmp<volScalarField> d() const;
+        virtual scalar d(const label) const;
 };
 
 

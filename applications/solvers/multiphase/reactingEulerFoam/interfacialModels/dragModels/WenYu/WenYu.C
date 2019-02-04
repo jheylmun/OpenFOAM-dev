@@ -82,4 +82,33 @@ Foam::tmp<Foam::volScalarField> Foam::dragModels::WenYu::CdRe() const
 }
 
 
+Foam::scalar Foam::dragModels::WenYu::cellCdRe(const label celli) const
+{
+    scalar alpha2
+    (
+        max
+        (
+            pair_.continuous()[celli],
+            pair_.continuous().residualAlpha().value()
+        )
+    );
+
+    scalar Res(alpha2*pair_.Re(celli));
+    scalar CdsRes
+    (
+        neg(Res - 1000)*24.0*(1.0 + 0.15*pow(Res, 0.687))
+      + pos0(Res - 1000)*0.44*max(Res, residualRe_.value())
+    );
+
+    return
+        CdsRes
+       *pow(alpha2, -3.65)
+       *max
+        (
+            pair_.continuous()[celli],
+            pair_.continuous().residualAlpha().value()
+        );
+}
+
+
 // ************************************************************************* //

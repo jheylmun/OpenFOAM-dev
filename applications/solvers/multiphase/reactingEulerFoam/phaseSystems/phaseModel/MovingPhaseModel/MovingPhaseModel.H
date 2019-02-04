@@ -151,6 +151,7 @@ public:
 
             //- Return the velocity
             virtual tmp<volVectorField> U() const;
+            virtual vector U(const label) const;
 
             //- Access the velocity
             virtual volVectorField& URef();

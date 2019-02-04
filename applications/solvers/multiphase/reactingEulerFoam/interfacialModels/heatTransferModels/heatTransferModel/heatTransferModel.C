@@ -78,4 +78,11 @@ Foam::heatTransferModel::K() const
 }
 
 
+Foam::scalar
+Foam::heatTransferModel::cellK(const label celli) const
+{
+    return cellK(residualAlpha_.value(), celli);
+}
+
+
 // ************************************************************************* //

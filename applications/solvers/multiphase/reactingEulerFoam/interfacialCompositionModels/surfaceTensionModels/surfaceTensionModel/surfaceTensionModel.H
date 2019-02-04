@@ -117,6 +117,7 @@ public:
 
         //- Aspect ratio
         virtual tmp<volScalarField> sigma() const = 0;
+        virtual scalar sigma(const label) const = 0;
 
         //- Dummy write for regIOobject
         bool writeData(Ostream& os) const;

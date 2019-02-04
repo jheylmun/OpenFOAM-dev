@@ -158,4 +158,117 @@ Foam::tmp<Foam::surfaceScalarField> Foam::dragModels::segregated::Kf() const
 }
 
 
+Foam::scalar Foam::dragModels::segregated::cellCdRe
+(
+    const label celli
+) const
+{
+    FatalErrorInFunction
+        << "Not implemented."
+        << "Drag coefficient not defined for the segregated model."
+        << exit(FatalError);
+
+    return 0.0;
+}
+
+
+Foam::scalar Foam::dragModels::segregated::cellK
+(
+    const label celli
+) const
+{
+    const fvMesh& mesh(pair_.phase1().mesh());
+
+    scalar alpha1(pair_.phase1()[celli]);
+    scalar alpha2(pair_.phase2()[celli]);
+
+    scalar rho1(pair_.phase1().thermo().cellrho(celli));
+    scalar rho2(pair_.phase2().thermo().cellrho(celli));
+
+    scalar nu1(pair_.phase1().thermo().cellnu(celli));
+    scalar nu2(pair_.phase2().thermo().cellnu(celli));
+
+    vector gradI(Zero);
+    const labelList& cell = mesh.cells()[celli];
+    const labelUList& owner = mesh.owner();
+    const labelUList& neighbour = mesh.neighbour();
+    const label nInternalFaces = mesh.nInternalFaces();
+    forAll(cell, facei)
+    {
+        if (cell[facei] > nInternalFaces) continue;
+        label own = owner[cell[facei]];
+        label nei = neighbour[cell[facei]];
+        scalar alpha1Own(pair_.phase1()[own]);
+        scalar alpha1Nei(pair_.phase1()[nei]);
+        scalar alpha2Own(pair_.phase2()[own]);
+        scalar alpha2Nei(pair_.phase2()[nei]);
+
+        scalar IOwn
+        (
+            alpha1Own
+           /max
+            (
+                alpha1Own + alpha2Own,
+                pair_.phase1().residualAlpha().value()
+              + pair_.phase2().residualAlpha().value()
+            )
+        );
+        scalar INei
+        (
+            alpha1Nei
+           /max
+            (
+                alpha1Nei + alpha2Nei,
+                pair_.phase1().residualAlpha().value()
+              + pair_.phase2().residualAlpha().value()
+            )
+        );
+        gradI += (IOwn - INei)*mesh.Sf()[cell[facei]];
+    }
+    scalar L = cbrt(mesh.V()[celli]);
+
+    scalar magGradI
+    (
+        max
+        (
+            mag(gradI),
+            (
+                pair_.phase1().residualAlpha().value()
+              + pair_.phase2().residualAlpha().value()
+            )/L
+        )
+    );
+
+    scalar muI(rho1*nu1*rho2*nu2/(rho1*nu1 + rho2*nu2));
+
+    scalar muAlphaI
+    (
+        alpha1*rho1*nu1*alpha2*rho2*nu2
+       /(
+            max
+            (
+                alpha1,
+                pair_.phase1().residualAlpha().value()
+            )*rho1*nu1
+          + max
+            (
+                alpha2,
+                pair_.phase2().residualAlpha().value()
+            )*rho2*nu2
+        )
+    );
+
+    scalar ReI
+    (
+        pair_.rho(celli)
+       *pair_.magUr(celli)
+       /(magGradI*muI)
+    );
+
+    scalar lambda(m_.value()*ReI + n_.value()*muAlphaI/muI);
+
+    return lambda*sqr(magGradI)*muI;
+}
+
+
 // ************************************************************************* //

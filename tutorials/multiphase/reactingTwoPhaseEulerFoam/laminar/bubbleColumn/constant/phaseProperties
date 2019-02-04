@@ -89,6 +89,13 @@ aspectRatio
     }
 );
 
+dragOdeCoeffs
+{
+    solveOde on;
+    solver Euler;
+    absTol 1e-4;
+    maxSteps 1e5;
+}
 drag
 (
     (air in water)
@@ -113,17 +120,17 @@ drag
         }
     }
 
-    (air and water)
-    {
-        type            segregated;
-
-        m               0.5;
-        n               8;
-        swarmCorrection
-        {
-            type        none;
-        }
-    }
+//     (air and water)
+//     {
+//         type            segregated;
+//
+//         m               0.5;
+//         n               8;
+//         swarmCorrection
+//         {
+//             type        none;
+//         }
+//     }
 );
 
 virtualMass

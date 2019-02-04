@@ -107,6 +107,9 @@ public:
 
         //- Swarm correction coefficient
         virtual tmp<volScalarField> Cs() const = 0;
+
+        //- Swarm correction coefficientfor cell
+        virtual scalar cellCs(const label) const = 0;
 };
 
 

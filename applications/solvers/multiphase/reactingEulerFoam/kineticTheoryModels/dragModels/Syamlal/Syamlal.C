@@ -120,4 +120,50 @@ Foam::tmp<Foam::surfaceScalarField> Foam::dragModels::Syamlal::Kf() const
 {
     return fvc::interpolate(K());
 }
+
+
+Foam::scalar Foam::dragModels::Syamlal::cellCdRe(const label) const
+{
+    FatalErrorInFunction
+        << "Not implemented."
+        << "Drag coefficient not defined for the Syamlal model."
+        << exit(FatalError);
+
+    return 0.0;
+}
+
+
+Foam::scalar Foam::dragModels::Syamlal::cellK(const label celli) const
+{
+    const fvMesh& mesh = pair_.phase1().mesh();
+    const phaseModel& phase1 = pair_.phase1();
+    const phaseModel& phase2 = pair_.phase2();
+
+    const kineticTheorySystem& kt =
+        mesh.lookupObject<kineticTheorySystem>
+        (
+            "kineticTheorySystem"
+        );
+    const volScalarField& Pfric = kt.Pfr();
+    scalar e = kt.es()[pair_];
+    scalar Cf = kt.Cfs()[pair_];
+    scalar pi = Foam::constant::mathematical::pi;
+
+    scalar g0 = kt.gs0(phase1, phase2)()[celli];
+    return
+        (
+            3.0*(1.0 + e)*(pi/2.0 + Cf*sqr(pi)/8.0)
+           *phase1[celli]*phase1.thermo().cellrho(celli)
+           *phase2[celli]*phase2.thermo().cellrho(celli)
+           *sqr(phase1.d(celli) + phase2.d(celli))*g0*pair_.magUr(celli)
+        )
+       /(
+            2.0*pi
+           *(
+                phase1.thermo().cellrho(celli)*pow3(phase1.d(celli))
+              + phase2.thermo().cellrho(celli)*pow3(phase2.d(celli))
+            )
+        )
+      + C1_.value()*Pfric[celli];
+}
 // ************************************************************************* //

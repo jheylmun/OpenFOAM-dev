@@ -41,6 +41,7 @@ SourceFiles
 
 #include "phaseSystem.H"
 #include "HashPtrTable.H"
+#include "dragOde.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -138,6 +139,12 @@ private:
 
     // Private data
 
+        //- Ode system and solver for solving the  drag system
+        autoPtr<dragOde> dragOde_;
+
+        //- Switch to solve drag in ode solver
+        Switch solveDragOde_;
+
         //- Drag coefficients
         KdTable Kds_;
 
@@ -201,6 +208,12 @@ public:
 
 
     // Member Functions
+
+        //- Is drag solved with and ode system
+        virtual bool solveDragOde() const;
+
+        //- Solve the drag ode system
+        virtual void solveDrag();
 
         //- Return the momentum transfer matrices for the cell-based algorithm.
         //  This includes implicit and explicit forces that add into the cell

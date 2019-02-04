@@ -119,6 +119,7 @@ public:
 
         //- Return the phase mean diameter field
         virtual tmp<volScalarField> d() const = 0;
+        virtual scalar d(const label) const = 0;
 
         //- Read phaseProperties dictionary
         virtual bool read(const dictionary& phaseProperties) = 0;

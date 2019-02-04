@@ -42,6 +42,24 @@ Foam::tmp<Foam::volScalarField> Foam::phasePair::EoH
 }
 
 
+Foam::scalar Foam::phasePair::EoH
+(
+    const label celli,
+    const scalar& d
+) const
+{
+    return
+        mag
+        (
+            dispersed().thermo().cellrho(celli)
+          - continuous().thermo().cellrho(celli)
+        )
+       *mag(g()[celli])
+       *sqr(d)
+       /sigma(celli);
+}
+
+
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 Foam::phasePair::phasePair
@@ -108,9 +126,23 @@ Foam::tmp<Foam::volScalarField> Foam::phasePair::rho() const
 }
 
 
+Foam::scalar Foam::phasePair::rho(const label celli) const
+{
+    return
+        phase1()[celli]*phase1().thermo().cellrho(celli)
+      + phase2()[celli]*phase2().thermo().cellrho(celli);
+}
+
+
 Foam::tmp<Foam::volScalarField> Foam::phasePair::magUr() const
 {
     return mag(phase1().U() - phase2().U());
+}
+
+
+Foam::scalar Foam::phasePair::magUr(const label celli) const
+{
+    return mag(phase1().U(celli) - phase2().U(celli));
 }
 
 
@@ -120,9 +152,24 @@ Foam::tmp<Foam::volVectorField> Foam::phasePair::Ur() const
 }
 
 
+Foam::vector Foam::phasePair::Ur(const label celli) const
+{
+    return dispersed().U(celli) - continuous().U(celli);
+}
+
+
 Foam::tmp<Foam::volScalarField> Foam::phasePair::Re() const
 {
     return magUr()*dispersed().d()/continuous().nu();
+}
+
+
+Foam::scalar Foam::phasePair::Re(const label celli) const
+{
+    return
+        magUr(celli)
+       *dispersed().d(celli)
+       /continuous().thermo().cellnu(celli);
 }
 
 
@@ -136,9 +183,25 @@ Foam::tmp<Foam::volScalarField> Foam::phasePair::Pr() const
 }
 
 
+Foam::scalar Foam::phasePair::Pr(const label celli) const
+{
+    return
+        continuous().thermo().cellnu(celli)
+       *continuous().thermo().cellCpv(celli)
+       *continuous().thermo().cellrho(celli)
+       /continuous().thermo().cellkappa(celli);
+}
+
+
 Foam::tmp<Foam::volScalarField> Foam::phasePair::Eo() const
 {
     return EoH(dispersed().d());
+}
+
+
+Foam::scalar Foam::phasePair::Eo(const label celli) const
+{
+    return EoH(celli, dispersed().d(celli));
 }
 
 
@@ -149,6 +212,18 @@ Foam::tmp<Foam::volScalarField> Foam::phasePair::EoH1() const
         (
             dispersed().d()
            *cbrt(1 + 0.163*pow(Eo(), 0.757))
+        );
+}
+
+
+Foam::scalar Foam::phasePair::EoH1(const label celli) const
+{
+    return
+        EoH
+        (
+            celli,
+            dispersed().d(celli)
+           *cbrt(1 + 0.163*pow(Eo(celli), 0.757))
         );
 }
 
@@ -164,6 +239,18 @@ Foam::tmp<Foam::volScalarField> Foam::phasePair::EoH2() const
 }
 
 
+Foam::scalar Foam::phasePair::EoH2(const label celli) const
+{
+    return
+        EoH
+        (
+            celli,
+            dispersed().d(celli)
+           /cbrt(E(celli))
+        );
+}
+
+
 Foam::tmp<Foam::volScalarField> Foam::phasePair::sigma() const
 {
     return
@@ -171,6 +258,16 @@ Foam::tmp<Foam::volScalarField> Foam::phasePair::sigma() const
         (
             phasePair(phase1(), phase2())
         ).sigma();
+}
+
+
+Foam::scalar Foam::phasePair::sigma(const label celli) const
+{
+    return
+        phase1().fluid().lookupSubModel<surfaceTensionModel>
+        (
+            phasePair(phase1(), phase2())
+        ).sigma(celli);
 }
 
 
@@ -188,9 +285,29 @@ Foam::tmp<Foam::volScalarField> Foam::phasePair::Mo() const
 }
 
 
+Foam::scalar Foam::phasePair::Mo(const label celli) const
+{
+    return
+        mag(g()[celli])
+       *continuous().thermo().cellnu(celli)
+       *pow3
+        (
+            continuous().thermo().cellnu(celli)
+           *continuous().thermo().cellrho(celli)
+           /sigma(celli)
+        );
+}
+
+
 Foam::tmp<Foam::volScalarField> Foam::phasePair::Ta() const
 {
     return Re()*pow(Mo(), 0.23);
+}
+
+
+Foam::scalar Foam::phasePair::Ta(const label celli) const
+{
+    return Re(celli)*pow(Mo(celli), 0.23);
 }
 
 
@@ -201,6 +318,16 @@ Foam::tmp<Foam::volScalarField> Foam::phasePair::E() const
         << exit(FatalError);
 
     return phase1();
+}
+
+
+Foam::scalar Foam::phasePair::E(const label celli) const
+{
+    FatalErrorInFunction
+        << "Requested aspect ratio of the dispersed phase in an unordered pair"
+        << exit(FatalError);
+
+    return 0.0;
 }
 
 

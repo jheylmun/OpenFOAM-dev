@@ -4,6 +4,7 @@ EXE_INC = \
     -I../interfacialModels/lnInclude \
     -I../interfacialCompositionModels/lnInclude \
     -I../fvOptions/lnInclude \
+    -I../dragOde/lnInclude \
     -ItwoPhaseCompressibleTurbulenceModels/lnInclude \
     -I$(LIB_SRC)/thermophysicalModels/basic/lnInclude \
     -I$(LIB_SRC)/transportModels/compressible/lnInclude \
@@ -20,6 +21,7 @@ EXE_LIBS = \
     -lreactingEulerianInterfacialModels \
     -lreactingEulerianInterfacialCompositionModels \
     -ltwoPhaseReactingTurbulenceModels \
+    -ldragOde \
     -lfiniteVolume \
     -lfvOptions \
     -lreactingFvOptions \

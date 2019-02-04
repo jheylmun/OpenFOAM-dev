@@ -514,6 +514,12 @@ const Foam::volScalarField& Foam::basicThermo::alpha() const
 }
 
 
+const Foam::scalar& Foam::basicThermo::cellalpha(const label celli) const
+{
+    return alpha_[celli];
+}
+
+
 const Foam::scalarField& Foam::basicThermo::alpha(const label patchi) const
 {
     return alpha_.boundaryField()[patchi];

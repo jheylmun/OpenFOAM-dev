@@ -83,4 +83,20 @@ Foam::swarmCorrections::TomiyamaSwarm::Cs() const
 }
 
 
+Foam::scalar
+Foam::swarmCorrections::TomiyamaSwarm::cellCs(const label celli) const
+{
+    return
+        pow
+        (
+            max
+            (
+                this->pair_.continuous()[celli],
+                residualAlpha_.value()
+            ),
+            scalar(3) - 2*l_.value()
+        );
+}
+
+
 // ************************************************************************* //

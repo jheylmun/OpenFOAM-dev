@@ -86,4 +86,27 @@ Foam::dragModels::TomiyamaAnalytic::CdRe() const
 }
 
 
+Foam::scalar
+Foam::dragModels::TomiyamaAnalytic::cellCdRe(const label celli) const
+{
+    scalar Eo(max(pair_.Eo(celli), residualEo_.value()));
+    scalar E(max(pair_.E(celli), residualE_.value()));
+
+    scalar OmEsq(max(scalar(1) - sqr(E), sqr(residualE_.value())));
+    scalar rtOmEsq(sqrt(OmEsq));
+
+    scalar F(max(asin(rtOmEsq) - E*rtOmEsq, residualE_.value())/OmEsq);
+
+    return
+        (8.0/3.0)
+       *Eo
+       /(
+            Eo*pow(E, 2.0/3.0)/OmEsq
+          + 16*pow(E, 4.0/3.0)
+        )
+       /sqr(F)
+       *max(pair_.Re(celli), residualRe_.value());
+}
+
+
 // ************************************************************************* //

@@ -281,6 +281,9 @@ public:
             //- Density [kg/m^3]
             virtual tmp<volScalarField> rho() const = 0;
 
+            //- Density for cell [kg/m^3]
+            virtual scalar cellrho(const label celli) const = 0;
+
             //- Density for patch [kg/m^3]
             virtual tmp<scalarField> rho(const label patchi) const = 0;
 
@@ -349,6 +352,9 @@ public:
             //- Heat capacity at constant pressure [J/kg/K]
             virtual tmp<volScalarField> Cp() const = 0;
 
+            //- Heat capacity at constant pressure for cell [J/kg/K]
+            virtual scalar cellCp(const label celli) const = 0;
+
             //- Heat capacity at constant pressure for patch [J/kg/K]
             virtual tmp<scalarField> Cp
             (
@@ -359,6 +365,9 @@ public:
 
             //- Heat capacity at constant volume [J/kg/K]
             virtual tmp<volScalarField> Cv() const = 0;
+
+            //- Heat capacity at constant volume for cell [J/kg/K]
+            virtual scalar cellCv(const label celli) const = 0;
 
             //- Heat capacity at constant volume for patch [J/kg/K]
             virtual tmp<scalarField> Cv
@@ -371,6 +380,9 @@ public:
             //- Gamma = Cp/Cv []
             virtual tmp<volScalarField> gamma() const = 0;
 
+            //- Gamma = Cp/Cv for cell []
+            virtual scalar cellgamma(const label celli) const = 0;
+
             //- Gamma = Cp/Cv for patch []
             virtual tmp<scalarField> gamma
             (
@@ -381,6 +393,9 @@ public:
 
             //- Heat capacity at constant pressure/volume [J/kg/K]
             virtual tmp<volScalarField> Cpv() const = 0;
+
+            //- Heat capacity at constant pressure/volume for cell [J/kg/K]
+            virtual scalar cellCpv(const label celli) const = 0;
 
             //- Heat capacity at constant pressure/volume for patch [J/kg/K]
             virtual tmp<scalarField> Cpv
@@ -393,6 +408,9 @@ public:
             //- Heat capacity ratio []
             virtual tmp<volScalarField> CpByCpv() const = 0;
 
+            //- Heat capacity ratio for cell []
+            virtual scalar cellCpByCpv(const label celli) const = 0;
+
             //- Heat capacity ratio for patch []
             virtual tmp<scalarField> CpByCpv
             (
@@ -404,6 +422,9 @@ public:
             //- Molecular weight [kg/kmol]
             virtual tmp<volScalarField> W() const = 0;
 
+            //- Molecular weight for cell [kg/kmol]
+            virtual scalar cellW(const label celli) const = 0;
+
             //- Molecular weight for patch [kg/kmol]
             virtual tmp<scalarField> W(const label patchi) const = 0;
 
@@ -412,6 +433,9 @@ public:
 
             //- Thermal diffusivity for enthalpy of mixture [kg/m/s]
             virtual const volScalarField& alpha() const;
+
+            //- Thermal diffusivity for enthalpy of mixture for cell [kg/m/s]
+            virtual const scalar& cellalpha(const label celli) const;
 
             //- Thermal diffusivity for enthalpy of mixture for patch [kg/m/s]
             virtual const scalarField& alpha
@@ -425,6 +449,9 @@ public:
             //- Thermal diffusivity for temperature of mixture [J/m/s/K]
             virtual tmp<volScalarField> kappa() const = 0;
 
+            //- Thermal diffusivity for temperature of mixture for cell [J/m/s/K]
+            virtual scalar cellkappa(const label celli) const = 0;
+
             //- Thermal diffusivity for temperature of mixture
             //  for patch [J/m/s/K]
             virtual tmp<scalarField> kappa
@@ -435,6 +462,9 @@ public:
             //- Thermal diffusivity for energy of mixture [kg/m/s]
             virtual tmp<volScalarField> alphahe() const = 0;
 
+            //- Thermal diffusivity for energy of mixture for cell[kg/m/s]
+            virtual scalar cellalphahe(const label celli) const = 0;
+
             //- Thermal diffusivity for energy of mixture for patch [kg/m/s]
             virtual tmp<scalarField> alphahe(const label patchi) const = 0;
 
@@ -443,6 +473,14 @@ public:
             virtual tmp<volScalarField> kappaEff
             (
                 const volScalarField&
+            ) const = 0;
+
+            //- Effective thermal turbulent diffusivity for temperature
+            //  of mixture for cell [J/m/s/K]
+            virtual scalar cellkappaEff
+            (
+                const scalar&,
+                const label
             ) const = 0;
 
             //- Effective thermal turbulent diffusivity for temperature
@@ -457,6 +495,14 @@ public:
             virtual tmp<volScalarField> alphaEff
             (
                 const volScalarField& alphat
+            ) const = 0;
+
+            //- Effective thermal turbulent diffusivity of mixture
+            //  for cell[kg/m/s]
+            virtual scalar cellalphaEff
+            (
+                const scalar& alphat,
+                const label
             ) const = 0;
 
             //- Effective thermal turbulent diffusivity of mixture

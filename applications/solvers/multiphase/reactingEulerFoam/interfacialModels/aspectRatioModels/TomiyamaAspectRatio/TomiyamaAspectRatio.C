@@ -78,4 +78,18 @@ Foam::aspectRatioModels::TomiyamaAspectRatio::E() const
 }
 
 
+Foam::scalar
+Foam::aspectRatioModels::TomiyamaAspectRatio::E(const label celli) const
+{
+    NotImplemented;
+    return
+        VakhrushevEfremov::E(celli)
+       *max
+       (
+           scalar(1) - 0.35*yWall()()[celli]/pair_.dispersed().d(celli),
+           scalar(0.65)
+       );
+}
+
+
 // ************************************************************************* //

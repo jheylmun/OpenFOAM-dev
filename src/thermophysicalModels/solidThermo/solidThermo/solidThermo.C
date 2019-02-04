@@ -123,6 +123,12 @@ Foam::tmp<Foam::volScalarField> Foam::solidThermo::rho() const
 }
 
 
+Foam::scalar Foam::solidThermo::cellrho(const label celli) const
+{
+    return rho_[celli];
+}
+
+
 Foam::tmp<Foam::scalarField> Foam::solidThermo::rho(const label patchi) const
 {
     return rho_.boundaryField()[patchi];

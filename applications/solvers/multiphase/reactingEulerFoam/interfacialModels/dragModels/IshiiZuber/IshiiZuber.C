@@ -97,4 +97,47 @@ Foam::dragModels::IshiiZuber::CdRe() const
 }
 
 
+Foam::scalar
+Foam::dragModels::IshiiZuber::cellCdRe(const label celli) const
+{
+    scalar Re(pair_.Re(celli));
+    scalar Eo(pair_.Eo(celli));
+
+    scalar mud(pair_.dispersed().thermo().cellmu(celli));
+    scalar muc(pair_.continuous().thermo().cellmu(celli));
+
+    scalar muStar((mud + 0.4*muc)/(mud + muc));
+
+    scalar muMix
+    (
+        muc*pow(max(1 - pair_.dispersed()[celli], scalar(1e-3)), -2.5*muStar)
+    );
+
+    scalar ReM(Re*muc/muMix);
+    scalar CdRe
+    (
+        pos0(1000 - ReM)*24*(scalar(1) + 0.1*pow(ReM, 0.75))
+      + neg(1000 - ReM)*0.44*ReM
+    );
+
+    scalar F
+    (
+        max
+        (
+            (muc/muMix)*sqrt(1 - pair_.dispersed()[celli]),
+            1e-3
+        )
+    );
+
+    scalar Ealpha((1 + 17.67*pow(F, 0.8571428))/(18.67*F));
+
+    scalar CdReEllipse(Ealpha*0.6666*sqrt(Eo)*Re);
+
+    return
+        pos0(CdReEllipse - CdRe)
+       *min(CdReEllipse, Re*sqr(1 - pair_.dispersed()[celli])*2.66667)
+      + neg(CdReEllipse - CdRe)*CdRe;
+}
+
+
 // ************************************************************************* //

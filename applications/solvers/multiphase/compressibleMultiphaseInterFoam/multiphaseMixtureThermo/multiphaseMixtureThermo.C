@@ -316,6 +316,21 @@ Foam::tmp<Foam::volScalarField> Foam::multiphaseMixtureThermo::rho() const
 }
 
 
+Foam::scalar Foam::multiphaseMixtureThermo::cellrho(const label celli) const
+{
+    PtrDictionary<phaseModel>::const_iterator phasei = phases_.begin();
+
+    scalar rho = 0.0;
+
+    for (++phasei; phasei != phases_.end(); ++phasei)
+    {
+        rho += phasei()[celli]*phasei().thermo().cellrho(celli);
+    }
+
+    return rho;
+}
+
+
 Foam::tmp<Foam::scalarField> Foam::multiphaseMixtureThermo::rho
 (
     const label patchi
@@ -350,6 +365,21 @@ Foam::tmp<Foam::volScalarField> Foam::multiphaseMixtureThermo::Cp() const
     }
 
     return tCp;
+}
+
+
+Foam::scalar Foam::multiphaseMixtureThermo::cellCp(const label celli) const
+{
+    PtrDictionary<phaseModel>::const_iterator phasei = phases_.begin();
+
+    scalar Cp = 0.0;
+
+    for (++phasei; phasei != phases_.end(); ++phasei)
+    {
+        Cp += phasei()[celli]*phasei().thermo().cellCp(celli);
+    }
+
+    return Cp;
 }
 
 
@@ -392,6 +422,21 @@ Foam::tmp<Foam::volScalarField> Foam::multiphaseMixtureThermo::Cv() const
 }
 
 
+Foam::scalar Foam::multiphaseMixtureThermo::cellCv(const label celli) const
+{
+    PtrDictionary<phaseModel>::const_iterator phasei = phases_.begin();
+
+    scalar Cv = 0.0;
+
+    for (++phasei; phasei != phases_.end(); ++phasei)
+    {
+        Cv += phasei()[celli]*phasei().thermo().cellCv(celli);
+    }
+
+    return Cv;
+}
+
+
 Foam::tmp<Foam::scalarField> Foam::multiphaseMixtureThermo::Cv
 (
     const scalarField& p,
@@ -428,6 +473,21 @@ Foam::tmp<Foam::volScalarField> Foam::multiphaseMixtureThermo::gamma() const
     }
 
     return tgamma;
+}
+
+
+Foam::scalar Foam::multiphaseMixtureThermo::cellgamma(const label celli) const
+{
+    PtrDictionary<phaseModel>::const_iterator phasei = phases_.begin();
+
+    scalar gamma = 0.0;
+
+    for (++phasei; phasei != phases_.end(); ++phasei)
+    {
+        gamma += phasei()[celli]*phasei().thermo().cellgamma(celli);
+    }
+
+    return gamma;
 }
 
 
@@ -471,6 +531,21 @@ Foam::tmp<Foam::volScalarField> Foam::multiphaseMixtureThermo::Cpv() const
 }
 
 
+Foam::scalar Foam::multiphaseMixtureThermo::cellCpv(const label celli) const
+{
+    PtrDictionary<phaseModel>::const_iterator phasei = phases_.begin();
+
+    scalar Cpv = 0.0;
+
+    for (++phasei; phasei != phases_.end(); ++phasei)
+    {
+        Cpv += phasei()[celli]*phasei().thermo().cellCpv(celli);
+    }
+
+    return Cpv;
+}
+
+
 Foam::tmp<Foam::scalarField> Foam::multiphaseMixtureThermo::Cpv
 (
     const scalarField& p,
@@ -508,6 +583,22 @@ Foam::tmp<Foam::volScalarField> Foam::multiphaseMixtureThermo::CpByCpv() const
     }
 
     return tCpByCpv;
+}
+
+
+Foam::scalar Foam::multiphaseMixtureThermo::cellCpByCpv(const label celli) const
+{
+    PtrDictionary<phaseModel>::const_iterator phasei = phases_.begin();
+
+    scalar CpByCpv = 0.0;
+
+    for (++phasei; phasei != phases_.end(); ++phasei)
+    {
+        CpByCpv +=
+            phasei()[celli]*phasei().thermo().cellCpByCpv(celli);
+    }
+
+    return CpByCpv;
 }
 
 
@@ -551,6 +642,21 @@ Foam::tmp<Foam::volScalarField> Foam::multiphaseMixtureThermo::W() const
 }
 
 
+Foam::scalar Foam::multiphaseMixtureThermo::cellW(const label celli) const
+{
+    PtrDictionary<phaseModel>::const_iterator phasei = phases_.begin();
+
+    scalar W = 0.0;
+
+    for (++phasei; phasei != phases_.end(); ++phasei)
+    {
+        W += phasei()[celli]*phasei().thermo().cellW(celli);
+    }
+
+    return W;
+}
+
+
 Foam::tmp<Foam::scalarField> Foam::multiphaseMixtureThermo::W
 (
     const label patchi
@@ -579,6 +685,21 @@ Foam::tmp<Foam::volScalarField> Foam::multiphaseMixtureThermo::nu() const
 }
 
 
+Foam::scalar Foam::multiphaseMixtureThermo::cellnu(const label celli) const
+{
+    PtrDictionary<phaseModel>::const_iterator phasei = phases_.begin();
+
+    scalar nu = 0.0;
+
+    for (++phasei; phasei != phases_.end(); ++phasei)
+    {
+        nu += phasei()[celli]*phasei().thermo().cellnu(celli);
+    }
+
+    return nu;
+}
+
+
 Foam::tmp<Foam::scalarField> Foam::multiphaseMixtureThermo::nu
 (
     const label patchi
@@ -600,6 +721,22 @@ Foam::tmp<Foam::volScalarField> Foam::multiphaseMixtureThermo::kappa() const
     }
 
     return tkappa;
+}
+
+
+Foam::scalar Foam::multiphaseMixtureThermo::cellkappa(const label celli) const
+{
+    PtrDictionary<phaseModel>::const_iterator phasei = phases_.begin();
+
+    scalar kappa = 0.0;
+
+    for (++phasei; phasei != phases_.end(); ++phasei)
+    {
+        kappa +=
+            phasei()[celli]*phasei().thermo().cellkappa(celli);
+    }
+
+    return kappa;
 }
 
 
@@ -637,6 +774,22 @@ Foam::tmp<Foam::volScalarField> Foam::multiphaseMixtureThermo::alphahe() const
     }
 
     return talphaEff;
+}
+
+
+Foam::scalar Foam::multiphaseMixtureThermo::cellalphahe(const label celli) const
+{
+    PtrDictionary<phaseModel>::const_iterator phasei = phases_.begin();
+
+    scalar alphahe = 0.0;
+
+    for (++phasei; phasei != phases_.end(); ++phasei)
+    {
+        alphahe +=
+            phasei()[celli]*phasei().thermo().cellalphahe(celli);
+    }
+
+    return alphahe;
 }
 
 
@@ -682,6 +835,27 @@ Foam::tmp<Foam::volScalarField> Foam::multiphaseMixtureThermo::kappaEff
 }
 
 
+Foam::scalar Foam::multiphaseMixtureThermo::cellkappaEff
+(
+    const scalar& alphat,
+    const label celli
+) const
+{
+    PtrDictionary<phaseModel>::const_iterator phasei = phases_.begin();
+
+    scalar kappaEff = 0.0;
+
+    for (++phasei; phasei != phases_.end(); ++phasei)
+    {
+        kappaEff +=
+            phasei()[celli]
+           *phasei().thermo().cellkappaEff(alphat, celli);
+    }
+
+    return kappaEff;
+}
+
+
 Foam::tmp<Foam::scalarField> Foam::multiphaseMixtureThermo::kappaEff
 (
     const scalarField& alphat,
@@ -722,6 +896,27 @@ Foam::tmp<Foam::volScalarField> Foam::multiphaseMixtureThermo::alphaEff
     }
 
     return talphaEff;
+}
+
+
+Foam::scalar Foam::multiphaseMixtureThermo::cellalphaEff
+(
+    const scalar& alphat,
+    const label celli
+) const
+{
+    PtrDictionary<phaseModel>::const_iterator phasei = phases_.begin();
+
+    scalar alphaEff = 0.0;
+
+    for (++phasei; phasei != phases_.end(); ++phasei)
+    {
+        alphaEff +=
+            phasei()[celli]
+           *phasei().thermo().cellalphaEff(alphat, celli);
+    }
+
+    return alphaEff;
 }
 
 

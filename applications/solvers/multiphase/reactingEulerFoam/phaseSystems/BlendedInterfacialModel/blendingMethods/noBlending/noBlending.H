@@ -79,18 +79,34 @@ public:
 
     // Member Functions
 
-        //- Factor for primary phase
+        //- Factor for first phase
         virtual tmp<volScalarField> f1
         (
             const phaseModel& phase1,
             const phaseModel& phase2
         ) const;
 
-        //- Factor for secondary phase
+        //- Factor for first phase for cell
+        virtual scalar f1
+        (
+            const phaseModel& phase1,
+            const phaseModel& phase2,
+            const label celli
+        ) const;
+
+        //- Factor for second phase
         virtual tmp<volScalarField> f2
         (
             const phaseModel& phase1,
             const phaseModel& phase2
+        ) const;
+
+        //- Factor for second phase for cell
+        virtual scalar f2
+        (
+            const phaseModel& phase1,
+            const phaseModel& phase2,
+            const label celli
         ) const;
 };
 

@@ -89,6 +89,9 @@ public:
 
         //- Drag coefficient
         virtual tmp<volScalarField> CdRe() const;
+
+        //- Drag coefficient for cell
+        virtual scalar cellCdRe(const label) const;
 };
 
 

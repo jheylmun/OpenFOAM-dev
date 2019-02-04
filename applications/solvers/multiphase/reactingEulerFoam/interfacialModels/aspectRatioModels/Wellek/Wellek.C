@@ -71,4 +71,11 @@ Foam::aspectRatioModels::Wellek::E() const
 }
 
 
+Foam::scalar
+Foam::aspectRatioModels::Wellek::E(const label celli) const
+{
+    return scalar(1)/(scalar(1) + 0.163*pow(pair_.Eo(celli), 0.757));
+}
+
+
 // ************************************************************************* //

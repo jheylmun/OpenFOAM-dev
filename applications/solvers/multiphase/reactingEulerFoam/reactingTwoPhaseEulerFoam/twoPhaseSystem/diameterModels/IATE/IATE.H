@@ -135,6 +135,10 @@ public:
         {
             return d_;
         }
+        virtual scalar d(const label celli) const
+        {
+            return d_[celli];
+        }
 
         //- Correct the diameter field
         virtual void correct();

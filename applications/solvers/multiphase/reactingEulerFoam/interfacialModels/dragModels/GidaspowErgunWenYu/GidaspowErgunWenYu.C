@@ -89,4 +89,13 @@ Foam::dragModels::GidaspowErgunWenYu::CdRe() const
 }
 
 
+Foam::scalar
+Foam::dragModels::GidaspowErgunWenYu::cellCdRe(const label celli) const
+{
+    return
+        pos0(pair_.continuous()[celli] - 0.8)*WenYu_->cellCdRe(celli)
+      + neg(pair_.continuous()[celli] - 0.8)*Ergun_->cellCdRe(celli);
+}
+
+
 // ************************************************************************* //

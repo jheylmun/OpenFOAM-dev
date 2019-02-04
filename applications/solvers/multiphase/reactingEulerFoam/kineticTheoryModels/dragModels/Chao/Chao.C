@@ -134,4 +134,76 @@ Foam::tmp<Foam::surfaceScalarField> Foam::dragModels::Chao::Kf() const
 {
     return fvc::interpolate(K());
 }
+
+Foam::scalar Foam::dragModels::Chao::cellCdRe(const label celli) const
+{
+    FatalErrorInFunction
+        << "Not implemented."
+        << "Drag coefficient not defined for the Chao model."
+        << exit(FatalError);
+
+    return 0.0;
+}
+
+
+Foam::scalar Foam::dragModels::Chao::cellK(const label celli) const
+{
+    const fvMesh& mesh = pair_.phase1().mesh();
+    const phaseModel& phase1 = pair_.phase1();
+    const phaseModel& phase2 = pair_.phase2();
+
+    const kineticTheorySystem& kt
+    (
+        mesh.lookupObject<kineticTheorySystem>
+        (
+            "kineticTheorySystem"
+        )
+    );
+
+    scalar rho1(phase1.thermo().cellrho(celli));
+    scalar rho2(phase2.thermo().cellrho(celli));
+    const volScalarField& Theta1
+    (
+        mesh.lookupObject<volScalarField>
+        (
+            IOobject::groupName("Theta", phase1.name())
+        )
+    );
+    const volScalarField& Theta2
+    (
+        mesh.lookupObject<volScalarField>
+        (
+            IOobject::groupName("Theta", phase2.name())
+        )
+    );
+
+    const scalar& e(kt.es()[pair_]);
+    const scalar pi(Foam::constant::mathematical::pi);
+
+    scalar gij(kt.gs0(phase1, phase2)()[celli]);
+    scalar dij(0.5*(phase1.d(celli) + phase2.d(celli)));
+    scalar m0
+    (
+        constant::mathematical::pi/6.0
+       *(
+           rho1*pow3(phase1.d(celli))
+         + rho2*pow3(phase2.d(celli))
+        )
+    );
+    scalar magUr(pair_.magUr(celli));
+
+    return
+        phase1[celli]*phase2[celli]
+       *rho1*rho2/m0*sqr(dij)*(1.0 + e)*gij
+       *(
+            sqrt(2.0*pi)*(sqrt(Theta1[celli]) + sqrt(Theta2[celli]))
+          - sqrt(2.0)*pow(Theta1[celli]*Theta2[celli], 0.25)
+          + 0.5*pi*magUr - 1.135*sqrt(magUr)
+           *(
+                pow(Theta1[celli], 0.25) + pow(Theta2[celli], 0.25)
+              - 0.8*pow(Theta1[celli]*Theta2[celli], 0.125)
+            )
+        );
+}
+
 // ************************************************************************* //

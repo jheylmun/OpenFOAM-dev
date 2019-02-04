@@ -33,6 +33,8 @@ License
 #include "fvmLaplacian.H"
 #include "fvcDdt.H"
 #include "fvcDiv.H"
+#include "heRhoThermo.H"
+#include "pureMixture.H"
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
@@ -94,7 +96,6 @@ Foam::ThermoPhaseModel<BasePhaseModel, ThermoType>::rho() const
 {
     return thermo_->rho();
 }
-
 
 template<class BasePhaseModel, class ThermoType>
 Foam::tmp<Foam::volScalarField>

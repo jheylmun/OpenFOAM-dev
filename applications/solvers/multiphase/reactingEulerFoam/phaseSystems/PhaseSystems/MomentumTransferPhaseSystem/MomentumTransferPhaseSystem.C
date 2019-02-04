@@ -292,6 +292,9 @@ MomentumTransferPhaseSystem
             )
         );
     }
+
+    dragOde_.set(new dragOde(*this, dragModels_));
+    solveDragOde_ = dragOde_->solveDrag();
 }
 
 
@@ -304,6 +307,25 @@ Foam::MomentumTransferPhaseSystem<BasePhaseSystem>::
 
 
 // * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * * //
+
+template<class BasePhaseSystem>
+bool Foam::MomentumTransferPhaseSystem<BasePhaseSystem>::solveDragOde() const
+{
+    return solveDragOde_;
+}
+
+
+template<class BasePhaseSystem>
+void
+Foam::MomentumTransferPhaseSystem<BasePhaseSystem>::solveDrag()
+{
+    if (solveDragOde_)
+    {
+        Info<<"solving drag in ode solver"<<endl;
+        dragOde_->solve(this->mesh_.time().deltaTValue());
+    }
+}
+
 
 template<class BasePhaseSystem>
 Foam::autoPtr<Foam::phaseSystem::momentumTransferTable>
@@ -340,19 +362,22 @@ Foam::MomentumTransferPhaseSystem<BasePhaseSystem>::momentumTransfer()
         *Kdfs_[dragModelIter.key()] = dragModelIter()->Kf();
     }
 
-    // Add the implicit part of the drag force
-    forAllConstIter(KdTable, Kds_, KdIter)
+    if (!solveDragOde_)
     {
-        const volScalarField& K(*KdIter());
-        const phasePair& pair(this->phasePairs_[KdIter.key()]);
-
-        forAllConstIter(phasePair, pair, iter)
+        // Add the implicit part of the drag force
+        forAllConstIter(KdTable, Kds_, KdIter)
         {
-            if (!iter().stationary())
-            {
-                fvVectorMatrix& eqn = *eqns[iter().name()];
+            const volScalarField& K(*KdIter());
+            const phasePair& pair(this->phasePairs_[KdIter.key()]);
 
-                eqn -= fvm::Sp(K, eqn.psi());
+            forAllConstIter(phasePair, pair, iter)
+            {
+                if (!iter().stationary())
+                {
+                    fvVectorMatrix& eqn = *eqns[iter().name()];
+
+                    eqn -= fvm::Sp(K, eqn.psi());
+                }
             }
         }
     }

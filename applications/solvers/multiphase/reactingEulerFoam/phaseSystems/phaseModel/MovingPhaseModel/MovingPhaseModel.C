@@ -293,6 +293,7 @@ Foam::MovingPhaseModel<BasePhaseModel>::UEqn()
     return
     (
         fvm::ddt(alpha, rho, U_)
+      - alpha*rho*fvc::ddt(U_)
       + fvm::div(alphaRhoPhi_, U_)
       + fvm::SuSp(- this->continuityError(), U_)
       + this->fluid().MRF().DDt(alpha*rho, U_)
@@ -326,6 +327,14 @@ Foam::tmp<Foam::volVectorField>
 Foam::MovingPhaseModel<BasePhaseModel>::U() const
 {
     return U_;
+}
+
+
+template<class BasePhaseModel>
+Foam::vector
+Foam::MovingPhaseModel<BasePhaseModel>::U(const label celli) const
+{
+    return U_[celli];
 }
 
 

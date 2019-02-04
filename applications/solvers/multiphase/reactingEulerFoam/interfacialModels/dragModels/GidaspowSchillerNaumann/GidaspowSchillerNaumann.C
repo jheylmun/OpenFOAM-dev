@@ -84,4 +84,35 @@ Foam::dragModels::GidaspowSchillerNaumann::CdRe() const
 }
 
 
+Foam::scalar
+Foam::dragModels::GidaspowSchillerNaumann::cellCdRe(const label celli) const
+{
+    scalar alpha2
+    (
+        max
+        (
+            scalar(1) - pair_.dispersed()[celli],
+            pair_.continuous().residualAlpha().value()
+        )
+    );
+
+    scalar Re(alpha2*pair_.Re(celli));
+
+    scalar CdsRe
+    (
+        neg(Re - 1000)*24*(1.0 + 0.15*pow(Re, 0.687))/alpha2
+      + pos0(Re - 1000)*0.44*max(Re, residualRe_.value())
+    );
+
+    return
+        CdsRe
+       *pow(alpha2, -2.65)
+       *max
+       (
+            pair_.continuous()[celli],
+            pair_.continuous().residualAlpha().value()
+       );
+}
+
+
 // ************************************************************************* //

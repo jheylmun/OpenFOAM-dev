@@ -81,4 +81,11 @@ Foam::tmp<Foam::volScalarField> Foam::swarmCorrections::noSwarm::Cs() const
 }
 
 
+Foam::scalar
+Foam::swarmCorrections::noSwarm::cellCs(const label) const
+{
+    return 1.0;
+}
+
+
 // ************************************************************************* //

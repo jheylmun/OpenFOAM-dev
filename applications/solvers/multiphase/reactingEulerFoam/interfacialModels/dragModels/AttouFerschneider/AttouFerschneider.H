@@ -107,6 +107,30 @@ class AttouFerschneider
             const phaseModel& solid
         ) const;
 
+        //- Return the momentum transfer coefficient between gas and liquid
+        virtual scalar cellKGasLiquid
+        (
+            const phaseModel& gas,
+            const phaseModel& liquid,
+            const label celli
+        ) const;
+
+        //- Return the momentum transfer coefficient between gas and solid
+        virtual scalar cellKGasSolid
+        (
+            const phaseModel& gas,
+            const phaseModel& solid,
+            const label celli
+        ) const;
+
+        //- Return the momentum transfer coefficient between liquid and solid
+        virtual scalar cellKLiquidSolid
+        (
+            const phaseModel& liquid,
+            const phaseModel& solid,
+            const label celli
+        ) const;
+
 
 public:
 
@@ -139,6 +163,14 @@ public:
 
         //- The drag coefficient used in the face-momentum equations
         virtual tmp<surfaceScalarField> Kf() const;
+
+    // Cell based functions
+
+        //- Drag coefficient for cell
+        virtual scalar cellCdRe(const label) const;
+
+        //- Return the drag coefficient K for cell
+        virtual scalar cellK(const label) const;
 };
 
 

@@ -87,4 +87,10 @@ Foam::tmp<Foam::volScalarField> Foam::orderedPhasePair::E() const
 }
 
 
+Foam::scalar Foam::orderedPhasePair::E(const label celli) const
+{
+    return phase1().fluid().E(*this, celli);
+}
+
+
 // ************************************************************************* //

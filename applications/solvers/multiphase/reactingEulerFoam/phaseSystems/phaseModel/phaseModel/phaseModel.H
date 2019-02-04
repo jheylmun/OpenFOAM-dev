@@ -179,6 +179,7 @@ public:
 
         //- Return the Sauter-mean diameter
         tmp<volScalarField> d() const;
+        scalar d(const label) const;
 
         //- Return const-reference to diameterModel of the phase
         const autoPtr<diameterModel>& dPtr() const;
@@ -272,6 +273,7 @@ public:
 
             //- Return the velocity
             virtual tmp<volVectorField> U() const = 0;
+            virtual vector U(const label) const = 0;
 
             //- Access the velocity
             virtual volVectorField& URef() = 0;

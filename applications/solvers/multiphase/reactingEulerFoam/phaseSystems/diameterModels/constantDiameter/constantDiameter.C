@@ -84,6 +84,12 @@ Foam::tmp<Foam::volScalarField> Foam::diameterModels::constant::d() const
 }
 
 
+Foam::scalar Foam::diameterModels::constant::d(const label celli) const
+{
+    return d_.value();
+}
+
+
 bool Foam::diameterModels::constant::read(const dictionary& phaseProperties)
 {
     diameterModel::read(phaseProperties);

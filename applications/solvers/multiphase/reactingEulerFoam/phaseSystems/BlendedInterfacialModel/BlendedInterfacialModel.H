@@ -122,6 +122,16 @@ class BlendedInterfacialModel
             Args ... args
         ) const;
 
+        //- Return the blended coeff/value for cell
+        template<class Type>
+        Type evaluate
+        (
+            const label celli,
+            Type (ModelType::*method)(const label) const,
+            const word& name,
+            const bool subtract
+        ) const;
+
 
 public:
 
@@ -174,6 +184,9 @@ public:
         //- Return the blended force coefficient
         tmp<volScalarField> K() const;
 
+        //- Return the blended force coefficient for cell
+        scalar cellK(const label) const;
+
         //- Return the blended force coefficient with a specified residual alpha
         tmp<volScalarField> K(const scalar residualAlpha) const;
 
@@ -183,6 +196,10 @@ public:
         //- Return the blended force
         template<class Type>
         tmp<GeometricField<Type, fvPatchField, volMesh>> F() const;
+
+//         //- Return the blended force cell
+//         template<class Type>
+//         Type cellF(const label cell) const;
 
         //- Return the face blended force
         tmp<surfaceScalarField> Ff() const;

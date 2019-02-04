@@ -75,4 +75,28 @@ Foam::tmp<Foam::volScalarField> Foam::dragModels::Gibilaro::CdRe() const
 }
 
 
+Foam::scalar
+Foam::dragModels::Gibilaro::cellCdRe(const label celli) const
+{
+    scalar alpha2
+    (
+        max
+        (
+            pair_.continuous()[celli],
+            pair_.continuous().residualAlpha().value()
+        )
+    );
+
+    return
+        (4.0/3.0)
+       *(17.3/alpha2 + 0.336*pair_.Re(celli))
+       *max
+        (
+           pair_.continuous()[celli],
+            pair_.continuous().residualAlpha().value()
+        )
+       *pow(alpha2, -2.8);
+}
+
+
 // ************************************************************************* //

@@ -132,6 +132,9 @@ public:
             //- Density [kg/m^3]
             virtual tmp<volScalarField> rho() const;
 
+            //- Density for cell [kg/m^3]
+            virtual scalar cellrho(const label cell) const;
+
             //- Density for patch [kg/m^3]
             virtual tmp<scalarField> rho(const label patchi) const;
 
@@ -146,6 +149,12 @@ public:
 
 
         // Per patch calculation
+
+//             //- Anisotropic thermal conductivity [W/m/K]
+//             virtual vector cellKappa
+//             (
+//                 const label cell
+//             ) const = 0;
 
             //- Anisotropic thermal conductivity [W/m/K]
             virtual tmp<vectorField> Kappa

@@ -82,6 +82,7 @@ public:
 
         //- Return the diameter as a field
         virtual tmp<volScalarField> d() const;
+        virtual scalar d(const label) const;
 
         //- Read diameterProperties dictionary
         virtual bool read(const dictionary& diameterProperties);

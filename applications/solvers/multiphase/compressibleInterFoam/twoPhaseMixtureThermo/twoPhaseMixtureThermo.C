@@ -216,6 +216,15 @@ Foam::tmp<Foam::volScalarField> Foam::twoPhaseMixtureThermo::Cp() const
 }
 
 
+Foam::scalar
+Foam::twoPhaseMixtureThermo::cellCp(const label celli) const
+{
+    return
+        alpha1()[celli]*thermo1_->cellCp(celli)
+      + alpha2()[celli]*thermo2_->cellCp(celli);
+}
+
+
 Foam::tmp<Foam::scalarField> Foam::twoPhaseMixtureThermo::Cp
 (
     const scalarField& p,
@@ -232,6 +241,15 @@ Foam::tmp<Foam::scalarField> Foam::twoPhaseMixtureThermo::Cp
 Foam::tmp<Foam::volScalarField> Foam::twoPhaseMixtureThermo::Cv() const
 {
     return alpha1()*thermo1_->Cv() + alpha2()*thermo2_->Cv();
+}
+
+
+Foam::scalar
+Foam::twoPhaseMixtureThermo::cellCv(const label celli) const
+{
+    return
+        alpha1()[celli]*thermo1_->cellCv(celli)
+      + alpha2()[celli]*thermo2_->cellCv(celli);
 }
 
 
@@ -254,6 +272,15 @@ Foam::tmp<Foam::volScalarField> Foam::twoPhaseMixtureThermo::gamma() const
 }
 
 
+Foam::scalar
+Foam::twoPhaseMixtureThermo::cellgamma(const label celli) const
+{
+    return
+        alpha1()[celli]*thermo1_->cellgamma(celli)
+      + alpha2()[celli]*thermo2_->cellgamma(celli);
+}
+
+
 Foam::tmp<Foam::scalarField> Foam::twoPhaseMixtureThermo::gamma
 (
     const scalarField& p,
@@ -270,6 +297,15 @@ Foam::tmp<Foam::scalarField> Foam::twoPhaseMixtureThermo::gamma
 Foam::tmp<Foam::volScalarField> Foam::twoPhaseMixtureThermo::Cpv() const
 {
     return alpha1()*thermo1_->Cpv() + alpha2()*thermo2_->Cpv();
+}
+
+
+Foam::scalar
+Foam::twoPhaseMixtureThermo::cellCpv(const label celli) const
+{
+    return
+        alpha1()[celli]*thermo1_->cellCpv(celli)
+      + alpha2()[celli]*thermo2_->cellCpv(celli);
 }
 
 
@@ -294,6 +330,15 @@ Foam::tmp<Foam::volScalarField> Foam::twoPhaseMixtureThermo::CpByCpv() const
 }
 
 
+Foam::scalar
+Foam::twoPhaseMixtureThermo::cellCpByCpv(const label celli) const
+{
+    return
+        alpha1()[celli]*thermo1_->cellCpByCpv(celli)
+      + alpha2()[celli]*thermo2_->cellCpByCpv(celli);
+}
+
+
 Foam::tmp<Foam::scalarField> Foam::twoPhaseMixtureThermo::CpByCpv
 (
     const scalarField& p,
@@ -313,6 +358,15 @@ Foam::tmp<Foam::volScalarField> Foam::twoPhaseMixtureThermo::W() const
 }
 
 
+Foam::scalar
+Foam::twoPhaseMixtureThermo::cellW(const label celli) const
+{
+    return
+        alpha1()[celli]*thermo1_->cellW(celli)
+      + alpha2()[celli]*thermo2_->cellW(celli);
+}
+
+
 Foam::tmp<Foam::scalarField> Foam::twoPhaseMixtureThermo::W
 (
     const label patchi
@@ -327,6 +381,18 @@ Foam::tmp<Foam::scalarField> Foam::twoPhaseMixtureThermo::W
 Foam::tmp<Foam::volScalarField> Foam::twoPhaseMixtureThermo::nu() const
 {
     return mu()/(alpha1()*thermo1_->rho() + alpha2()*thermo2_->rho());
+}
+
+
+Foam::scalar
+Foam::twoPhaseMixtureThermo::cellnu(const label celli) const
+{
+    return
+        cellmu(celli)
+       /(
+            alpha1()[celli]*thermo1_->cellrho(celli)
+          + alpha2()[celli]*thermo2_->cellrho(celli)
+        );
 }
 
 
@@ -350,6 +416,14 @@ Foam::tmp<Foam::volScalarField> Foam::twoPhaseMixtureThermo::kappa() const
 }
 
 
+Foam::scalar
+Foam::twoPhaseMixtureThermo::cellkappa(const label celli) const
+{
+    return
+        alpha1()[celli]*thermo1_->cellkappa(celli)
+      + alpha2()[celli]*thermo2_->cellkappa(celli);
+}
+
 Foam::tmp<Foam::scalarField> Foam::twoPhaseMixtureThermo::kappa
 (
     const label patchi
@@ -366,6 +440,15 @@ Foam::tmp<Foam::volScalarField> Foam::twoPhaseMixtureThermo::alphahe() const
     return
         alpha1()*thermo1_->alphahe()
       + alpha2()*thermo2_->alphahe();
+}
+
+
+Foam::scalar
+Foam::twoPhaseMixtureThermo::cellalphahe(const label celli) const
+{
+    return
+        alpha1()[celli]*thermo1_->cellalphahe(celli)
+      + alpha2()[celli]*thermo2_->cellalphahe(celli);
 }
 
 
@@ -391,6 +474,18 @@ Foam::tmp<Foam::volScalarField> Foam::twoPhaseMixtureThermo::kappaEff
 }
 
 
+Foam::scalar
+Foam::twoPhaseMixtureThermo::cellkappaEff
+(
+    const scalar& alphat,
+    const label celli
+) const
+{
+    return
+        alpha1()[celli]*thermo1_->cellkappaEff(alphat, celli)
+      + alpha2()[celli]*thermo2_->cellkappaEff(alphat, celli);
+}
+
 Foam::tmp<Foam::scalarField> Foam::twoPhaseMixtureThermo::kappaEff
 (
     const scalarField& alphat,
@@ -411,6 +506,19 @@ Foam::tmp<Foam::volScalarField> Foam::twoPhaseMixtureThermo::alphaEff
     return
         alpha1()*thermo1_->alphaEff(alphat)
       + alpha2()*thermo2_->alphaEff(alphat);
+}
+
+
+Foam::scalar
+Foam::twoPhaseMixtureThermo::cellalphaEff
+(
+    const scalar& alphat,
+    const label celli
+) const
+{
+    return
+        alpha1()[celli]*thermo1_->cellalphaEff(alphat, celli)
+      + alpha2()[celli]*thermo2_->cellalphaEff(alphat, celli);
 }
 
 

@@ -103,6 +103,28 @@ Foam::tmp<Foam::volScalarField> Foam::blendingMethods::hyperbolic::f1
 }
 
 
+Foam::scalar Foam::blendingMethods::hyperbolic::f1
+(
+    const phaseModel& phase1,
+    const phaseModel& phase2,
+    const label celli
+) const
+{
+    return
+        (
+            1
+          + tanh
+            (
+                (4/transitionAlphaScale_.value())
+               *(
+                    phase2[celli]
+                  - minContinuousAlpha_[phase2.name()].value()
+                )
+            )
+        )/2;
+}
+
+
 Foam::tmp<Foam::volScalarField> Foam::blendingMethods::hyperbolic::f2
 (
     const phaseModel& phase1,
@@ -116,6 +138,28 @@ Foam::tmp<Foam::volScalarField> Foam::blendingMethods::hyperbolic::f2
             (
                 (4/transitionAlphaScale_)
                *(phase1 - minContinuousAlpha_[phase1.name()])
+            )
+        )/2;
+}
+
+
+Foam::scalar Foam::blendingMethods::hyperbolic::f2
+(
+    const phaseModel& phase1,
+    const phaseModel& phase2,
+    const label celli
+) const
+{
+    return
+        (
+            1
+          + tanh
+            (
+                (4/transitionAlphaScale_.value())
+               *(
+                    phase1[celli]
+                  - minContinuousAlpha_[phase1.name()].value()
+                )
             )
         )/2;
 }

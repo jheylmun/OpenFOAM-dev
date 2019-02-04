@@ -99,4 +99,44 @@ Foam::tmp<Foam::volScalarField> Foam::dragModels::Beetstra::CdRe() const
 }
 
 
+Foam::scalar
+Foam::dragModels::Beetstra::cellCdRe(const label celli) const
+{
+    scalar alpha1
+    (
+        max
+        (
+            pair_.dispersed()[celli], pair_.continuous().residualAlpha().value()
+        )
+    );
+
+    scalar alpha2
+    (
+        max
+        (
+            scalar(1) - pair_.dispersed()[celli],
+            pair_.continuous().residualAlpha().value()
+        )
+    );
+
+    scalar Res(alpha2*pair_.Re(celli));
+
+    scalar ResLim(max(Res, residualRe_.value()));
+
+    scalar F0
+    (
+        10*alpha1/sqr(alpha2) + sqr(alpha2)*(1 + 1.5*sqrt(alpha1))
+    );
+
+    scalar F1
+    (
+        0.413*Res/(24*sqr(alpha2))*(1.0/alpha2
+        + 3*alpha1*alpha2 + 8.4*pow(ResLim, -0.343))
+        /(1 + pow(10.0, 3*alpha1)*pow(ResLim, -(1 + 4*alpha1)/2.0))
+    );
+
+    return 24*alpha2*(F0 + F1);
+}
+
+
 // ************************************************************************* //

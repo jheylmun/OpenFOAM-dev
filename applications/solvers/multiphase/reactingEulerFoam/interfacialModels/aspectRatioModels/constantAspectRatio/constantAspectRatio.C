@@ -88,4 +88,11 @@ Foam::aspectRatioModels::constantAspectRatio::E() const
 }
 
 
+Foam::scalar
+Foam::aspectRatioModels::constantAspectRatio::E(const label celli) const
+{
+    return E0_.value();
+}
+
+
 // ************************************************************************* //

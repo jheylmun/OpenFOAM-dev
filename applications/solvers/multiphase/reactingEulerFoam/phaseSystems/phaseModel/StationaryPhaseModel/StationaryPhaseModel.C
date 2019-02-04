@@ -145,6 +145,14 @@ Foam::StationaryPhaseModel<BasePhaseModel>::U() const
 
 
 template<class BasePhaseModel>
+Foam::vector
+Foam::StationaryPhaseModel<BasePhaseModel>::U(const label) const
+{
+    return Zero;
+}
+
+
+template<class BasePhaseModel>
 Foam::volVectorField&
 Foam::StationaryPhaseModel<BasePhaseModel>::URef()
 {

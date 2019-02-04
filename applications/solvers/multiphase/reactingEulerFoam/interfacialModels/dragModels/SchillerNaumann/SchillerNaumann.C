@@ -71,4 +71,14 @@ Foam::tmp<Foam::volScalarField> Foam::dragModels::SchillerNaumann::CdRe() const
 }
 
 
+Foam::scalar
+Foam::dragModels::SchillerNaumann::cellCdRe(const label celli) const
+{
+    scalar Re(pair_.Re(celli));
+    return
+        neg(Re - 1000)*24*(1.0 + 0.15*pow(Re, 0.687))
+      + pos0(Re - 1000)*0.44*max(Re, residualRe_.value());
+}
+
+
 // ************************************************************************* //

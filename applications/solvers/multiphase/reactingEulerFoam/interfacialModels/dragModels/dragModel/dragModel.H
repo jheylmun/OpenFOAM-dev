@@ -146,6 +146,18 @@ public:
         //  used in the face-momentum equations
         virtual tmp<surfaceScalarField> Kf() const;
 
+
+    // Cell based functions
+
+        //- Drag coefficient for cell
+        virtual scalar cellCdRe(const label) const = 0;
+
+        //- Return the phase-intensive drag coefficient Ki for cell
+        virtual scalar cellKi(const label) const;
+
+        //- Return the drag coefficient K for cell
+        virtual scalar cellK(const label) const;
+
         //- Dummy write for regIOobject
         bool writeData(Ostream& os) const;
 };

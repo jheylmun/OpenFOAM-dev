@@ -341,4 +341,12 @@ Foam::diameterModels::velocityGroup::d() const
     return d_;
 }
 
+
+Foam::scalar
+Foam::diameterModels::velocityGroup::d(const label celli) const
+{
+    return d_[celli];
+}
+
+
 // ************************************************************************* //

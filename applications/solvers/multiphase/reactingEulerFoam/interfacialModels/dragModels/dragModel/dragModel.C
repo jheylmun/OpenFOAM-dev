@@ -133,6 +133,29 @@ Foam::tmp<Foam::surfaceScalarField> Foam::dragModel::Kf() const
 }
 
 
+Foam::scalar Foam::dragModel::cellKi(const label celli) const
+{
+    return
+        0.75
+       *cellCdRe(celli)
+       *swarmCorrection_->cellCs(celli)
+       *pair_.continuous().thermo().cellrho(celli)
+       *pair_.continuous().thermo().cellnu(celli)
+       /sqr(pair_.dispersed().d(celli));
+}
+
+
+Foam::scalar Foam::dragModel::cellK(const label celli) const
+{
+    return
+        max
+        (
+            pair_.dispersed()[celli],
+            pair_.dispersed().residualAlpha().value()
+        )*cellKi(celli);
+}
+
+
 bool Foam::dragModel::writeData(Ostream& os) const
 {
     return os.good();

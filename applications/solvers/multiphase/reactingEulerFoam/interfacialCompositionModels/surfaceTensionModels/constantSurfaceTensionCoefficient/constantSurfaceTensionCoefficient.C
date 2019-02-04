@@ -93,4 +93,12 @@ Foam::surfaceTensionModels::constantSurfaceTensionCoefficient::sigma() const
 }
 
 
+Foam::scalar
+Foam::surfaceTensionModels::constantSurfaceTensionCoefficient
+::sigma(const label) const
+{
+    return sigma_.value();
+}
+
+
 // ************************************************************************* //

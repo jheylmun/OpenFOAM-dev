@@ -4,6 +4,8 @@ EXE_INC = \
     -I../../phaseSystems/lnInclude \
     -I../twoPhaseCompressibleTurbulenceModels/lnInclude \
     -I../../derivedFvPatchFields/lnInclude \
+    -I../../dragOde/lnInclude \
+    -I$(LIB_SRC)/ODE/lnInclude \
     -I$(LIB_SRC)/thermophysicalModels/basic/lnInclude \
     -I$(LIB_SRC)/thermophysicalModels/specie/lnInclude \
     -I$(LIB_SRC)/thermophysicalModels/reactionThermo/lnInclude \

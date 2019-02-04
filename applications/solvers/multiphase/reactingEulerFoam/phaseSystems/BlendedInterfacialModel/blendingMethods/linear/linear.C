@@ -136,6 +136,37 @@ Foam::tmp<Foam::volScalarField> Foam::blendingMethods::linear::f1
 }
 
 
+
+Foam::scalar Foam::blendingMethods::linear::f1
+(
+    const phaseModel& phase1,
+    const phaseModel& phase2,
+    const label celli
+) const
+{
+    scalar minFullAlpha
+    (
+        minFullyContinuousAlpha_[phase2.name()].value()
+    );
+    scalar minPartAlpha
+    (
+        minPartlyContinuousAlpha_[phase2.name()].value()
+    );
+
+    return
+        min
+        (
+            max
+            (
+                (phase2[celli] - minPartAlpha)
+               /(minFullAlpha - minPartAlpha + small),
+                scalar(0)
+            ),
+            scalar(1)
+        );
+}
+
+
 Foam::tmp<Foam::volScalarField> Foam::blendingMethods::linear::f2
 (
     const phaseModel& phase1,
@@ -153,6 +184,36 @@ Foam::tmp<Foam::volScalarField> Foam::blendingMethods::linear::f2
             max
             (
                 (phase1 - minPartAlpha)
+               /(minFullAlpha - minPartAlpha + small),
+                scalar(0)
+            ),
+            scalar(1)
+        );
+}
+
+
+Foam::scalar Foam::blendingMethods::linear::f2
+(
+    const phaseModel& phase1,
+    const phaseModel& phase2,
+    const label celli
+) const
+{
+    scalar minFullAlpha
+    (
+        minFullyContinuousAlpha_[phase2.name()].value()
+    );
+    scalar minPartAlpha
+    (
+        minPartlyContinuousAlpha_[phase2.name()].value()
+    );
+
+    return
+        min
+        (
+            max
+            (
+                (phase1[celli] - minPartAlpha)
                /(minFullAlpha - minPartAlpha + small),
                 scalar(0)
             ),

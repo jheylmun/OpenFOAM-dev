@@ -101,6 +101,97 @@ Foam::dragModels::AttouFerschneider::KLiquidSolid
 }
 
 
+Foam::scalar
+Foam::dragModels::AttouFerschneider::cellKGasLiquid
+(
+    const phaseModel& gas,
+    const phaseModel& liquid,
+    const label celli
+) const
+{
+    const phaseModel& solid = gas.fluid().phases()[solidName_];
+
+    scalar oneMinusGas
+    (
+        max(1 - gas[celli], liquid.residualAlpha().value())
+    );
+    scalar cbrtR
+    (
+        cbrt
+        (
+            max
+            (
+                solid[celli], solid.residualAlpha().value()
+            )/oneMinusGas
+        )
+    );
+    scalar magURel(mag(gas.U(celli) - liquid.U(celli)));
+
+    return
+        E2_.value()*gas.thermo().cellmu(celli)
+       *sqr(oneMinusGas/solid.d(celli))*sqr(cbrtR)
+       /max(gas[celli], gas.residualAlpha().value())
+      + E2_.value()*gas.thermo().cellrho(celli)
+       *magURel*(1 - gas[celli])/solid.d(celli)*cbrtR;
+}
+
+
+Foam::scalar
+Foam::dragModels::AttouFerschneider::cellKGasSolid
+(
+    const phaseModel& gas,
+    const phaseModel& solid,
+    const label celli
+) const
+{
+    scalar oneMinusGas
+    (
+        max(1 - gas[celli], solid.residualAlpha().value())
+    );
+    scalar cbrtR
+    (
+        cbrt
+        (
+            max
+            (
+                solid[celli],
+                solid.residualAlpha().value()
+            )/oneMinusGas
+        )
+    );
+
+    return
+        E1_.value()*gas.thermo().cellmu(celli)
+       *sqr(oneMinusGas/solid.d(celli))*sqr(cbrtR)
+       /max(gas[celli], gas.residualAlpha().value())
+      + E2_.value()*gas.thermo().cellrho(celli)
+       *mag(gas.U(celli))*(1 - gas[celli])/solid.d(celli)*cbrtR;
+}
+
+
+Foam::scalar
+Foam::dragModels::AttouFerschneider::cellKLiquidSolid
+(
+    const phaseModel& liquid,
+    const phaseModel& solid,
+    const label celli
+) const
+{
+    const phaseModel& gas = liquid.fluid().phases()[gasName_];
+
+    return
+        E1_.value()*liquid.thermo().cellmu(celli)
+       *sqr
+        (
+            max(solid[celli], solid.residualAlpha().value())
+           /solid.d(celli)
+        )
+       /max(liquid[celli], liquid.residualAlpha().value())
+      + E2_.value()*liquid.thermo().cellrho(celli)
+       *mag(gas.U(celli))*solid[celli]/solid.d(celli);
+}
+
+
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 Foam::dragModels::AttouFerschneider::AttouFerschneider
@@ -179,6 +270,84 @@ Foam::tmp<Foam::surfaceScalarField>
 Foam::dragModels::AttouFerschneider::Kf() const
 {
     return fvc::interpolate(K());
+}
+
+
+Foam::scalar
+Foam::dragModels::AttouFerschneider::cellCdRe(const label) const
+{
+    FatalErrorInFunction
+        << "Not implemented."
+        << "Drag coefficient is not defined for the AttouFerschneider model."
+        << exit(FatalError);
+
+    return 0.0;
+}
+
+
+Foam::scalar
+Foam::dragModels::AttouFerschneider::cellK(const label celli) const
+{
+    switch (Pair<word>::compare(pair_, phasePairKey(gasName_, liquidName_)))
+    {
+        case 1:
+            return cellKGasLiquid
+            (
+                pair_.phase1(),
+                pair_.phase2(),
+                celli
+            );
+        case -1:
+            return cellKGasLiquid
+            (
+                pair_.phase2(),
+                pair_.phase1(),
+                celli
+            );
+    }
+
+    switch (Pair<word>::compare(pair_, phasePairKey(gasName_, solidName_)))
+    {
+        case 1:
+            return cellKGasSolid
+            (
+                pair_.phase1(),
+                pair_.phase2(),
+                celli
+            );
+        case -1:
+            return cellKGasSolid
+            (
+                pair_.phase2(),
+                pair_.phase1(),
+                celli
+            );
+    }
+
+    switch (Pair<word>::compare(pair_, phasePairKey(liquidName_, solidName_)))
+    {
+        case 1:
+            return cellKLiquidSolid
+            (
+                pair_.phase1(),
+                pair_.phase2(),
+                celli
+            );
+        case -1:
+            return cellKLiquidSolid
+            (
+                pair_.phase2(),
+                pair_.phase1(),
+                celli
+            );
+    }
+
+    FatalErrorInFunction
+        << "The pair does not contain two of out of the gas, liquid and solid "
+        << "phase models."
+        << exit(FatalError);
+
+    return 0.0;
 }
 
 
