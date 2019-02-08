@@ -90,8 +90,8 @@ Foam::dragModels::Ergun::cellCdRe(const label celli) const
                 pair_.continuous().residualAlpha().value()
             )
            /max
-           (
-               pair_.continuous()[celli],
+            (
+                pair_.continuous()[celli],
                 pair_.continuous().residualAlpha().value()
            )
           + 1.75*pair_.Re(celli)

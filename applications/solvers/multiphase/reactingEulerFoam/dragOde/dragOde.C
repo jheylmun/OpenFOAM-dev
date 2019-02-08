@@ -59,19 +59,25 @@ void Foam::dragOde::setq()
     {
         phaseModel& phase = phaseModels_[phasei];
         label ui = phase.index()*nDims_;
+        vector U
+        (
+            phase.stationary()
+          ? phase.U(celli_)
+          : phase.U()().oldTime()[celli_]
+        );
         if (solutionD_[0] == 1)
         {
-            q_[ui] = phase.URef()[celli_].x();
+            q_[ui] = U.x();
             ui++;
         }
         if (solutionD_[1] == 1)
         {
-            q_[ui] = phase.URef()[celli_].y();
+            q_[ui] = U.y();
             ui++;
         }
         if (solutionD_[2] == 1)
         {
-            q_[ui] = phase.URef()[celli_].z();
+            q_[ui] = U.z();
         }
     }
 }
@@ -150,7 +156,6 @@ void Foam::dragOde::derivatives
                 phase1[celli_],
                 phase1.residualAlpha().value()
             )*phase1.thermo().cellrho(celli_);
-        scalar u1 = q_[ui];
 
         label uj = phase2.index()*nDims_;
         scalar alphaRho2 =
@@ -159,13 +164,15 @@ void Foam::dragOde::derivatives
                 phase2[celli_],
                 phase2.residualAlpha().value()
             )*phase2.thermo().cellrho(celli_);
-        scalar u2 = q_[uj];
 
         scalar drag1 = drag/alphaRho1;
         scalar drag2 = drag/alphaRho2;
 
         if (nDims_ > 0)
         {
+            scalar u1 = q[ui];
+            scalar u2 = q[uj];
+
             dqdt[ui] += drag1*(u2 - u1);
             dqdt[uj] += drag2*(u1 - u2);
             ui++;
@@ -173,6 +180,9 @@ void Foam::dragOde::derivatives
         }
         if (nDims_ > 1)
         {
+            scalar u1 = q[ui];
+            scalar u2 = q[uj];
+
             dqdt[ui] += drag1*(u2 - u1);
             dqdt[uj] += drag2*(u1 - u2);
             ui++;
@@ -180,10 +190,13 @@ void Foam::dragOde::derivatives
         }
         if (nDims_ > 2)
         {
+            scalar u1 = q[ui];
+            scalar u2 = q[uj];
             dqdt[ui] += drag1*(u2 - u1);
             dqdt[uj] += drag2*(u1 - u2);
         }
     }
+
 }
 
 
@@ -211,7 +224,6 @@ void Foam::dragOde::jacobian
                 phase1[celli_],
                 phase1.residualAlpha().value()
             )*phase1.thermo().cellrho(celli_);
-        scalar u1 = q_[ui];
 
         label uj = phase2.index()*nDims_;
         scalar alphaRho2 =
@@ -220,19 +232,21 @@ void Foam::dragOde::jacobian
                 phase2[celli_],
                 phase2.residualAlpha().value()
             )*phase2.thermo().cellrho(celli_);
-        scalar u2 = q_[uj];
 
         scalar drag1 = drag/alphaRho1;
         scalar drag2 = drag/alphaRho2;
 
         if (nDims_ > 0)
         {
+            scalar u1 = q[ui];
+            scalar u2 = q[uj];
+
             dqdt[ui] += drag1*(u2 - u1);
             dqdt[uj] += drag2*(u1 - u2);
 
-            J(ui, ui) += -drag1;
+            J(ui, ui) -= drag1;
             J(ui, uj) += drag1;
-            J(uj, uj) += -drag2;
+            J(uj, uj) -= drag2;
             J(uj, ui) += drag2;
 
             ui++;
@@ -240,12 +254,15 @@ void Foam::dragOde::jacobian
         }
         if (nDims_ > 1)
         {
+            scalar u1 = q[ui];
+            scalar u2 = q[uj];
+
             dqdt[ui] += drag1*(u2 - u1);
             dqdt[uj] += drag2*(u1 - u2);
 
-            J(ui, ui) += -drag1;
+            J(ui, ui) -= drag1;
             J(ui, uj) += drag1;
-            J(uj, uj) += -drag2;
+            J(uj, uj) -= drag2;
             J(uj, ui) += drag2;
 
             ui++;
@@ -253,11 +270,14 @@ void Foam::dragOde::jacobian
         }
         if (nDims_ > 2)
         {
+            scalar u1 = q[ui];
+            scalar u2 = q[uj];
+
             dqdt[ui] += drag1*(u2 - u1);
             dqdt[uj] += drag2*(u1 - u2);
-            J(ui, ui) += -drag1;
+            J(ui, ui) -= drag1;
             J(ui, uj) += drag1;
-            J(uj, uj) += -drag2;
+            J(uj, uj) -= drag2;
             J(uj, ui) += drag2;
         }
     }
@@ -285,8 +305,6 @@ Foam::scalar Foam::dragOde::solve
     }
     return min(deltaT_);
 }
-
-
 
 
 // ************************************************************************* //

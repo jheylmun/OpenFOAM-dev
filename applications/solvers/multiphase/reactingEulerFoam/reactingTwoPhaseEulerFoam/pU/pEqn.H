@@ -134,21 +134,21 @@ while (pimple.correct())
 
     ddtCorrByAs.clear();
 
-    // Drag fluxes
-    PtrList<surfaceScalarField> phiKdPhis(fluid.phiKdPhis(rAUs));
-    const surfaceScalarField& phiKdPhi1 = phiKdPhis[0];
-    const surfaceScalarField& phiKdPhi2 = phiKdPhis[1];
-
     // Total predicted flux
     surfaceScalarField phiHbyA
     (
         "phiHbyA",
-        alphaf1*(phiHbyA1 - phiKdPhi1) + alphaf2*(phiHbyA2 - phiKdPhi2)
+        alphaf1*phiHbyA1 + alphaf2*phiHbyA2
     );
 
-    MRF.makeRelative(phiHbyA);
+    if (!fluid.solveDragOde())
+    {
+        // Drag fluxes
+        PtrList<surfaceScalarField> phiKdPhis(fluid.phiKdPhis(rAUs));
+        phiHbyA -= (alphaf1*phiKdPhis[0] + alphaf2*phiKdPhis[1]);
+    }
 
-    phiKdPhis.clear();
+    MRF.makeRelative(phiHbyA);
 
     // Construct pressure "diffusivity"
     const surfaceScalarField rAUf
@@ -341,6 +341,12 @@ while (pimple.correct())
             );
 
             // Partial-elimination phase-flux corrector
+            if (fluid.solveDragOde())
+            {
+                phi1 = phiHbyA1 + alpharAUf1*mSfGradp;
+                phi2 = phiHbyA2 + alpharAUf2*mSfGradp;
+            }
+            else
             {
                 const surfaceScalarField phi1s
                 (
@@ -378,6 +384,17 @@ while (pimple.correct())
             mSfGradp = pEqnIncomp.flux()/rAUf;
 
             // Partial-elimination phase-velocity corrector
+            if (fluid.solveDragOde())
+            {
+                U1 =
+                    HbyA1
+                  + fvc::reconstruct(alpharAUf1*mSfGradp - phigF1);
+
+                U2 =
+                    HbyA2
+                  + fvc::reconstruct(alpharAUf2*mSfGradp - phigF2);
+            }
+            else
             {
                 const volVectorField Us1
                 (
@@ -402,13 +419,13 @@ while (pimple.correct())
                 );
 
                 U1 = U + alpha2*Ur;
-                U1.correctBoundaryConditions();
-                fvOptions.correct(U1);
-
                 U2 = U - alpha1*Ur;
-                U2.correctBoundaryConditions();
-                fvOptions.correct(U2);
             }
+            U1.correctBoundaryConditions();
+            fvOptions.correct(U1);
+
+            U2.correctBoundaryConditions();
+            fvOptions.correct(U2);
         }
     }
 

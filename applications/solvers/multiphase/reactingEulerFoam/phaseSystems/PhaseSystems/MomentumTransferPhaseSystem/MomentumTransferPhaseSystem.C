@@ -362,7 +362,19 @@ Foam::MomentumTransferPhaseSystem<BasePhaseSystem>::momentumTransfer()
         *Kdfs_[dragModelIter.key()] = dragModelIter()->Kf();
     }
 
-    if (!solveDragOde_)
+    if (solveDragOde_)
+    {
+        dragOde_->solve(this->mesh().time().deltaTValue());
+        forAll(this->movingPhases(), phasei)
+        {
+            const phaseModel& phase(this->movingPhases()[phasei]);
+            *eqns[phase.name()] +=
+                max(phase.residualAlpha(), phase)
+               *phase.rho()
+               *fvc::ddt(phase.U()());
+        }
+    }
+    else
     {
         // Add the implicit part of the drag force
         forAllConstIter(KdTable, Kds_, KdIter)
@@ -453,6 +465,19 @@ Foam::MomentumTransferPhaseSystem<BasePhaseSystem>::momentumTransferf()
             phase.name(),
             new fvVectorMatrix(phase.U(), dimMass*dimVelocity/dimTime)
         );
+    }
+
+    if (solveDragOde_)
+    {
+        dragOde_->solve(this->mesh().time().deltaTValue());
+        forAll(this->movingPhases(), phasei)
+        {
+            const phaseModel& phase(this->movingPhases()[phasei]);
+            *eqns[phase.name()] +=
+                max(phase.residualAlpha(), phase)
+               *phase.rho()
+               *fvc::ddt(phase.U()());
+        }
     }
 
     // Create U & grad(U) fields

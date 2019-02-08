@@ -109,14 +109,7 @@ int main(int argc, char *argv[])
 
             #include "YEqns.H"
 
-            if (solveDragOde)
-            {
-                #include "pUOde/UEqns.H"
-                #include "EEqns.H"
-                #include "pUOde/pEqn.H"
-                fluid.solveDrag();
-            }
-            else if (faceMomentum)
+            if (faceMomentum)
             {
                 #include "pUf/UEqns.H"
                 #include "EEqns.H"

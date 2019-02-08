@@ -293,7 +293,6 @@ Foam::MovingPhaseModel<BasePhaseModel>::UEqn()
     return
     (
         fvm::ddt(alpha, rho, U_)
-      - alpha*rho*fvc::ddt(U_)
       + fvm::div(alphaRhoPhi_, U_)
       + fvm::SuSp(- this->continuityError(), U_)
       + this->fluid().MRF().DDt(alpha*rho, U_)

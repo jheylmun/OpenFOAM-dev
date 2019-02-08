@@ -146,21 +146,24 @@ while (pimple.correct())
         )
       - phigF2;
 
-    // Drag fluxes
-    PtrList<surfaceScalarField> phiKdPhifs(fluid.phiKdPhifs(rAUfs));
-    const surfaceScalarField& phiKdPhif1 = phiKdPhifs[0];
-    const surfaceScalarField& phiKdPhif2 = phiKdPhifs[1];
-
     // Total predicted flux
     surfaceScalarField phiHbyA
     (
         "phiHbyA",
-        alphaf1*(phiHbyA1 - phiKdPhif1) + alphaf2*(phiHbyA2 - phiKdPhif2)
+        alphaf1*phiHbyA1 + alphaf2*phiHbyA2
     );
 
-    MRF.makeRelative(phiHbyA);
+    if (!fluid.solveDragOde())
+    {
+        // Drag fluxes
+        PtrList<surfaceScalarField> phiKdPhifs
+        (
+            fluid.phiKdPhifs(rAUfs)
+        );
+        phiHbyA -= (alphaf1*phiKdPhifs[0] + alphaf2*phiKdPhifs[1]);
+    }
 
-    phiKdPhifs.clear();
+    MRF.makeRelative(phiHbyA);
 
     // Construct pressure "diffusivity"
     const surfaceScalarField rAUf
@@ -345,24 +348,32 @@ while (pimple.correct())
 
             phi = phiHbyA + pEqnIncomp.flux();
 
-            const surfaceScalarField phi1s
-            (
-                phiHbyA1 + alpharAUf1*mSfGradp
-            );
+            if (fluid.solveDragOde())
+            {
+                phi1 = phiHbyA1 + alpharAUf1*mSfGradp;
+                phi2 = phiHbyA2 + alpharAUf2*mSfGradp;
+            }
+            else
+            {
+                const surfaceScalarField phi1s
+                (
+                    phiHbyA1 + alpharAUf1*mSfGradp
+                );
 
-            const surfaceScalarField phi2s
-            (
-                phiHbyA2 + alpharAUf2*mSfGradp
-            );
+                const surfaceScalarField phi2s
+                (
+                    phiHbyA2 + alpharAUf2*mSfGradp
+                );
 
-            surfaceScalarField phir
-            (
-                ((phi2s + rAUf2*Kdf*phi1s) - (phi1s + rAUf1*Kdf*phi2s))
-               /(1 - rAUf1*rAUf2*sqr(Kdf))
-            );
+                surfaceScalarField phir
+                (
+                    ((phi2s + rAUf2*Kdf*phi1s) - (phi1s + rAUf1*Kdf*phi2s))
+                /(1 - rAUf1*rAUf2*sqr(Kdf))
+                );
 
-            phi1 = phi - alphaf2*phir;
-            phi2 = phi + alphaf1*phir;
+                phi1 = phi - alphaf2*phir;
+                phi2 = phi + alphaf1*phir;
+            }
 
             U1 = fvc::reconstruct(MRF.absolute(phi1));
             U1.correctBoundaryConditions();
