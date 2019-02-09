@@ -140,7 +140,7 @@ while (pimple.correct())
     fluid.fillFields("phiHbyA", dimForce/dimDensity/dimVelocity, phiHbyAs);
 
     // Add explicit drag forces and fluxes if not doing partial elimination
-    if (!partialElimination)
+    if (!partialElimination && !fluid.solveDragOde())
     {
         PtrList<surfaceScalarField> phiKdPhifs(fluid.phiKdPhifs(rAUfs));
 
@@ -174,7 +174,7 @@ while (pimple.correct())
     }
 
     // Add explicit drag fluxes if doing partial elimination
-    if (partialElimination)
+    if (partialElimination && !fluid.solveDragOde())
     {
         PtrList<surfaceScalarField> phiKdPhifs(fluid.phiKdPhifs(rAUfs));
 
@@ -383,7 +383,7 @@ while (pimple.correct())
                 }
             }
 
-            if (partialElimination)
+            if (partialElimination && !fluid.solveDragOde())
             {
                 fluid.partialEliminationf(rAUfs);
             }

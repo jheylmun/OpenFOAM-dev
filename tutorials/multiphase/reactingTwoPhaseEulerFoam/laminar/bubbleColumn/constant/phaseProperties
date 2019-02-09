@@ -92,8 +92,9 @@ aspectRatio
 dragOdeCoeffs
 {
     solveOde on;
-    solver Euler;
-    absTol 1e-4;
+    solver seulex;
+    absTol 1e-6;
+    relTol 1e-3;
     maxSteps 1e5;
 }
 drag
