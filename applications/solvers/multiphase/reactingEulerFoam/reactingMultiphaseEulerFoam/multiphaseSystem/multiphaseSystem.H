@@ -81,7 +81,10 @@ private:
 
         void calcAlphas();
 
-        void solveAlphas(const bool polydisperse);
+        void solveAlphas
+        (
+            const PtrList<surfaceScalarField>& deltaAlphaPhiPs
+        );
 
         tmp<surfaceVectorField> nHatfv
         (

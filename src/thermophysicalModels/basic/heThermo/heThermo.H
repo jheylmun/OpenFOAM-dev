@@ -237,9 +237,6 @@ public:
                 const label patchi
             ) const;
 
-            //- Speed of sound [m/s]
-            virtual tmp<volScalarField> speedOfSound() const;
-
             //- Heat capacity at constant pressure/volume for patch [J/kg/K]
             virtual tmp<scalarField> Cpv
             (

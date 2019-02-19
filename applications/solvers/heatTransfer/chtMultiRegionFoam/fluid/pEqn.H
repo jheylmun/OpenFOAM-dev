@@ -22,7 +22,7 @@ surfaceScalarField phiHbyA
 
 MRF.makeRelative(fvc::interpolate(rho), phiHbyA);
 
-const bool closedVolume = adjustPhi(phiHbyA, U, p_rgh);
+const bool closedVolume = mesh.steady() && adjustPhi(phiHbyA, U, p_rgh);
 const bool adjustMass = closedVolume && !thermo.incompressible();
 
 phiHbyA += phig;
@@ -34,6 +34,8 @@ constrainPressure(p_rgh, rho, U, phiHbyA, rhorAUf, MRF);
     fvScalarMatrix p_rghEqnComp
     (
         fvc::ddt(rho) + psi*correction(fvm::ddt(p_rgh))
+     ==
+        fvOptions(psi, p_rgh, rho.name())
     );
 
     if (pimple.transonic())
@@ -69,7 +71,7 @@ constrainPressure(p_rgh, rho, U, phiHbyA, rhorAUf, MRF);
             pressureControl.refValue()
         );
 
-        p_rghEqn.solve(mesh.solver(p_rgh.select(pimple.finalInnerIter())));
+        p_rghEqn.solve();
 
         if (pimple.finalNonOrthogonalIter())
         {

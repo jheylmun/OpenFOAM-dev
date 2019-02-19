@@ -72,7 +72,7 @@ solvers
         minIter         1;
     }
 
-    Yi
+    "Yi.*"
     {
         solver          PBiCGStab;
         preconditioner  DILU;

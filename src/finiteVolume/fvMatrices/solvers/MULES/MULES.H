@@ -251,6 +251,16 @@ void limitSum
     const labelHashSet& fixed
 );
 
+template<class PsiMaxType, class PsiMinType>
+void limitSum
+(
+    const volScalarField& psi,
+    const surfaceScalarField& phi,
+    PtrList<surfaceScalarField>& phiPsis,
+    const PsiMaxType& psiMax,
+    const PsiMinType& psiMin
+);
+
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 } // End namespace MULES

@@ -1,3 +1,0 @@
-explicitRhoFoam.C
-
-EXE = $(FOAM_APPBIN)/explicitRhoFoam

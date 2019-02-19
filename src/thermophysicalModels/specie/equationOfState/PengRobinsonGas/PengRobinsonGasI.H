@@ -173,6 +173,50 @@ inline Foam::scalar Foam::PengRobinsonGas<Specie>::Cp(scalar p, scalar T) const
 
 
 template<class Specie>
+inline Foam::scalar Foam::PengRobinsonGas<Specie>::E(scalar p, scalar T) const
+{
+    const scalar Pr = p/Pc_;
+    const scalar Tr = T/Tc_;
+    const scalar B = 0.07780*Pr/Tr;
+    const scalar kappa = 0.37464 + 1.54226*omega_ - 0.26992*sqr(omega_);
+    const scalar alpha = sqr(1 + kappa*(1 - sqrt(Tr)));
+
+    const scalar Z = this->Z(p, T);
+
+    return
+        this->R()
+       *Tc_
+       *(
+         - 2.078*(1 + kappa)*sqrt(alpha)
+          *log((Z + 2.414*B)/(Z - 0.414*B))
+        );
+}
+
+
+template<class Specie>
+inline Foam::scalar Foam::PengRobinsonGas<Specie>::Cv(scalar p, scalar T) const
+{
+    const scalar a = 0.45724*sqr(RR*Tc_)/Pc_;
+    const scalar b = 0.07780*RR*Tc_/Pc_;
+    const scalar kappa = 0.37464 + 1.54226*omega_ - 0.26992*sqr(omega_);
+
+    const scalar B = b*p/(RR*T);
+
+    const scalar Z = this->Z(p, T);
+
+    const scalar app = kappa*a*(1 + kappa)/(2*sqrt(pow3(T)*Tc_));
+
+    const scalar root2 = sqrt(2.0);
+
+    return
+    (
+        app*(T/(2*root2*b))*log((Z + (root2 + 1)*B)/(Z - (root2 - 1)*B))
+      - RR
+    )/this->W();
+}
+
+
+template<class Specie>
 inline Foam::scalar Foam::PengRobinsonGas<Specie>::S
 (
     scalar p,
@@ -297,44 +341,6 @@ inline Foam::scalar Foam::PengRobinsonGas<Specie>::CpMCv
     const scalar N = ap*B/(b*RR);
 
     return this->R()*sqr(M - N)/(sqr(M) - 2*A*(Z + B));
-}
-
-
-template<class Specie>
-inline Foam::scalar Foam::PengRobinsonGas<Specie>::dpdT
-(
-    scalar T,
-    scalar rho
-) const
-{
-    const scalar Tr = T/Tc_;
-    const scalar a = 0.45724*sqr(this->R()*Tc_)/Pc_;
-    const scalar b = 0.07780*this->R()*Tc_/Pc_;
-    const scalar V = 1/rho;
-    const scalar kappa = 0.37464 + 1.54226*omega_ - 0.26992*sqr(omega_);
-    const scalar alphaPrime = (kappa*(kappa*(sqrt(Tr) - 1.0) - 1.0))/sqrt(Tr);
-
-    return this->R()/(V-b) - a*alphaPrime/(sqr(V) + 2*b*V - sqr(b));
-}
-
-
-template<class Specie>
-inline Foam::scalar Foam::PengRobinsonGas<Specie>::dpdv
-(
-    scalar T,
-    scalar rho
-) const
-{
-    const scalar Tr = T/Tc_;
-    const scalar a = 0.45724*sqr(this->R()*Tc_)/Pc_;
-    const scalar b = 0.07780*this->R()*Tc_/Pc_;
-    const scalar V = 1/rho;
-    const scalar kappa = 0.37464 + 1.54226*omega_ - 0.26992*sqr(omega_);
-    const scalar alpha = sqr(1 + kappa*(1 - sqrt(Tr)));
-
-    return
-        2*a*alpha*(V + b)/sqr(sqr(V) + 2*b*V - sqr(b))
-      - this->R()*T/sqr(V-b);
 }
 
 

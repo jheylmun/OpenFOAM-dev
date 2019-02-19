@@ -115,20 +115,6 @@ class thermo
             scalar (thermo::*limit)(const scalar) const
         ) const;
 
-        //- Return the temperature corresponding to the value of the
-        //  thermodynamic property f, given the function f = F(p, T)
-        //  and dF(p, T)/dT, where rho and T are used with the eos to
-        //  calculate pressure
-        inline scalar Trho
-        (
-            scalar f,
-            scalar rho,
-            scalar T0,
-            scalar (thermo::*F)(const scalar, const scalar) const,
-            scalar (thermo::*dFdT)(const scalar, const scalar) const,
-            scalar (thermo::*limit)(const scalar) const
-        ) const;
-
 
 public:
 
@@ -177,22 +163,20 @@ public:
             // Absolute Enthalpy [J/kg]
             // inline scalar Ha(const scalar p, const scalar T) const;
 
+            // Heat capacity at constant volume [J/(kg K)]
+            // inline scalar Cv(const scalar p, const scalar T) const;
+
+            // Sensible internal energy [J/kg]
+            // inline scalar Es(const scalar p, const scalar T) const;
+
+            // Absolute internal energy [J/kg]
+            // inline scalar Ea(const scalar p, const scalar T) const;
+
             // Entropy [J/(kg K)]
             // inline scalar S(const scalar p, const scalar T) const;
 
 
         // Mass specific derived properties
-
-            //- Temperature from eos
-            inline scalar TpRho
-            (
-                scalar p,
-                scalar rho,
-                scalar T0
-            ) const;
-
-            //- Heat capacity at constant volume [J/(kg K)]
-            inline scalar Cv(const scalar p, const scalar T) const;
 
             //- Heat capacity at constant pressure/volume [J/(kg K)]
             inline scalar Cpv(const scalar p, const scalar T) const;
@@ -207,23 +191,11 @@ public:
             //- Enthalpy/Internal energy [J/kg]
             inline scalar HE(const scalar p, const scalar T) const;
 
-            //- Sensible internal energy [J/kg]
-            inline scalar Es(const scalar p, const scalar T) const;
-
-            //- Absolute internal energy [J/kg]
-            inline scalar Ea(const scalar p, const scalar T) const;
-
             //- Gibbs free energy [J/kg]
             inline scalar G(const scalar p, const scalar T) const;
 
             //- Helmholtz free energy [J/kg]
             inline scalar A(const scalar p, const scalar T) const;
-
-            //- Internal energy differentiated with respect to pressure
-            inline scalar dHEdp(const scalar T, const scalar rho) const;
-
-            //- Internal energy differentiated with respect to density
-            inline scalar dHEdrho(const scalar T, const scalar rho) const;
 
 
         // Mole specific derived properties
@@ -345,52 +317,6 @@ public:
                 const scalar T0
             ) const;
 
-
-        // Energy->temperature  inversion functions (density based)
-
-            //- Temperature from enthalpy or internal energy
-            //  given an initial temperature T0
-            inline scalar THErho
-            (
-                const scalar H,
-                const scalar rho,
-                const scalar T0
-            ) const;
-
-            //- Temperature from sensible enthalpy given an initial T0
-            inline scalar THsrho
-            (
-                const scalar Hs,
-                const scalar rho,
-                const scalar T0
-            ) const;
-
-            //- Temperature from absolute enthalpy
-            //  given an initial temperature T0
-            inline scalar THarho
-            (
-                const scalar H,
-                const scalar rho,
-                const scalar T0
-            ) const;
-
-            //- Temperature from sensible internal energy
-            //  given an initial temperature T0
-            inline scalar TEsrho
-            (
-                const scalar E,
-                const scalar rho,
-                const scalar T0
-            ) const;
-
-            //- Temperature from absolute internal energy
-            //  given an initial temperature T0
-            inline scalar TEarho
-            (
-                const scalar E,
-                const scalar rho,
-                const scalar T0
-            ) const;
 
         // Derivative term used for Jacobian
 

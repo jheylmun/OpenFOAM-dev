@@ -34,9 +34,9 @@ License
 #include "perfectFluid.H"
 #include "PengRobinsonGas.H"
 #include "adiabaticPerfectFluid.H"
-#include "stiffenedEoS.H"
 
 #include "hConstThermo.H"
+#include "eConstThermo.H"
 #include "janafThermo.H"
 #include "sensibleEnthalpy.H"
 #include "sensibleInternalEnergy.H"
@@ -44,6 +44,7 @@ License
 
 #include "constTransport.H"
 #include "sutherlandTransport.H"
+#include "WLFTransport.H"
 
 #include "icoPolynomial.H"
 #include "hPolynomialThermo.H"
@@ -131,18 +132,6 @@ makeThermos
     specie
 );
 
-makeThermos
-(
-    rhoThermo,
-    heRhoThermo,
-    pureMixture,
-    constTransport,
-    sensibleEnthalpy,
-    hConstThermo,
-    stiffenedEoS,
-    specie
-);
-
 makeThermo
 (
     rhoThermo,
@@ -320,7 +309,31 @@ makeThermos
     pureMixture,
     constTransport,
     sensibleInternalEnergy,
+    eConstThermo,
+    rhoConst,
+    specie
+);
+
+makeThermos
+(
+    rhoThermo,
+    heRhoThermo,
+    pureMixture,
+    constTransport,
+    sensibleInternalEnergy,
     hConstThermo,
+    perfectFluid,
+    specie
+);
+
+makeThermos
+(
+    rhoThermo,
+    heRhoThermo,
+    pureMixture,
+    constTransport,
+    sensibleInternalEnergy,
+    eConstThermo,
     perfectFluid,
     specie
 );
@@ -342,6 +355,18 @@ makeThermo
     rhoThermo,
     heRhoThermo,
     pureMixture,
+    constTransport,
+    sensibleInternalEnergy,
+    eConstThermo,
+    adiabaticPerfectFluid,
+    specie
+);
+
+makeThermos
+(
+    rhoThermo,
+    heRhoThermo,
+    pureMixture,
     polynomialTransport,
     sensibleInternalEnergy,
     hPolynomialThermo,
@@ -357,42 +382,6 @@ makeThermos
     constTransport,
     sensibleInternalEnergy,
     hConstThermo,
-    stiffenedEoS,
-    specie
-);
-
-makeThermos
-(
-    rhoThermo,
-    heRhoThermo,
-    pureMixture,
-    sutherlandTransport,
-    sensibleInternalEnergy,
-    hConstThermo,
-    stiffenedEoS,
-    specie
-);
-
-makeThermos
-(
-    rhoThermo,
-    heRhoThermo,
-    pureMixture,
-    sutherlandTransport,
-    sensibleInternalEnergy,
-    janafThermo,
-    stiffenedEoS,
-    specie
-);
-
-makeThermos
-(
-    rhoThermo,
-    heRhoThermo,
-    pureMixture,
-    constTransport,
-    sensibleInternalEnergy,
-    hConstThermo,
     incompressiblePerfectGas,
     specie
 );
@@ -454,6 +443,18 @@ makeThermos
     sensibleInternalEnergy,
     janafThermo,
     Boussinesq,
+    specie
+);
+
+makeThermos
+(
+    rhoThermo,
+    heRhoThermo,
+    pureMixture,
+    WLFTransport,
+    sensibleInternalEnergy,
+    eConstThermo,
+    rhoConst,
     specie
 );
 

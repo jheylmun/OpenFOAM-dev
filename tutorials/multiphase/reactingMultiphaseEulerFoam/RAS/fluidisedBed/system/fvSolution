@@ -25,7 +25,7 @@ solvers
 
         solver          smoothSolver;
         smoother        symGaussSeidel;
-        tolerance       1e-9;
+        tolerance       1e-10;
         relTol          0;
         minIter         1;
     }
@@ -83,10 +83,10 @@ solvers
 
 PIMPLE
 {
-    nOuterCorrectors 1;
+    nOuterCorrectors 3;
     nCorrectors      1;
     nNonOrthogonalCorrectors 0;
-    faceMomentum     no;
+    faceMomentum     yes;
 }
 
 relaxationFactors

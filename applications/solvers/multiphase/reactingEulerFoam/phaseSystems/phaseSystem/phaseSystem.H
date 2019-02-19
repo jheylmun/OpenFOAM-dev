@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2015-2018 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2015-2019 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -51,11 +51,13 @@ SourceFiles
 #include "surfaceFields.H"
 #include "fvMatricesFwd.H"
 
+
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
 
+class kineticTheorySystem;
 class blendingMethod;
 template<class modelType> class BlendedInterfacialModel;
 class surfaceTensionModel;
@@ -138,6 +140,12 @@ protected:
 
         //- Multi-component phase models
         phaseModelPartialList multiComponentPhaseModels_;
+
+        //- Pointer to kinetic theory system
+        kineticTheorySystem* kineticTheoryPtr_;
+
+        //- Is the kinetic theory polydisperse
+        bool polydisperseKineticTheory_;
 
         //- Phase pairs
         phasePairTable phasePairs_;
@@ -364,9 +372,21 @@ public:
 
         // Sub-model lookup
 
+            //- Check availability of a sub model for a given phase pair
+            template<class modelType>
+            bool foundSubModel(const phasePair& key) const;
+
             //- Return a sub model between a phase pair
             template<class modelType>
             const modelType& lookupSubModel(const phasePair& key) const;
+
+            //- Check availability of a sub model between two phases
+            template<class modelType>
+            bool foundSubModel
+            (
+                const phaseModel& dispersed,
+                const phaseModel& continuous
+            ) const;
 
             //- Return a sub model between two phases
             template<class modelType>
@@ -375,6 +395,10 @@ public:
                 const phaseModel& dispersed,
                 const phaseModel& continuous
             ) const;
+
+            //- Check availability of a blended sub model for a given phase pair
+            template<class modelType>
+            bool foundBlendedSubModel(const phasePair& key) const;
 
             //- Return a blended sub model between a phase pair
             template<class modelType>
@@ -524,7 +548,7 @@ public:
             virtual void correctThermo();
 
             //- Correct the turbulence
-            virtual void correctTurbulence();
+            virtual void correctTurbulence(const bool postSolve);
 
             //- Correct the energy transport e.g. alphat
             virtual void correctEnergyTransport();

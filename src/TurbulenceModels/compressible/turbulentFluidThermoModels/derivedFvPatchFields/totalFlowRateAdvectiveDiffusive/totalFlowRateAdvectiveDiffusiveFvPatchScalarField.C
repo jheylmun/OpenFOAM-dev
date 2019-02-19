@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2019 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -154,11 +154,8 @@ void Foam::totalFlowRateAdvectiveDiffusiveFvPatchScalarField::updateCoeffs()
 
     const label patchi = patch().index();
 
-    const LESModel<EddyDiffusivity<compressible::turbulenceModel>>& turbModel =
-        db().lookupObject
-        <
-            LESModel<EddyDiffusivity<compressible::turbulenceModel>>
-        >
+    const compressible::turbulenceModel& turbModel =
+        db().lookupObject<compressible::turbulenceModel>
         (
             IOobject::groupName
             (
@@ -202,10 +199,9 @@ void Foam::totalFlowRateAdvectiveDiffusiveFvPatchScalarField::
 write(Ostream& os) const
 {
     fvPatchField<scalar>::write(os);
-    os.writeKeyword("phi") << phiName_ << token::END_STATEMENT << nl;
-    os.writeKeyword("rho") << rhoName_ << token::END_STATEMENT << nl;
-    os.writeKeyword("massFluxFraction") << massFluxFraction_
-        << token::END_STATEMENT << nl;
+    Foam::writeEntry(os, "phi", phiName_);
+    Foam::writeEntry(os, "rho", rhoName_);
+    Foam::writeEntry(os, "massFluxFraction", massFluxFraction_);
     this->writeEntry("value", os);
 }
 

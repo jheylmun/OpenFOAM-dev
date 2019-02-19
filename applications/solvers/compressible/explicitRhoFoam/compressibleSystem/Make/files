@@ -1,3 +1,0 @@
-compressibleSystem.C
-
-LIB = $(FOAM_LIBBIN)/libcompressibleSystem

@@ -251,13 +251,6 @@ public:
         //- Update properties
         virtual void correct() = 0;
 
-        //- Correct temperature and update pressure
-        virtual void correctP()
-        {
-            NotImplemented;
-            return;
-        }
-
         //- Return the name of the thermo physics
         virtual word thermoName() const = 0;
 
@@ -291,12 +284,6 @@ public:
             //- Density for patch [kg/m^3]
             virtual tmp<scalarField> rho(const label patchi) const = 0;
 
-            //- Calculate ensity [kg/m^3]
-            virtual void calcRho()
-            {
-                NotImplemented;
-                return;
-            }
 
             //- Enthalpy/Internal energy [J/kg]
             //  Non-const access allowed for transport equations
@@ -392,13 +379,6 @@ public:
                 const scalarField& T,
                 const label patchi
             ) const = 0;
-
-            //- Speed of sound [m/s]
-            virtual tmp<volScalarField> speedOfSound() const
-            {
-                NotImplemented;
-                return p_;
-            }
 
             //- Heat capacity at constant pressure/volume [J/kg/K]
             virtual tmp<volScalarField> Cpv() const = 0;

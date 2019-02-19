@@ -171,17 +171,9 @@ Foam::tmp<Foam::volScalarField> Foam::heThermo<BasicThermo, MixtureType>::he
 
     tmp<volScalarField> the
     (
-        new volScalarField
+        volScalarField::New
         (
-            IOobject
-            (
-                "he",
-                mesh.time().timeName(),
-                mesh,
-                IOobject::NO_READ,
-                IOobject::NO_WRITE,
-                false
-            ),
+            "he",
             mesh,
             he_.dimensions()
         )
@@ -266,17 +258,9 @@ Foam::heThermo<BasicThermo, MixtureType>::hc() const
 
     tmp<volScalarField> thc
     (
-        new volScalarField
+        volScalarField::New
         (
-            IOobject
-            (
-                "hc",
-                mesh.time().timeName(),
-                mesh,
-                IOobject::NO_READ,
-                IOobject::NO_WRITE,
-                false
-            ),
+            "hc",
             mesh,
             he_.dimensions()
         )
@@ -335,17 +319,9 @@ Foam::heThermo<BasicThermo, MixtureType>::Cp() const
 
     tmp<volScalarField> tCp
     (
-        new volScalarField
+        volScalarField::New
         (
-            IOobject
-            (
-                "Cp",
-                mesh.time().timeName(),
-                mesh,
-                IOobject::NO_READ,
-                IOobject::NO_WRITE,
-                false
-            ),
+            "Cp",
             mesh,
             dimEnergy/dimMass/dimTemperature
         )
@@ -408,17 +384,9 @@ Foam::heThermo<BasicThermo, MixtureType>::Cv() const
 
     tmp<volScalarField> tCv
     (
-        new volScalarField
+        volScalarField::New
         (
-            IOobject
-            (
-                "Cv",
-                mesh.time().timeName(),
-                mesh,
-                IOobject::NO_READ,
-                IOobject::NO_WRITE,
-                false
-            ),
+            "Cv",
             mesh,
             dimEnergy/dimMass/dimTemperature
         )
@@ -477,17 +445,9 @@ Foam::heThermo<BasicThermo, MixtureType>::gamma() const
 
     tmp<volScalarField> tgamma
     (
-        new volScalarField
+        volScalarField::New
         (
-            IOobject
-            (
-                "gamma",
-                mesh.time().timeName(),
-                mesh,
-                IOobject::NO_READ,
-                IOobject::NO_WRITE,
-                false
-            ),
+            "gamma",
             mesh,
             dimless
         )
@@ -524,95 +484,6 @@ Foam::heThermo<BasicThermo, MixtureType>::gamma() const
 
 
 template<class BasicThermo, class MixtureType>
-Foam::tmp<Foam::volScalarField>
-Foam::heThermo<BasicThermo, MixtureType>::speedOfSound() const
-{
-    tmp<volScalarField> aTmp
-    (
-        new volScalarField
-        (
-            IOobject
-            (
-                IOobject::groupName("a", this->T_.group()),
-                this->p_.time().timeName(),
-                this->p_.mesh(),
-                IOobject::NO_READ,
-                IOobject::NO_WRITE,
-                false
-            ),
-            this->p_.mesh(),
-            dimensionedScalar("0", dimVelocity, 0.0)
-        )
-    );
-    scalarField& aCells = aTmp.ref().primitiveFieldRef();
-    tmp<volScalarField> Rho(BasicThermo::rho());
-
-    const scalarField& pCells = this->p_;
-    const scalarField& TCells = this->T_;
-    const scalarField& rhoCells = Rho();
-
-    forAll(TCells, celli)
-    {
-        const typename MixtureType::thermoType& mixture_ =
-            this->cellMixture(celli);
-
-        aCells[celli] =
-            sqrt
-            (
-                1/mixture_.Cv(pCells[celli], TCells[celli])
-               *sqr
-                (
-                    mixture_.dpdT
-                    (
-                        TCells[celli],
-                        rhoCells[celli]
-                    )
-                )*TCells[celli]
-              - mixture_.dpdv(TCells[celli], rhoCells[celli])
-            )/rhoCells[celli];
-    }
-
-    const volScalarField::Boundary& pBf = this->p_.boundaryField();
-    const volScalarField::Boundary& TBf = this->T_.boundaryField();
-    const volScalarField::Boundary& rhoBf = Rho().boundaryField();
-    volScalarField::Boundary& aBf = aTmp.ref().boundaryFieldRef();
-
-
-    forAll(this->T_.boundaryField(), patchi)
-    {
-        forAll(TBf[patchi], facei)
-        {
-            const typename MixtureType::thermoType& mixture_ =
-                this->patchFaceMixture(patchi, facei);
-
-            aBf[patchi][facei] =
-                sqrt
-                (
-                    1/mixture_.Cv
-                    (
-                        pBf[patchi][facei],
-                        TBf[patchi][facei]
-                    )
-                   *sqr
-                    (
-                        mixture_.dpdT
-                        (
-                            TBf[patchi][facei],
-                            rhoBf[patchi][facei]
-                        )
-                    )*TBf[patchi][facei]
-                  - mixture_.dpdv
-                    (
-                        TBf[patchi][facei],
-                        rhoBf[patchi][facei]
-                    )
-                )/rhoBf[patchi][facei];
-        }
-    }
-    return aTmp;
-}
-
-template<class BasicThermo, class MixtureType>
 Foam::tmp<Foam::scalarField> Foam::heThermo<BasicThermo, MixtureType>::Cpv
 (
     const scalarField& p,
@@ -641,17 +512,9 @@ Foam::heThermo<BasicThermo, MixtureType>::Cpv() const
 
     tmp<volScalarField> tCpv
     (
-        new volScalarField
+        volScalarField::New
         (
-            IOobject
-            (
-                "Cpv",
-                mesh.time().timeName(),
-                mesh,
-                IOobject::NO_READ,
-                IOobject::NO_WRITE,
-                false
-            ),
+            "Cpv",
             mesh,
             dimEnergy/dimMass/dimTemperature
         )
@@ -713,17 +576,9 @@ Foam::heThermo<BasicThermo, MixtureType>::CpByCpv() const
 
     tmp<volScalarField> tCpByCpv
     (
-        new volScalarField
+        volScalarField::New
         (
-            IOobject
-            (
-                "CpByCpv",
-                mesh.time().timeName(),
-                mesh,
-                IOobject::NO_READ,
-                IOobject::NO_WRITE,
-                false
-            ),
+            "CpByCpv",
             mesh,
             dimless
         )
@@ -819,17 +674,9 @@ Foam::tmp<Foam::volScalarField> Foam::heThermo<BasicThermo, MixtureType>::W
 
     tmp<volScalarField> tW
     (
-        new volScalarField
+        volScalarField::New
         (
-            IOobject
-            (
-                "W",
-                mesh.time().timeName(),
-                mesh,
-                IOobject::NO_READ,
-                IOobject::NO_WRITE,
-                false
-            ),
+            "W",
             mesh,
             dimMass/dimMoles
         )

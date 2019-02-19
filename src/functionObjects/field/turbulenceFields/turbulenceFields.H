@@ -52,8 +52,9 @@ Description
 Usage
     \table
         Property     | Description                 | Required | Default value
-        type         | type name: processorField   | yes      |
-        fields       | fields to store (see below) | yes      |
+        type         | Type name: processorField   | yes      |
+        fields       | Fields to store (see below) | yes      |
+        prefix       | If true prefix fields       | no       | no
     \endtable
 
     Where \c fields can include:
@@ -106,33 +107,31 @@ class turbulenceFields
 {
 public:
 
-    enum compressibleField
+    enum class compressibleField
     {
-        cfK,
-        cfEpsilon,
-        cfOmega,
-        cfMut,
-        cfMuEff,
-        cfAlphat,
-        cfAlphaEff,
-        cfR,
-        cfDevRhoReff
+        k,
+        epsilon,
+        omega,
+        mut,
+        muEff,
+        alphat,
+        alphaEff,
+        R,
+        devRhoReff
     };
     static const NamedEnum<compressibleField, 9> compressibleFieldNames_;
 
-    enum incompressibleField
+    enum class incompressibleField
     {
-        ifK,
-        ifEpsilon,
-        ifOmega,
-        ifNut,
-        ifNuEff,
-        ifR,
-        ifDevReff
+        k,
+        epsilon,
+        omega,
+        nut,
+        nuEff,
+        R,
+        devReff
     };
     static const NamedEnum<incompressibleField, 7> incompressibleFieldNames_;
-
-    static const word modelName;
 
 
 protected:
@@ -142,11 +141,14 @@ protected:
         //- Fields to load
         wordHashSet fieldSet_;
 
+        //- Optional field prefix to avoid name clashes
+        //  Defaults to null
+        word prefix_;
+
 
     // Protected Member Functions
 
-        //- Return true if compressible turbulence model is identified
-        bool compressible();
+        static const word& modelName();
 
         //- Process the turbulence field
         template<class Type>

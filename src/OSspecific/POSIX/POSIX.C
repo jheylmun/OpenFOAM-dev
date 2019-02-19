@@ -38,6 +38,7 @@ Description
 #include "timer.H"
 #include "IFstream.H"
 #include "DynamicList.H"
+#include "HashSet.H"
 #include "IOstreams.H"
 #include "Pstream.H"
 
@@ -126,7 +127,7 @@ Foam::string Foam::hostName(bool full)
     char buf[128];
     ::gethostname(buf, sizeof(buf));
 
-    // implementation as per hostname from net-tools
+    // Implementation as per hostname from net-tools
     if (full)
     {
         struct hostent *hp = ::gethostbyname(buf);
@@ -145,7 +146,7 @@ Foam::string Foam::domainName()
     char buf[128];
     ::gethostname(buf, sizeof(buf));
 
-    // implementation as per hostname from net-tools
+    // Implementation as per hostname from net-tools
     struct hostent *hp = ::gethostbyname(buf);
     if (hp)
     {
@@ -298,7 +299,7 @@ bool Foam::mkDir(const fileName& pathName, mode_t mode)
         }
     }
 
-    // empty names are meaningless
+    // Empty names are meaningless
     if (pathName.empty())
     {
         return false;
@@ -483,7 +484,7 @@ mode_t Foam::mode
 }
 
 
-Foam::fileName::Type Foam::type
+Foam::fileType Foam::type
 (
     const fileName& name,
     const bool checkVariants,
@@ -498,19 +499,19 @@ Foam::fileName::Type Foam::type
 
     if (S_ISREG(m))
     {
-        return fileName::FILE;
+        return fileType::file;
     }
     else if (S_ISLNK(m))
     {
-        return fileName::LINK;
+        return fileType::link;
     }
     else if (S_ISDIR(m))
     {
-        return fileName::DIRECTORY;
+        return fileType::directory;
     }
     else
     {
-        return fileName::UNDEFINED;
+        return fileType::undefined;
     }
 }
 
@@ -660,18 +661,13 @@ double Foam::highResLastModified
 Foam::fileNameList Foam::readDir
 (
     const fileName& directory,
-    const fileName::Type type,
+    const fileType type,
     const bool filterVariants,
     const bool followLink
 )
 {
-    // Initial filename list size
-    // also used as increment if initial size found to be insufficient
-    static const int maxNnames = 100;
-
     if (POSIX::debug)
     {
-        // InfoInFunction
         Pout<< FUNCTION_NAME << " : reading directory " << directory << endl;
         if ((POSIX::debug & 2) && !Pstream::master())
         {
@@ -679,21 +675,16 @@ Foam::fileNameList Foam::readDir
         }
     }
 
-    // Setup empty string list MAXTVALUES long
-    fileNameList dirEntries(maxNnames);
+    // Create empty set of file names
+    HashSet<fileName> dirEntries;
 
     // Pointers to the directory entries
     DIR *source;
     struct dirent *list;
 
-    // Temporary variables and counters
-    label nEntries = 0;
-
     // Attempt to open directory and set the structure pointer
     if ((source = ::opendir(directory.c_str())) == nullptr)
     {
-        dirEntries.setSize(0);
-
         if (POSIX::debug)
         {
             InfoInFunction
@@ -707,17 +698,17 @@ Foam::fileNameList Foam::readDir
         {
             fileName fName(list->d_name);
 
-            // ignore files beginning with ., i.e. '.', '..' and '.*'
+            // Ignore files beginning with ., i.e. '.', '..' and '.*'
             if (fName.size() && fName[0] != '.')
             {
                 word fExt = fName.ext();
 
                 if
                 (
-                    (type == fileName::DIRECTORY)
+                    (type == fileType::directory)
                  ||
                     (
-                        type == fileName::FILE
+                        type == fileType::file
                      && fName[fName.size()-1] != '~'
                      && fExt != "bak"
                      && fExt != "BAK"
@@ -728,12 +719,7 @@ Foam::fileNameList Foam::readDir
                 {
                     if ((directory/fName).type(false, followLink) == type)
                     {
-                        if (nEntries >= dirEntries.size())
-                        {
-                            dirEntries.setSize(dirEntries.size() + maxNnames);
-                        }
-
-                        dirEntries[nEntries++] = fName;
+                        bool filtered = false;
 
                         if (filterVariants)
                         {
@@ -741,23 +727,26 @@ Foam::fileNameList Foam::readDir
                             {
                                 if (fExt == fileStat::variantExts_[i])
                                 {
-                                    dirEntries[nEntries - 1] = fName.lessExt();
+                                    dirEntries.insert(fName.lessExt());
+                                    filtered = true;
                                     break;
                                 }
                             }
+                        }
+
+                        if (!filtered)
+                        {
+                            dirEntries.insert(fName);
                         }
                     }
                 }
             }
         }
 
-        // Reset the length of the entries list
-        dirEntries.setSize(nEntries);
-
         ::closedir(source);
     }
 
-    return dirEntries;
+    return dirEntries.toc();
 }
 
 
@@ -777,15 +766,15 @@ bool Foam::cp(const fileName& src, const fileName& dest, const bool followLink)
         return false;
     }
 
-    const fileName::Type srcType = src.type(false, followLink);
+    const fileType srcType = src.type(false, followLink);
 
     fileName destFile(dest);
 
     // Check type of source file.
-    if (srcType == fileName::FILE)
+    if (srcType == fileType::file)
     {
         // If dest is a directory, create the destination file name.
-        if (destFile.type() == fileName::DIRECTORY)
+        if (destFile.type() == fileType::directory)
         {
             destFile = destFile/src.name();
         }
@@ -822,10 +811,10 @@ bool Foam::cp(const fileName& src, const fileName& dest, const bool followLink)
             return false;
         }
     }
-    else if (srcType == fileName::LINK)
+    else if (srcType == fileType::link)
     {
         // If dest is a directory, create the destination file name.
-        if (destFile.type() == fileName::DIRECTORY)
+        if (destFile.type() == fileType::directory)
         {
             destFile = destFile/src.name();
         }
@@ -838,10 +827,10 @@ bool Foam::cp(const fileName& src, const fileName& dest, const bool followLink)
 
         ln(src, destFile);
     }
-    else if (srcType == fileName::DIRECTORY)
+    else if (srcType == fileType::directory)
     {
         // If dest is a directory, create the destination file name.
-        if (destFile.type() == fileName::DIRECTORY)
+        if (destFile.type() == fileType::directory)
         {
             destFile = destFile/src.component(src.components().size() -1);
         }
@@ -879,7 +868,7 @@ bool Foam::cp(const fileName& src, const fileName& dest, const bool followLink)
         }
 
         // Copy files
-        fileNameList contents = readDir(src, fileName::FILE, false, followLink);
+        fileNameList contents = readDir(src, fileType::file, false, followLink);
         forAll(contents, i)
         {
             if (POSIX::debug)
@@ -897,7 +886,7 @@ bool Foam::cp(const fileName& src, const fileName& dest, const bool followLink)
         fileNameList subdirs = readDir
         (
             src,
-            fileName::DIRECTORY,
+            fileType::directory,
             false,
             followLink
         );
@@ -924,7 +913,6 @@ bool Foam::ln(const fileName& src, const fileName& dst)
 {
     if (POSIX::debug)
     {
-        // InfoInFunction
         Pout<< FUNCTION_NAME
             << " : Create softlink from : " << src << " to " << dst << endl;
         if ((POSIX::debug & 2) && !Pstream::master())
@@ -965,7 +953,6 @@ bool Foam::mv(const fileName& src, const fileName& dst, const bool followLink)
 {
     if (POSIX::debug)
     {
-        // InfoInFunction
         Pout<< FUNCTION_NAME << " : Move : " << src << " to " << dst << endl;
         if ((POSIX::debug & 2) && !Pstream::master())
         {
@@ -975,8 +962,8 @@ bool Foam::mv(const fileName& src, const fileName& dst, const bool followLink)
 
     if
     (
-        dst.type() == fileName::DIRECTORY
-     && src.type(false, followLink) != fileName::DIRECTORY
+        dst.type() == fileType::directory
+     && src.type(false, followLink) != fileType::directory
     )
     {
         const fileName dstName(dst/src.name());
@@ -994,7 +981,6 @@ bool Foam::mvBak(const fileName& src, const std::string& ext)
 {
     if (POSIX::debug)
     {
-        // InfoInFunction
         Pout<< FUNCTION_NAME
             << " : moving : " << src << " to extension " << ext << endl;
         if ((POSIX::debug & 2) && !Pstream::master())
@@ -1017,7 +1003,7 @@ bool Foam::mvBak(const fileName& src, const std::string& ext)
                 dstName += index;
             }
 
-            // avoid overwriting existing files, except for the last
+            // Avoid overwriting existing files, except for the last
             // possible index where we have no choice
             if (!exists(dstName, false, false) || n == maxIndex)
             {
@@ -1027,7 +1013,7 @@ bool Foam::mvBak(const fileName& src, const std::string& ext)
         }
     }
 
-    // fall-through: nothing to do
+    // Fall-through: nothing to do
     return false;
 }
 
@@ -1036,7 +1022,6 @@ bool Foam::rm(const fileName& file)
 {
     if (POSIX::debug)
     {
-        // InfoInFunction
         Pout<< FUNCTION_NAME << " : Removing : " << file << endl;
         if ((POSIX::debug & 2) && !Pstream::master())
         {
@@ -1067,7 +1052,6 @@ bool Foam::rmDir(const fileName& directory)
 {
     if (POSIX::debug)
     {
-        // InfoInFunction
         Pout<< FUNCTION_NAME << " : removing directory " << directory << endl;
         if ((POSIX::debug & 2) && !Pstream::master())
         {
@@ -1098,7 +1082,7 @@ bool Foam::rmDir(const fileName& directory)
             {
                 fileName path = directory/fName;
 
-                if (path.type(false, false) == fileName::DIRECTORY)
+                if (path.type(false, false) == fileType::directory)
                 {
                     if (!rmDir(path))
                     {
@@ -1173,7 +1157,7 @@ bool Foam::ping
 {
     struct hostent *hostPtr;
     volatile int sockfd;
-    struct sockaddr_in destAddr;      // will hold the destination addr
+    struct sockaddr_in destAddr;      // Will hold the destination addr
     u_int addr;
 
     if ((hostPtr = ::gethostbyname(destName.c_str())) == nullptr)
@@ -1231,7 +1215,6 @@ bool Foam::ping
         {
             return true;
         }
-        // perror("connect");
 
         return false;
     }
@@ -1302,13 +1285,14 @@ void* Foam::dlSym(void* handle, const std::string& symbol)
             << "dlSym(void*, const std::string&)"
             << " : dlsym of " << symbol << std::endl;
     }
-    // clear any old errors - see manpage dlopen
+
+    // Clear any old errors - see manpage dlopen
     (void) ::dlerror();
 
-    // get address of symbol
+    // Get address of symbol
     void* fun = ::dlsym(handle, symbol.c_str());
 
-    // find error (if any)
+    // Find error (if any)
     char *error = ::dlerror();
 
     if (error)
@@ -1333,13 +1317,13 @@ bool Foam::dlSymFound(void* handle, const std::string& symbol)
                 << " : dlsym of " << symbol << std::endl;
         }
 
-        // clear any old errors - see manpage dlopen
+        // Clear any old errors - see manpage dlopen
         (void) ::dlerror();
 
-        // get address of symbol
+        // Get address of symbol
         (void) ::dlsym(handle, symbol.c_str());
 
-        // symbol can be found if there was no error
+        // Symbol can be found if there was no error
         return !::dlerror();
     }
     else

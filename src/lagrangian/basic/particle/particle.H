@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2019 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -94,15 +94,9 @@ class particle
         //- Size in bytes of the fields
         static const std::size_t sizeofFields_;
 
-        //- The factor by which the displacement is increased when passing
-        //  through negative space. This should be slightly bigger than one.
-        //  This is needed as a straight trajectory can form a closed loop
-        //  through regions of overlapping positive and negative space, leading
-        //  to a track which never ends. By increasing the rate of displacement
-        //  through negative regions, the change in track fraction over this
-        //  part of the loop no longer exactly cancels the change over the
-        //  positive part, and the track therefore terminates.
-        static const scalar negativeSpaceDisplacementFactor;
+        //- The value of nBehind_ at which tracking is abandoned. See the
+        //  description of nBehind_.
+        static const label maxNBehind_;
 
 
 public:
@@ -154,6 +148,18 @@ private:
 
         //- Fraction of time-step completed
         scalar stepFraction_;
+
+        //- The distance behind the maximum distance reached so far
+        scalar behind_;
+
+        //- The number of tracks carried out that ended in a distance behind the
+        //  maximum distance reached so far. Once this reaches maxNBehind_,
+        //  tracking is abandoned for the current step. This is needed because
+        //  when tetrahedra are inverted a straight trajectory can form a closed
+        //  loop through regions of overlapping positive and negative space.
+        //  Without this break clause, such loops can result in a valid track
+        //  which never ends.
+        label nBehind_;
 
         //- Originating processor id
         label origProc_;
@@ -358,7 +364,8 @@ public:
         DefinePropertyList
         (
             "(coordinatesa coordinatesb coordinatesc coordinatesd) "
-            "celli tetFacei tetPti facei stepFraction origProc origId"
+            "celli tetFacei tetPti facei stepFraction "
+            "behind nBehind origProc origId"
         );
 
         //- Cumulative particle counter - used to provide unique ID
@@ -512,6 +519,10 @@ public:
 
     // Track
 
+        //- Set step fraction and behind data to zero in preparation for a new
+        //  track
+        inline void reset();
+
         //- Track along the displacement for a given fraction of the overall
         //  step. End when the track is complete, or when a boundary is hit.
         //  On exit, stepFraction_ will have been incremented to the current
@@ -570,6 +581,17 @@ public:
         //  interact the particle with the relevant patch.
         template<class TrackCloudType>
         void hitFace
+        (
+            const vector& displacement,
+            const scalar fraction,
+            TrackCloudType& cloud,
+            trackingData& td
+        );
+
+        //- As above, but does not change the master patch. Needed in order for
+        //  ACMI to be able to delegate a hit to the non-overlap patch.
+        template<class TrackCloudType>
+        void hitFaceNoChangeToMasterPatch
         (
             const vector& displacement,
             const scalar fraction,

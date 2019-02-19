@@ -173,6 +173,12 @@ public:
             //- Return Cp departure [J/(kg K]
             inline scalar Cp(scalar p, scalar T) const;
 
+            //- Return internal energy departure [J/kg]
+            inline scalar E(const scalar p, const scalar T) const;
+
+            //- Return Cv departure [J/(kg K]
+            inline scalar Cv(scalar p, scalar T) const;
+
             //- Return entropy [J/(kg K)]
             inline scalar S(const scalar p, const scalar T) const;
 
@@ -184,20 +190,6 @@ public:
 
             //- Return (Cp - Cv) [J/(kg K]
             inline scalar CpMCv(scalar p, scalar T) const;
-
-            //- Return the derivative of pressure with respesct to temperature
-            inline scalar dpdT
-            (
-                scalar T,
-                scalar rho
-            ) const;
-
-            //- Return the derivative of pressure with respesct to molar volume
-            inline scalar dpdv
-            (
-                scalar T,
-                scalar rho
-            ) const;
 
 
         // IO

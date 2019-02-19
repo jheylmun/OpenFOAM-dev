@@ -107,12 +107,34 @@ inline Foam::scalar Foam::incompressiblePerfectGas<Specie>::H
     scalar T
 ) const
 {
-    return 0;
+    return p/this->rho(p, T);
 }
 
 
 template<class Specie>
 inline Foam::scalar Foam::incompressiblePerfectGas<Specie>::Cp
+(
+    scalar p,
+    scalar T
+) const
+{
+    return 0;
+}
+
+
+template<class Specie>
+inline Foam::scalar Foam::incompressiblePerfectGas<Specie>::E
+(
+    scalar p,
+    scalar T
+) const
+{
+    return 0;
+}
+
+
+template<class Specie>
+inline Foam::scalar Foam::incompressiblePerfectGas<Specie>::Cv
 (
     scalar p,
     scalar T
@@ -162,28 +184,7 @@ inline Foam::scalar Foam::incompressiblePerfectGas<Specie>::CpMCv
     scalar T
 ) const
 {
-    return this->R();
-}
-
-template<class Specie>
-inline Foam::scalar Foam::incompressiblePerfectGas<Specie>::dpdT
-(
-    scalar T,
-    scalar rho
-) const
-{
-    return 0;//RR*this->W()/rho;
-}
-
-
-template<class Specie>
-inline Foam::scalar Foam::incompressiblePerfectGas<Specie>::dpdv
-(
-    scalar T,
-    scalar rho
-) const
-{
-    return 0;//-RR*T*sqr(this->W()/rho);
+    return 0;
 }
 
 

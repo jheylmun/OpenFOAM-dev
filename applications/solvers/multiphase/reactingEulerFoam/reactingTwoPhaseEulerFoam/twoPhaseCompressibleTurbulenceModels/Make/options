@@ -1,5 +1,6 @@
 EXE_INC = \
     -I../twoPhaseSystem/lnInclude \
+    -I../../kineticTheoryModels/lnInclude \
     -I../../phaseSystems/lnInclude \
     -I../../interfacialModels/lnInclude \
     -I../../interfacialCompositionModels/lnInclude \
@@ -19,6 +20,8 @@ LIB_LIBS = \
     -lreactingPhaseSystem \
     -lfluidThermophysicalModels \
     -lreactingTwoPhaseSystem \
+    -lreactingPhaseSystem \
+    -lreactingKineticTheoryModels \
     -lreactingEulerianInterfacialModels \
     -lreactingEulerianInterfacialCompositionModels \
     -lreactingEulerianFvPatchFields \

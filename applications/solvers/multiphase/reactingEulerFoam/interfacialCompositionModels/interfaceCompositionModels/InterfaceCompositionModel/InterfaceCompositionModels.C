@@ -128,8 +128,20 @@ namespace Foam
     makeInterfaceCompositionModel
     (
         Saturated,
+        constEThermoPhysics,
+        constEThermoPhysics
+    );
+    makeInterfaceCompositionModel
+    (
+        Saturated,
+        constGasEThermoPhysics,
+        constEThermoPhysics
+    );
+    makeInterfaceCompositionModel
+    (
+        Saturated,
         gasEThermoPhysics,
-        constFluidEThermoPhysics
+        constEThermoPhysics
     );
     makeInterfaceCompositionModel
     (
@@ -137,11 +149,30 @@ namespace Foam
         constGasEThermoPhysics,
         constFluidEThermoPhysics
     );
+    makeInterfaceCompositionModel
+    (
+        Saturated,
+        gasEThermoPhysics,
+        constFluidEThermoPhysics
+    );
+
+    makeSpecieInterfaceCompositionModel
+    (
+        NonRandomTwoLiquid,
+        constEThermoPhysics,
+        constEThermoPhysics
+    );
+    makeSpecieInterfaceCompositionModel
+    (
+        NonRandomTwoLiquid,
+        constGasEThermoPhysics,
+        constEThermoPhysics
+    );
     makeSpecieInterfaceCompositionModel
     (
         NonRandomTwoLiquid,
         gasEThermoPhysics,
-        constFluidEThermoPhysics
+        constEThermoPhysics
     );
     makeSpecieInterfaceCompositionModel
     (
@@ -149,12 +180,30 @@ namespace Foam
         constGasEThermoPhysics,
         constFluidEThermoPhysics
     );
+    makeSpecieInterfaceCompositionModel
+    (
+        NonRandomTwoLiquid,
+        gasEThermoPhysics,
+        constFluidEThermoPhysics
+    );
 
     // Liquid-side models
     makeSpecieInterfaceCompositionModel
     (
         Henry,
-        constFluidEThermoPhysics,
+        constEThermoPhysics,
+        constEThermoPhysics
+    );
+    makeSpecieInterfaceCompositionModel
+    (
+        Henry,
+        constEThermoPhysics,
+        constGasEThermoPhysics
+    );
+    makeSpecieInterfaceCompositionModel
+    (
+        Henry,
+        constEThermoPhysics,
         gasEThermoPhysics
     );
     makeSpecieInterfaceCompositionModel
@@ -165,8 +214,27 @@ namespace Foam
     );
     makeSpecieInterfaceCompositionModel
     (
-        Raoult,
+        Henry,
         constFluidEThermoPhysics,
+        gasEThermoPhysics
+    );
+
+    makeSpecieInterfaceCompositionModel
+    (
+        Raoult,
+        constEThermoPhysics,
+        constEThermoPhysics
+    );
+    makeSpecieInterfaceCompositionModel
+    (
+        Raoult,
+        constEThermoPhysics,
+        constGasEThermoPhysics
+    );
+    makeSpecieInterfaceCompositionModel
+    (
+        Raoult,
+        constEThermoPhysics,
         gasEThermoPhysics
     );
     makeSpecieInterfaceCompositionModel
@@ -174,6 +242,12 @@ namespace Foam
         Raoult,
         constFluidEThermoPhysics,
         constGasEThermoPhysics
+    );
+    makeSpecieInterfaceCompositionModel
+    (
+        Raoult,
+        constFluidEThermoPhysics,
+        gasEThermoPhysics
     );
 
     // multi-component gas in the presence of a multi-component solid

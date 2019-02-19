@@ -100,6 +100,9 @@ int main(int argc, char *argv[])
         // --- Pressure-velocity PIMPLE corrector loop
         while (pimple.loop())
         {
+            //- Solver granular temperature equation if a model uses kintic theory
+            fluid.correctTurbulence(false);
+
             fluid.solve();
             fluid.correct();
 
@@ -120,9 +123,10 @@ int main(int argc, char *argv[])
 
             fluid.correctKinematics();
 
+            // Solve standard turbulence models
             if (pimple.turbCorr())
             {
-                fluid.correctTurbulence();
+                fluid.correctTurbulence(true);
             }
         }
 

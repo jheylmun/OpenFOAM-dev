@@ -24,7 +24,6 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "perfectFluid.H"
-#include "specie.H"
 
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
@@ -102,12 +101,26 @@ inline Foam::scalar Foam::perfectFluid<Specie>::p(scalar T, scalar rho) const
 template<class Specie>
 inline Foam::scalar Foam::perfectFluid<Specie>::H(scalar p, scalar T) const
 {
-    return 0;
+    return p/rho(p, T) - Pstd/rho(Pstd, T);
 }
 
 
 template<class Specie>
 inline Foam::scalar Foam::perfectFluid<Specie>::Cp(scalar p, scalar T) const
+{
+    return 0;
+}
+
+
+template<class Specie>
+inline Foam::scalar Foam::perfectFluid<Specie>::E(scalar p, scalar T) const
+{
+    return 0;
+}
+
+
+template<class Specie>
+inline Foam::scalar Foam::perfectFluid<Specie>::Cv(scalar p, scalar T) const
 {
     return 0;
 }
@@ -137,21 +150,10 @@ inline Foam::scalar Foam::perfectFluid<Specie>::Z(scalar p, scalar T) const
 template<class Specie>
 inline Foam::scalar Foam::perfectFluid<Specie>::CpMCv(scalar p, scalar T) const
 {
-    return 0;
-}
+    const scalar R = this->R();
+    const scalar rho = this->rho(p, T);
 
-
-template<class Specie>
-inline Foam::scalar Foam::perfectFluid<Specie>::dpdT(scalar T,  scalar rho) const
-{
-    return this->R()*(rho - rho0_);
-}
-
-
-template<class Specie>
-inline Foam::scalar Foam::perfectFluid<Specie>::dpdv(scalar T,  scalar rho) const
-{
-    return -this->R()*T*sqr(rho);
+    return R*sqr(p/(rho*R*T));
 }
 
 

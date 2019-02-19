@@ -30,6 +30,8 @@ License
 #include "fvcDdt.H"
 #include "localEulerDdtScheme.H"
 
+#include "kineticTheorySystem.H"
+
 #include "dragModel.H"
 #include "BlendedInterfacialModel.H"
 
@@ -52,7 +54,7 @@ Foam::tmp<Foam::surfaceScalarField> Foam::phaseSystem::calcPhi
 {
     tmp<surfaceScalarField> tmpPhi
     (
-        new surfaceScalarField
+        surfaceScalarField::New
         (
             "phi",
             fvc::interpolate(phaseModels[0])*phaseModels[0].phi()
@@ -142,6 +144,9 @@ Foam::phaseSystem::phaseSystem
 
     phaseModels_(lookup("phases"), phaseModel::iNew(*this)),
 
+    kineticTheoryPtr_(NULL),
+    polydisperseKineticTheory_(false),
+
     phi_(calcPhi(phaseModels_)),
 
     dpdt_
@@ -153,7 +158,7 @@ Foam::phaseSystem::phaseSystem
             mesh
         ),
         mesh,
-        dimensionedScalar("dpdt", dimPressure/dimTime, 0)
+        dimensionedScalar(dimPressure/dimTime, 0)
     ),
 
     MRF_(mesh_),
@@ -234,6 +239,26 @@ Foam::phaseSystem::phaseSystem
     generatePairsAndSubModels("surfaceTension", surfaceTensionModels_);
     generatePairsAndSubModels("aspectRatio", aspectRatioModels_);
 
+    // Check if a granular phase is used and store at pointer if it is
+    if (mesh_.foundObject<kineticTheorySystem>("kineticTheorySystem"))
+    {
+        kineticTheoryPtr_ =
+        (
+            &mesh_.lookupObjectRef<kineticTheorySystem>("kineticTheorySystem")
+        );
+
+        // Initialize fields after all granular phases are initialized
+        kineticTheoryPtr_->correct();
+
+        //- If only one granular phase is used, the multiphase limiting is not
+        //  needed so it is skipped
+        if (kineticTheoryPtr_->polydisperse())
+        {
+            polydisperseKineticTheory_ = true;
+        }
+    }
+
+
     // Update motion fields
     correctKinematics();
 }
@@ -310,22 +335,11 @@ Foam::phaseSystem::E(const phasePairKey& key) const
     }
     else
     {
-        return tmp<volScalarField>
+        return volScalarField::New
         (
-            new volScalarField
-            (
-                IOobject
-                (
-                    aspectRatioModel::typeName + ":E",
-                    this->mesh_.time().timeName(),
-                    this->mesh_,
-                    IOobject::NO_READ,
-                    IOobject::NO_WRITE,
-                    false
-                ),
-                this->mesh_,
-                dimensionedScalar("zero", dimless, 1)
-            )
+            aspectRatioModel::typeName + ":E",
+            this->mesh_,
+            dimensionedScalar(dimless, 1)
         );
     }
 }
@@ -340,22 +354,11 @@ Foam::phaseSystem::sigma(const phasePairKey& key) const
     }
     else
     {
-        return tmp<volScalarField>
+        return volScalarField::New
         (
-            new volScalarField
-            (
-                IOobject
-                (
-                    surfaceTensionModel::typeName + ":sigma",
-                    this->mesh_.time().timeName(),
-                    this->mesh_,
-                    IOobject::NO_READ,
-                    IOobject::NO_WRITE,
-                    false
-                ),
-                this->mesh_,
-                dimensionedScalar("zero", surfaceTensionModel::dimSigma, 0)
-            )
+            surfaceTensionModel::typeName + ":sigma",
+            this->mesh_,
+            dimensionedScalar(surfaceTensionModel::dimSigma, 0)
         );
     }
 }
@@ -366,19 +369,11 @@ Foam::tmp<Foam::volScalarField> Foam::phaseSystem::dmdt
     const phasePairKey& key
 ) const
 {
-    return tmp<volScalarField>
+    return volScalarField::New
     (
-        new volScalarField
-        (
-            IOobject
-            (
-                IOobject::groupName("dmdt", phasePairs_[key]->name()),
-                this->mesh_.time().timeName(),
-                this->mesh_
-            ),
-            this->mesh_,
-            dimensionedScalar("zero", dimDensity/dimTime, 0)
-        )
+        IOobject::groupName("dmdt", phasePairs_[key]->name()),
+        this->mesh_,
+        dimensionedScalar(dimDensity/dimTime, 0)
     );
 }
 
@@ -432,11 +427,48 @@ void Foam::phaseSystem::correctThermo()
 }
 
 
-void Foam::phaseSystem::correctTurbulence()
+void Foam::phaseSystem::correctTurbulence(const bool postSolve)
 {
-    forAll(phaseModels_, phasei)
+    // If no granular phases exist, only update turbulence if post solve
+    if (!kineticTheoryPtr_)
     {
-        phaseModels_[phasei].correctTurbulence();
+        if (postSolve)
+        {
+            forAll(phaseModels_, phasei)
+            {
+                phaseModels_[phasei].correctTurbulence();
+            }
+        }
+        return;
+    }
+
+    //  Update granular phases before volume fraction transport each pimple
+    //  iteration to improve convergence of fields
+    if (!postSolve)
+    {
+        kineticTheoryPtr_->correct();
+
+        forAll(phaseModels_, phasei)
+        {
+            if (kineticTheoryPtr_->found(phaseModels_[phasei].name()))
+            {
+                phaseModels_[phasei].correctTurbulence();
+            }
+        }
+
+        kineticTheoryPtr_->correct();
+    }
+
+    // Update non granular phases after outer correctors finish
+    if (postSolve)
+    {
+        forAll(phaseModels_, phasei)
+        {
+            if (!kineticTheoryPtr_->found(phaseModels_[phasei].name()))
+            {
+                phaseModels_[phasei].correctTurbulence();
+            }
+        }
     }
 }
 

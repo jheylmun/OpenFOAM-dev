@@ -3,6 +3,7 @@ EXE_INC = \
     -I../interfacialModels/lnInclude \
     -I../interfacialCompositionModels/lnInclude \
     -I../derivedFvPatchFields/lnInclude \
+    -I../kineticTheoryModels/lnInclude \
     -I$(LIB_SRC)/ODE/lnInclude \
     -I$(LIB_SRC)/thermophysicalModels/basic/lnInclude \
     -I$(LIB_SRC)/thermophysicalModels/specie/lnInclude \

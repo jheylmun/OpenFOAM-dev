@@ -46,9 +46,9 @@ Foam::MultiComponentPhaseModel<BasePhaseModel>::MultiComponentPhaseModel
 )
 :
     BasePhaseModel(fluid, phaseName, index),
-    Sc_
+    Sct_
     (
-        "Sc",
+        "Sct",
         dimless,
         fluid.subDict(phaseName)
     ),
@@ -105,7 +105,7 @@ void Foam::MultiComponentPhaseModel<BasePhaseModel>::correctThermo()
             this->fluid().mesh()
         ),
         this->fluid().mesh(),
-        dimensionedScalar("zero", dimless, 0)
+        dimensionedScalar(dimless, 0)
     );
 
     PtrList<volScalarField>& Yi = YRef();
@@ -158,7 +158,7 @@ Foam::MultiComponentPhaseModel<BasePhaseModel>::YiEqn(volScalarField& Yi)
       - fvm::laplacian
         (
             fvc::interpolate(alpha)
-           *fvc::interpolate(this->muEff()/Sc_),
+           *fvc::interpolate(this->muEff()/Sct_),
             Yi
         )
      ==

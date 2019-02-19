@@ -28,7 +28,7 @@ air
     {
         d               1;
     }
-    Sc 0.7;
+    Sct 0.7;
 
     residualAlpha   1e-6;
 }
@@ -60,7 +60,7 @@ particles2
 
     alphaMax        0.63;
     residualAlpha   1e-6;
-    Sc 0.7;
+    Sct 0.7;
 }
 
 blending

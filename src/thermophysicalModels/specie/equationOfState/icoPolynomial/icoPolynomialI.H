@@ -106,12 +106,34 @@ inline Foam::scalar Foam::icoPolynomial<Specie, PolySize>::H
     scalar T
 ) const
 {
-    return 0;
+    return p/this->rho(p, T);
 }
 
 
 template<class Specie, int PolySize>
 inline Foam::scalar Foam::icoPolynomial<Specie, PolySize>::Cp
+(
+    scalar p,
+    scalar T
+) const
+{
+    return 0;
+}
+
+
+template<class Specie, int PolySize>
+inline Foam::scalar Foam::icoPolynomial<Specie, PolySize>::E
+(
+    scalar p,
+    scalar T
+) const
+{
+    return 0;
+}
+
+
+template<class Specie, int PolySize>
+inline Foam::scalar Foam::icoPolynomial<Specie, PolySize>::Cv
 (
     scalar p,
     scalar T
@@ -159,28 +181,6 @@ inline Foam::scalar Foam::icoPolynomial<Specie, PolySize>::CpMCv
 (
     scalar p,
     scalar T
-) const
-{
-    return -(p/sqr(rhoCoeffs_.value(T)))*rhoCoeffs_.derivative(T);
-}
-
-
-template<class Specie, int PolySize>
-inline Foam::scalar Foam::icoPolynomial<Specie, PolySize>::dpdT
-(
-    scalar T,
-    scalar rho
-) const
-{
-    return 0;
-}
-
-
-template<class Specie, int PolySize>
-inline Foam::scalar Foam::icoPolynomial<Specie, PolySize>::dpdv
-(
-    scalar T,
-    scalar rho
 ) const
 {
     return 0;

@@ -80,12 +80,26 @@ inline Foam::scalar Foam::rhoConst<Specie>::p(scalar T, scalar rho) const
 template<class Specie>
 inline Foam::scalar Foam::rhoConst<Specie>::H(scalar p, scalar T) const
 {
-    return 0;
+    return p/rho_;
 }
 
 
 template<class Specie>
 inline Foam::scalar Foam::rhoConst<Specie>::Cp(scalar p, scalar T) const
+{
+    return 0;
+}
+
+
+template<class Specie>
+inline Foam::scalar Foam::rhoConst<Specie>::E(scalar p, scalar T) const
+{
+    return 0;
+}
+
+
+template<class Specie>
+inline Foam::scalar Foam::rhoConst<Specie>::Cv(scalar p, scalar T) const
 {
     return 0;
 }
@@ -114,20 +128,6 @@ inline Foam::scalar Foam::rhoConst<Specie>::Z(scalar p, scalar T) const
 
 template<class Specie>
 inline Foam::scalar Foam::rhoConst<Specie>::CpMCv(scalar p, scalar T) const
-{
-    return 0;
-}
-
-
-template<class Specie>
-inline Foam::scalar Foam::rhoConst<Specie>::dpdT(scalar T, scalar rho) const
-{
-    return 0;
-}
-
-
-template<class Specie>
-inline Foam::scalar Foam::rhoConst<Specie>::dpdv(scalar T, scalar rho) const
 {
     return 0;
 }
