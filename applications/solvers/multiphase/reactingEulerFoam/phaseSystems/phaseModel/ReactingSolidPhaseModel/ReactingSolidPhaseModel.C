@@ -221,7 +221,7 @@ Foam::ReactingSolidPhaseModel
     }
     else
     {
-        forAll(gasThermo_, specieI)
+        forAll(chemistryPtr_->gasTable(), specieI)
         {
             dmdt.ref() += chemistryPtr_->RRg(specieI);
         }
